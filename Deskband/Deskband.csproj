@@ -1,0 +1,258 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{46ACE0DB-93C7-44FA-BA6E-CB863318F33F}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Deskband</RootNamespace>
+    <AssemblyName>Deskband</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>DeskbandControls.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x64\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <OutputPath>bin\x64\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Newtonsoft.Json.5.0.6\lib\net40\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xaml" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
+    <Reference Include="Xceed.Wpf.Toolkit">
+      <HintPath>..\packages\Extended.Wpf.Toolkit.2.0.0\lib\net40\Xceed.Wpf.Toolkit.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Common\Enums.cs" />
+    <Compile Include="Common\Extensions\EnumExtensions.cs" />
+    <Compile Include="Common\Extensions\MediaColorExtensions.cs" />
+    <Compile Include="Common\ImageHelpers.cs" />
+    <Compile Include="Common\JsonHelpers.cs" />
+    <Compile Include="Common\AssemblyResolver.cs" />
+    <Compile Include="Common\DelegateCommand.cs" />
+    <Compile Include="Common\MarkupExtensions\MultiStyleExtension.cs" />
+    <Compile Include="Common\MarkupExtensions\BoolRadioButton.cs" />
+    <Compile Include="Common\ValueConverters\SelectedIndexToEnabledConverter.cs" />
+    <Compile Include="Common\ValueConverters\ValueConverterBase.cs" />
+    <Compile Include="Communication\EventArgsTypes.cs" />
+    <Compile Include="Communication\FoobarActions.cs" />
+    <Compile Include="Communication\FormatStringIndex.cs" />
+    <Compile Include="Controller.cs" />
+    <Compile Include="Controls\AeroButton.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\AeroButton.Designer.cs">
+      <DependentUpon>AeroButton.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\AlbumArtPicture.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\ControlHost.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\FloatingForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Controls\FloatingForm.Designer.cs">
+      <DependentUpon>FloatingForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\MediaTrackbar.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\MediaTrackbar.Designer.cs">
+      <DependentUpon>MediaTrackbar.cs</DependentUpon>
+    </Compile>
+    <Compile Include="MainBand.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\BandObject.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\BandObjectAttribute.cs" />
+    <Compile Include="Native\ComTypes.cs" />
+    <Compile Include="Common\Extensions\StringExtensions.cs" />
+    <Compile Include="Native\WinApi.cs" />
+    <Compile Include="Controls\AeroLabel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Communication\MessageForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Communication\MessageForm.Designer.cs">
+      <DependentUpon>MessageForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Settings\Models\FloatingWindowModel.cs" />
+    <Compile Include="Settings\PromptDialog.xaml.cs">
+      <DependentUpon>PromptDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Settings\SettingsManager.cs" />
+    <Compile Include="Common\ObservableObject.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Settings\Models\AlbumArtModel.cs" />
+    <Compile Include="Settings\Models\ButtonModel.cs" />
+    <Compile Include="Settings\Models\GeneralModel.cs" />
+    <Compile Include="Settings\Models\TextBlockModel.cs" />
+    <Compile Include="Settings\Models\TrackbarModel.cs" />
+    <Compile Include="Settings\SettingsData.cs" />
+    <Compile Include="Settings\SettingsWindow.xaml.cs">
+      <DependentUpon>SettingsWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Settings\SettingsViewModel.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="DeskbandControls.snk" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="Settings\PromptDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Settings\SettingsWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\DeskbandBridge\DeskbandBridge.vcxproj">
+      <Project>{e8118efe-0f51-4bda-a728-a69636c48631}</Project>
+      <Name>DeskbandBridge</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="bin\Release\1x1.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Properties\Images\1x1.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Properties\Icons\Next.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Properties\Icons\Pause.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Properties\Icons\Play.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Properties\Icons\Prev.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Properties\Icons\Random.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Properties\Icons\Stop.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Properties\Icons\StopAfterCurrentOff.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Properties\Icons\StopAfterCurrentOn.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Properties\Icons\Unknown.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Properties\Images\NoCoverArt.png" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>start taskkill /im explorer.exe /f</PreBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup>
+    <PostBuildEvent>copy "$(ProjectDir)bin\Release\*.dll" "$(SolutionDir)Output\Bin" /Y
+</PostBuildEvent>
+  </PropertyGroup>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
