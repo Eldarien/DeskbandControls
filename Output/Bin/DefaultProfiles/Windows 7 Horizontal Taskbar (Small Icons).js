@@ -11,8 +11,6 @@
   "FloatingWindow": {
     "Opacity": 1.0,
     "Color": "#FF708090",
-    "X": 841,
-    "Y": 731,
     "Width": 252,
     "Height": 31,
     "BackgroundImage": null,

@@ -102,23 +102,27 @@
                                             Value="{Binding Path=Settings.General.TextScrollSpeed}" />
 
                     <CheckBox Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="2"
-                                  IsChecked="{Binding Path=Settings.General.DrawControlsOutline}">
-                        <Label Content="Draw Controls Outline" />
+                              VerticalAlignment="Center" VerticalContentAlignment="Center"
+                              IsChecked="{Binding Path=Settings.General.DrawControlsOutline}">
+                        <Label Content="Draw Controls Outline" VerticalAlignment="Center" />
                     </CheckBox>
 
                     <CheckBox Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="3"
-                                  IsChecked="{Binding Path=Settings.General.HideIfNotPlaying}">
-                        <Label Content="Hide If Not Playing" />
+                              VerticalAlignment="Center" VerticalContentAlignment="Center"
+                              IsChecked="{Binding Path=Settings.General.HideIfNotPlaying}">
+                        <Label Content="Hide If Not Playing" VerticalAlignment="Center" />
                     </CheckBox>
 
                     <StackPanel Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="4" Orientation="Horizontal">
                         <ext:BoolRadioButton GroupName="FloatingMode"
-                                             RadioValue="False" RadioBinding="{Binding Path=Settings.General.FloatingMode}">
-                            <Label Content="Deskband Mode" />
+                                             RadioValue="False" RadioBinding="{Binding Path=Settings.General.FloatingMode}"
+                                             VerticalAlignment="Center" VerticalContentAlignment="Center">
+                            <Label Content="Deskband Mode" VerticalAlignment="Center" />
                         </ext:BoolRadioButton>
                         <ext:BoolRadioButton GroupName="FloatingMode" Margin="10 0 0 0"
-                                             RadioValue="True" RadioBinding="{Binding Path=Settings.General.FloatingMode}">
-                            <Label Content="Floating Mode" />
+                                             RadioValue="True" RadioBinding="{Binding Path=Settings.General.FloatingMode}"
+                                             VerticalAlignment="Center" VerticalContentAlignment="Center">
+                            <Label Content="Floating Mode" VerticalAlignment="Center" />
                         </ext:BoolRadioButton>
                     </StackPanel>
 
@@ -180,12 +184,14 @@
 
                     <StackPanel Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="2" Orientation="Horizontal">
                         <ext:BoolRadioButton GroupName="FWBackgroundMode"
-                                             RadioValue="False" RadioBinding="{Binding Path=Settings.FloatingWindow.UseBackgroundImage}">
-                            <Label Content="Solid Color Background" />
+                                             RadioValue="False" RadioBinding="{Binding Path=Settings.FloatingWindow.UseBackgroundImage}"
+                                             VerticalAlignment="Center" VerticalContentAlignment="Center">
+                            <Label Content="Solid Color Background" VerticalAlignment="Center" />
                         </ext:BoolRadioButton>
                         <ext:BoolRadioButton GroupName="FWBackgroundMode" Margin="10 0 0 0"
-                                             RadioValue="True" RadioBinding="{Binding Path=Settings.FloatingWindow.UseBackgroundImage}">
-                            <Label Content="Image Background" />
+                                             RadioValue="True" RadioBinding="{Binding Path=Settings.FloatingWindow.UseBackgroundImage}"
+                                             VerticalAlignment="Center" VerticalContentAlignment="Center">
+                            <Label Content="Image Background" VerticalAlignment="Center" />
                         </ext:BoolRadioButton>
                     </StackPanel>
                     
@@ -215,13 +221,15 @@
                     </Grid>
 
                     <CheckBox Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="5"
-                                  IsChecked="{Binding Path=Settings.FloatingWindow.UseTransparencyKey}">
-                        <Label Content="Use Transparency Key For Background (Fuchsia)" />
+                              VerticalAlignment="Center" VerticalContentAlignment="Center"
+                              IsChecked="{Binding Path=Settings.FloatingWindow.UseTransparencyKey}">
+                        <Label Content="Use Transparency Key For Background (Fuchsia)" VerticalAlignment="Center" />
                     </CheckBox>
                     
                     <CheckBox Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="6"
-                                  IsChecked="{Binding Path=Settings.FloatingWindow.StretchBackgroundImage}">
-                        <Label Content="Stretch Background Image (Use carefully - may hog CPU)" />
+                              VerticalAlignment="Center" VerticalContentAlignment="Center"
+                              IsChecked="{Binding Path=Settings.FloatingWindow.StretchBackgroundImage}">
+                        <Label Content="Stretch Background Image (Use carefully - may hog CPU)" VerticalAlignment="Center" />
                     </CheckBox>
                 </Grid>
             </TabItem>
@@ -320,11 +328,13 @@
                                 <ColumnDefinition Width="Auto"></ColumnDefinition>
                             </Grid.ColumnDefinitions>
                             
-                            <CheckBox Grid.Column="0" IsChecked="{Binding ElementName=lbTextBlocks, Path=SelectedItem.Italic}">
-                                <Label Content="Italic" />
+                            <CheckBox Grid.Column="0" IsChecked="{Binding ElementName=lbTextBlocks, Path=SelectedItem.Italic}"
+                                      VerticalAlignment="Center" VerticalContentAlignment="Center">
+                                <Label Content="Italic" VerticalAlignment="Center" />
                             </CheckBox>
-                            <CheckBox Grid.Column="1" IsChecked="{Binding ElementName=lbTextBlocks, Path=SelectedItem.Bold}">
-                                <Label Content="Bold" />
+                            <CheckBox Grid.Column="1" IsChecked="{Binding ElementName=lbTextBlocks, Path=SelectedItem.Bold}"
+                                      VerticalAlignment="Center" VerticalContentAlignment="Center">
+                                <Label Content="Bold" VerticalAlignment="Center" />
                             </CheckBox>
                             
                         </Grid>
@@ -340,12 +350,10 @@
                             </Grid.ColumnDefinitions>
                             <Label Grid.Column="0" Content="X" Style="{ext:MultiStyle GridControl GridLabel}" />
                             <xctk:IntegerUpDown Grid.Column="1" Style="{ext:MultiStyle GridControl Numeric}"
-                                                    Minimum="0"
                                                     Value="{Binding ElementName=lbTextBlocks, Path=SelectedItem.X}" />
 
                             <Label Grid.Column="2" Content="Y" Style="{ext:MultiStyle GridControl GridLabel}" />
                             <xctk:IntegerUpDown Grid.Column="3" Style="{ext:MultiStyle GridControl Numeric}"
-                                                    Minimum="0"
                                                     Value="{Binding ElementName=lbTextBlocks, Path=SelectedItem.Y}" />
                         </Grid>
 
@@ -371,18 +379,21 @@
                         </Grid>
 
                         <CheckBox Grid.Column="0" Grid.Row="8" Grid.ColumnSpan="2"
-                                      IsChecked="{Binding ElementName=lbTextBlocks, Path=SelectedItem.Scroll}">
-                            <Label Content="Scroll Text" />
+                                  VerticalAlignment="Center" VerticalContentAlignment="Center"
+                                  IsChecked="{Binding ElementName=lbTextBlocks, Path=SelectedItem.Scroll}">
+                            <Label Content="Scroll Text" VerticalAlignment="Center" />
                         </CheckBox>
 
                         <CheckBox Grid.Column="0" Grid.Row="9" Grid.ColumnSpan="2"
-                                      IsChecked="{Binding ElementName=lbTextBlocks, Path=SelectedItem.AlignToRight}">
-                            <Label Content="Align to Right" />
+                                  VerticalAlignment="Center" VerticalContentAlignment="Center"
+                                  IsChecked="{Binding ElementName=lbTextBlocks, Path=SelectedItem.AlignToRight}">
+                            <Label Content="Align to Right" VerticalAlignment="Center" />
                         </CheckBox>
                         
                         <CheckBox Grid.Column="0" Grid.Row="10" Grid.ColumnSpan="2"
-                                      IsChecked="{Binding ElementName=lbTextBlocks, Path=SelectedItem.Visible}">
-                            <Label Content="Visible" />
+                                  VerticalAlignment="Center" VerticalContentAlignment="Center"
+                                  IsChecked="{Binding ElementName=lbTextBlocks, Path=SelectedItem.Visible}">
+                            <Label Content="Visible" VerticalAlignment="Center" />
                         </CheckBox>
                     </Grid>
                 </Grid>
@@ -423,12 +434,10 @@
                             </Grid.ColumnDefinitions>
                             <Label Grid.Column="0" Content="X" Style="{ext:MultiStyle GridControl GridLabel}" />
                             <xctk:IntegerUpDown Grid.Column="1" Style="{ext:MultiStyle GridControl Numeric}"
-                                                    Minimum="0"
                                                     Value="{Binding ElementName=lbButtons, Path=SelectedItem.X}" />
 
                             <Label Grid.Column="2" Content="Y" Style="{ext:MultiStyle GridControl GridLabel}" />
                             <xctk:IntegerUpDown Grid.Column="3" Style="{ext:MultiStyle GridControl Numeric}"
-                                                    Minimum="0"
                                                     Value="{Binding ElementName=lbButtons, Path=SelectedItem.Y}" />
                         </Grid>
 
@@ -484,8 +493,9 @@
                         </Grid>
 
                         <CheckBox Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="2"
-                                      IsChecked="{Binding ElementName=lbButtons, Path=SelectedItem.Visible}">
-                            <Label Content="Visible" />
+                                  VerticalAlignment="Center" VerticalContentAlignment="Center"
+                                  IsChecked="{Binding ElementName=lbButtons, Path=SelectedItem.Visible}">
+                            <Label Content="Visible" VerticalAlignment="Center" />
                         </CheckBox>
                     </Grid>
                 </Grid>
@@ -526,12 +536,10 @@
                             </Grid.ColumnDefinitions>
                             <Label Grid.Column="0" Content="X" Style="{ext:MultiStyle GridControl GridLabel}" />
                             <xctk:IntegerUpDown Grid.Column="1" Style="{ext:MultiStyle GridControl Numeric}"
-                                                    Minimum="0"
                                                     Value="{Binding ElementName=lbTrackbars, Path=SelectedItem.X}" />
 
                             <Label Grid.Column="2" Content="Y" Style="{ext:MultiStyle GridControl GridLabel}" />
                             <xctk:IntegerUpDown Grid.Column="3" Style="{ext:MultiStyle GridControl Numeric}"
-                                                    Minimum="0"
                                                     Value="{Binding ElementName=lbTrackbars, Path=SelectedItem.Y}" />
                         </Grid>
 
@@ -564,8 +572,9 @@
 
 
                         <CheckBox Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="2"
-                                      IsChecked="{Binding ElementName=lbTrackbars, Path=SelectedItem.Visible}">
-                            <Label Content="Visible" />
+                                  VerticalAlignment="Center" VerticalContentAlignment="Center"
+                                  IsChecked="{Binding ElementName=lbTrackbars, Path=SelectedItem.Visible}">
+                            <Label Content="Visible" VerticalAlignment="Center" />
                         </CheckBox>
                     </Grid>
                 </Grid>
@@ -595,12 +604,10 @@
                         </Grid.ColumnDefinitions>
                         <Label Grid.Column="0" Content="X" Style="{ext:MultiStyle GridControl GridLabel}" />
                         <xctk:IntegerUpDown Grid.Column="1" Style="{ext:MultiStyle GridControl Numeric}"
-                                                    Minimum="0"
                                                     Value="{Binding Path=Settings.AlbumArt.X}" />
 
                         <Label Grid.Column="2" Content="Y" Style="{ext:MultiStyle GridControl GridLabel}" />
                         <xctk:IntegerUpDown Grid.Column="3" Style="{ext:MultiStyle GridControl Numeric}"
-                                                    Minimum="0"
                                                     Value="{Binding Path=Settings.AlbumArt.Y}" />
                     </Grid>
 
@@ -642,8 +649,9 @@
                     </Grid>
 
                     <CheckBox Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="2"
-                                  IsChecked="{Binding Path=Settings.AlbumArt.Visible}">
-                        <Label Content="Visible" />
+                              VerticalAlignment="Center" VerticalContentAlignment="Center"
+                              IsChecked="{Binding Path=Settings.AlbumArt.Visible}">
+                        <Label Content="Visible" VerticalAlignment="Center" />
                     </CheckBox>
                 </Grid>
             </TabItem>
