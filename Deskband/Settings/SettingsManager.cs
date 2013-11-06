@@ -30,7 +30,7 @@ namespace Deskband.Settings
 
         private SettingsManager()
         {
-            //_appProfileDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            var _assemblyDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 
             _appProfileDir = Path.Combine(System.Environment.GetEnvironmentVariable("AppData"), "DeskbandControls");
             if (!Directory.Exists(_appProfileDir))
@@ -38,7 +38,15 @@ namespace Deskband.Settings
 
             _profilesPath = Path.Combine(_appProfileDir, "Profiles");
             if (!Directory.Exists(_profilesPath))
+            {
                 Directory.CreateDirectory(_profilesPath);
+                var defaultProfilesDir = Path.Combine(_assemblyDir, "DefaultProfiles");
+                var defaultProfiles = Directory.GetFiles(defaultProfilesDir, "*.js");
+                foreach (var dp in defaultProfiles)
+                {
+                    File.Copy(dp, Path.Combine(_profilesPath, Path.GetFileName(dp)));
+                }
+            }
 
             _configFilePath = Path.Combine(_appProfileDir, "config.js");
 
@@ -99,11 +107,9 @@ namespace Deskband.Settings
                 {
                     string json = File.ReadAllText(settingsFilePath);
                     var savedData = (JObject)JsonConvert.DeserializeObject(json);
-                    var newData = JObject.FromObject(defaults);
-
-                    JsonHelpers.Merge(newData, savedData);
-
-                    settingsData = newData.ToObject<SettingsData>();
+                    //var newData = JObject.FromObject(defaults);
+                    //JsonHelpers.Merge(newData, savedData);
+                    settingsData = savedData.ToObject<SettingsData>();
                 }
                 catch (Exception ex)
                 {
@@ -166,7 +172,7 @@ namespace Deskband.Settings
             settings.Buttons.Add(new ButtonModel(Enums.ButtonKindType.StopAfterCurrent, 0, 0) { Visible = false, IconPath = IconPath("StopAfterCurrentOff.ico"), AdditionalIconPath = IconPath("StopAfterCurrentOn.ico") });
             settings.Buttons.Add(new ButtonModel(Enums.ButtonKindType.Random, 0, 0) { Visible = false, IconPath = IconPath("Random.ico") });
 
-            settings.Trackbars.Add(new TrackbarModel(Enums.TrackbarKindType.Position, Colors.Violet, 40, 25, 148, 6));
+            settings.Trackbars.Add(new TrackbarModel(Enums.TrackbarKindType.Position, Colors.White, 40, 25, 148, 6));
             settings.Trackbars.Add(new TrackbarModel(Enums.TrackbarKindType.Volume, Colors.White, 190, 25, 60, 6));
 
             settings.AlbumArt.X = 0;
