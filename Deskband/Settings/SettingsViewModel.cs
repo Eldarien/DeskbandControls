@@ -249,7 +249,7 @@ namespace Deskband.Settings
             string profileName = SelectedProfile;
             if (profileName == NewProfile)
             {
-                profileName = PromptDialog.Prompt(_wnd, "Eneter new profile name:", "Create new profile");
+                profileName = PromptDialog.Prompt(_wnd, "Enter new profile name:", "Create new profile");
             }
             if (String.IsNullOrWhiteSpace(profileName))
                 return;
