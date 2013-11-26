@@ -217,6 +217,7 @@ namespace Deskband
             _stopped = true;
             UpdateButtonIcons();
             UpdatePosition(0);
+            UpdateAlbumArt(null);
             ClearTexts();
 
             FirePlaybackState(false);
