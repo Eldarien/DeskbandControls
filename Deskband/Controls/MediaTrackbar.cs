@@ -41,6 +41,8 @@ namespace Deskband.Controls
 
         private int position = 0;
 
+        private bool mousePressed;
+
         public int Position
         {
             get { return position; }
@@ -139,14 +141,9 @@ namespace Deskband.Controls
             WinApi.DeleteObject(pen);
         }
 
-        protected override void OnMouseDown(MouseEventArgs e)
+        private void SetPositionByMouseX(int x)
         {
-            base.OnMouseDown(e);
-
-            if (e.Button != MouseButtons.Left || this.Range == 0)
-                return;
-
-            int p = e.X * this.Range / (this.Width - 4);
+            int p = x * this.Range / (this.Width - 4);
             if (p > this.Range) p = this.Range;
 
             if (p != this.Position)
@@ -156,6 +153,35 @@ namespace Deskband.Controls
                 if (this.OnPositionChanged != null)
                     OnPositionChanged(this, new MediaTrackbarPositionEventArgs(p));
             }
+        }
+
+        protected override void OnMouseDown(MouseEventArgs e)
+        {
+            base.OnMouseDown(e);
+
+            if (e.Button != MouseButtons.Left || this.Range == 0)
+                return;
+
+            mousePressed = true;
+
+            SetPositionByMouseX(e.X);
+        }
+
+        protected override void OnMouseUp(MouseEventArgs e)
+        {
+            base.OnMouseUp(e);
+
+            mousePressed = false;
+        }
+
+        protected override void OnMouseMove(MouseEventArgs e)
+        {
+            base.OnMouseMove(e);
+
+            if (!mousePressed)
+                return;
+
+            SetPositionByMouseX(e.X);
         }
 
         public void SetDelta(int delta)
