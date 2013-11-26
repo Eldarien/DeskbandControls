@@ -143,7 +143,11 @@ namespace Deskband.Controls
 
         private void SetPositionByMouseX(int x)
         {
-            int p = x * this.Range / (this.Width - 4);
+            int clientWidth = this.Width - 4;
+            if (clientWidth <= 0)
+                return;
+
+            int p = x * this.Range / clientWidth;
             if (p > this.Range) p = this.Range;
 
             if (p != this.Position)
