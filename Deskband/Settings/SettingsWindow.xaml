@@ -87,6 +87,7 @@
                         <RowDefinition Height="Auto"></RowDefinition>
                         <RowDefinition Height="Auto"></RowDefinition>
                         <RowDefinition Height="Auto"></RowDefinition>
+                        <RowDefinition Height="Auto"></RowDefinition>
                     </Grid.RowDefinitions>
 
                     <Label Grid.Column="0" Grid.Row="0" Style="{ext:MultiStyle GridControl GridLabel}"
@@ -113,7 +114,13 @@
                         <Label Content="Hide If Not Playing" VerticalAlignment="Center" />
                     </CheckBox>
 
-                    <StackPanel Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="4" Orientation="Horizontal">
+                    <CheckBox Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="4"
+                              VerticalAlignment="Center" VerticalContentAlignment="Center"
+                              IsChecked="{Binding Path=Settings.General.HideIfFoobar2000IsNotRunning}">
+                        <Label Content="Hide If Foobar2000 Is Not Running" VerticalAlignment="Center" />
+                    </CheckBox>
+
+                    <StackPanel Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="5" Orientation="Horizontal">
                         <ext:BoolRadioButton GroupName="FloatingMode"
                                              RadioValue="False" RadioBinding="{Binding Path=Settings.General.FloatingMode}"
                                              VerticalAlignment="Center" VerticalContentAlignment="Center">
@@ -126,14 +133,14 @@
                         </ext:BoolRadioButton>
                     </StackPanel>
 
-                    <Label Grid.Column="0" Grid.Row="5" Style="{ext:MultiStyle GridControl GridLabel}"
+                    <Label Grid.Column="0" Grid.Row="6" Style="{ext:MultiStyle GridControl GridLabel}"
                                Content="Internet Search Format" />
-                    <TextBox Grid.Column="1" Grid.Row="5" Style="{ext:MultiStyle GridControl}"
+                    <TextBox Grid.Column="1" Grid.Row="6" Style="{ext:MultiStyle GridControl}"
                              Text="{Binding Path=Settings.General.InternetSearchFormat}" />
 
-                    <Label Grid.Column="0" Grid.Row="6" Style="{ext:MultiStyle GridControl GridLabel}"
+                    <Label Grid.Column="0" Grid.Row="7" Style="{ext:MultiStyle GridControl GridLabel}"
                                Content="Internet Search URL" />
-                    <TextBox Grid.Column="1" Grid.Row="6" Style="{ext:MultiStyle GridControl}"
+                    <TextBox Grid.Column="1" Grid.Row="7" Style="{ext:MultiStyle GridControl}"
                              Text="{Binding Path=Settings.General.InternetSearchUrl}"
                              ToolTip="Use %q% as search term placeholder"/>
                 </Grid>

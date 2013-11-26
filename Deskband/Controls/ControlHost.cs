@@ -18,6 +18,8 @@ namespace Deskband.Controls
 
         public event EventHandler<ValueEventArgs<bool>> OnPlaybackState;
 
+        public event EventHandler<ValueEventArgs<bool>> OnFoobarShowHide;
+
         private List<IDisposable> _disposeList = new List<IDisposable>();
 
         private T Disposable<T>(T disposable) where T : IDisposable
@@ -61,6 +63,7 @@ namespace Deskband.Controls
             _controller = new Controller(_messageForm, _labels, _buttons, _trackbars, _albumArts);
             _controller.OnApplySettings += (s, ea) => ApplySettings();
             _controller.OnPlaybackState += (s, ea) => { if (OnPlaybackState != null) OnPlaybackState(s, ea); };
+            _controller.OnFoobarShowHide += (s, ea) => { if (OnFoobarShowHide != null) OnFoobarShowHide(s, ea); };
         }
 
         protected override void Dispose(bool disposing)

@@ -29,6 +29,8 @@
 #define FOOBAR_PLUGIN_CMD_Activate 104
 #define FOOBAR_PLUGIN_CMD_GetVersion 105
 
+#define DESKBAND_CMD_Show 1
+#define DESKBAND_CMD_Hide 2
 #define DESKBAND_CMD_Text 10
 #define DESKBAND_CMD_TrackLength 11
 #define DESKBAND_CMD_TrackTime 12

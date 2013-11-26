@@ -66,6 +66,7 @@ namespace Deskband
             _host = Disposable(new ControlHost());
             _host.OnApplySettings += OnApplySettings;
             _host.OnPlaybackState += OnPlaybackState;
+            _host.OnFoobarShowHide += OnFoobarShowHide;
 
             _floatingForm = Disposable(new FloatingForm());
 
@@ -98,23 +99,32 @@ namespace Deskband
             _host.ApplySettings();
         }
 
-        private void OnPlaybackState(object sender, ValueEventArgs<bool> e)
+        private void ShowHide(bool show)
         {
             var settings = SettingsManager.Instance.Settings;
-            if (settings.General.HideIfNotPlaying && !e.Value)
-            {
-                if (settings.General.FloatingMode)
-                    HideFloatingWindow();
-                else
-                    HideBand();
-            }
-            else
+            if (show)
             {
                 if (settings.General.FloatingMode)
                     ShowFloatingWindow();
                 else
                     ShowBand();
             }
+            else
+            {
+                if (settings.General.FloatingMode)
+                    HideFloatingWindow();
+                else
+                    HideBand();
+            }
+        }
+
+        private void OnPlaybackState(object sender, ValueEventArgs<bool> e)
+        {
+            var settings = SettingsManager.Instance.Settings;
+            if (settings.General.HideIfNotPlaying && !e.Value)
+                ShowHide(false);
+            else
+                ShowHide(true);
 
             var stopped = _host.Controller.Stopped;
 
@@ -126,6 +136,15 @@ namespace Deskband
             _miCopyTitle.Enabled = !stopped;
             _miOpenContainingFolder.Enabled = !stopped;
             _miSearchInInternet.Enabled = !stopped;
+        }
+
+        private void OnFoobarShowHide(object sender, ValueEventArgs<bool> e)
+        {
+            var settings = SettingsManager.Instance.Settings;
+            if (settings.General.HideIfFoobar2000IsNotRunning)
+            {
+                ShowHide(e.Value);
+            }
         }
 
         private void OnApplySettings(object sender, EventArgs e)

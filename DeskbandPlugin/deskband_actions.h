@@ -1,6 +1,8 @@
 #pragma once
 namespace deskband_actions
 {
+	void show();
+	void hide();
 	void send_track_length(double length);
 	void send_track_time(double time);
 	void send_track_text(int index, pfc::string8 text);

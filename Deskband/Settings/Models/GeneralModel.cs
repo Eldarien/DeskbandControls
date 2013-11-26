@@ -42,6 +42,14 @@ namespace Deskband.Settings.Models
             set { _hideIfNotPlaying = value; RaisePropertyChangedEvent(x => x.HideIfNotPlaying); }
         }
 
+        private bool _hideIfFoobar2000IsNotRunning;
+
+        public bool HideIfFoobar2000IsNotRunning
+        {
+            get { return _hideIfFoobar2000IsNotRunning; }
+            set { _hideIfFoobar2000IsNotRunning = value; RaisePropertyChangedEvent(x => x.HideIfFoobar2000IsNotRunning); }
+        }
+
         private bool _floatingMode;
 
         public bool FloatingMode

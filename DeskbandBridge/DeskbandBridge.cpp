@@ -37,6 +37,8 @@ namespace DeskbandBridge {
 
 	public ref class DeskbandCommands {
 	public:
+		literal int Show = DESKBAND_CMD_Show;
+		literal int Hide = DESKBAND_CMD_Hide;
 		literal int Text = DESKBAND_CMD_Text;
 		literal int TrackLength = DESKBAND_CMD_TrackLength;
 		literal int TrackTime = DESKBAND_CMD_TrackTime;

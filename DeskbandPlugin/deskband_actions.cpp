@@ -22,6 +22,16 @@ namespace deskband_actions
 		}
 	}
 
+	void show()
+	{
+		send_command(DESKBAND_CMD_Show, NULL, 0);
+	}
+
+	void hide()
+	{
+		send_command(DESKBAND_CMD_Hide, NULL, 0);
+	}
+
 	void send_track_length(double length)
 	{
 		last_length = length;

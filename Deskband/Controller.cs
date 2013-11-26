@@ -16,6 +16,8 @@ namespace Deskband
     {
         public event EventHandler OnApplySettings;
 
+        public event EventHandler<ValueEventArgs<bool>> OnFoobarShowHide;
+
         public event EventHandler<ValueEventArgs<bool>> OnPlaybackState;
 
         private readonly MessageForm _messageForm;
@@ -44,6 +46,9 @@ namespace Deskband
             _foobarActions = new FoobarActions(_messageForm.Handle);
 
             _messageForm.OnThemeChanged += OnThemeChanged;
+
+            _messageForm.OnFoobarShow += OnFoobarShow;
+            _messageForm.OnFoobarHide += OnFoobarHide;
             _messageForm.OnTrackLength += OnTrackLength;
             _messageForm.OnTrackTime += OnTrackTime;
             _messageForm.OnTrackText += OnTrackText;
@@ -124,6 +129,18 @@ namespace Deskband
         }
 
         // Main events
+
+        private void OnFoobarShow(object sender, EventArgs e)
+        {
+            if (OnFoobarShowHide != null)
+                OnFoobarShowHide(sender, new ValueEventArgs<bool>(true));
+        }
+
+        private void OnFoobarHide(object sender, EventArgs e)
+        {
+            if (OnFoobarShowHide != null)
+                OnFoobarShowHide(sender, new ValueEventArgs<bool>(false));
+        }
 
         private void OnVersion(object sender, ValueEventArgs<string> e)
         {

@@ -17,6 +17,10 @@ namespace Deskband.Communication
     {
         public event EventHandler<EventArgs> OnThemeChanged;
 
+        public event EventHandler<EventArgs> OnFoobarShow;
+
+        public event EventHandler<EventArgs> OnFoobarHide;
+
         public event EventHandler<ValueEventArgs<double>> OnTrackTime;
 
         public event EventHandler<TrackTextEventArgs> OnTrackText;
@@ -84,6 +88,14 @@ namespace Deskband.Communication
                         int cmd = (int)csd.dwData;
                         switch (cmd)
                         {
+                            case DeskbandCommands.Show:
+                                FireEvent(OnFoobarShow, EventArgs.Empty);
+                                break;
+
+                            case DeskbandCommands.Hide:
+                                FireEvent(OnFoobarHide, EventArgs.Empty);
+                                break;
+
                             case DeskbandCommands.TrackTime:
                                 {
                                     double time = (double)Marshal.PtrToStructure(csd.lpData, typeof(double));

@@ -10,11 +10,15 @@ namespace deskband_controls_plugin
 		virtual void on_init()
 		{
 			msgwindow::create();
+
+			deskband_actions::show();
 		}
 
 		virtual void on_quit()
 		{
 			msgwindow::destroy();
+
+			deskband_actions::hide();
 		}
 	};
 	static initquit_factory_t<initquit_handler> foo_initquit;
