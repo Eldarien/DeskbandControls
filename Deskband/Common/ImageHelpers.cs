@@ -75,5 +75,40 @@ namespace Deskband.Common
 
             return result;
         }
+
+        public static Image Colorize(Image image, Color color)
+        {
+            if (color == Color.Transparent || color == Color.White ||
+                color.A == 255 && color.R == 0 && color.G == 0 && color.B == 0)
+                return image;
+
+            var result = new Bitmap(image.Width, image.Height, PixelFormat.Format32bppArgb);
+            result.SetResolution(image.HorizontalResolution, image.VerticalResolution);
+
+            float R = color.R / 255;
+            float G = color.G / 255;
+            float B = color.B / 255;
+
+            float[][] coeff = {
+                new float[] { R, 0, 0, 0, 0 },
+                new float[] { 0, G, 0, 0, 0 },
+                new float[] { 0, 0, B, 0, 0 },
+                new float[] { 0, 0, 0, 1, 0 },
+                new float[] { 0, 0, 0, 0, 1 }};
+
+            ColorMatrix cm = new ColorMatrix(coeff);
+            using (var ia = new ImageAttributes())
+            {
+                ia.SetColorMatrix(new ColorMatrix(coeff));
+
+                using (var g = Graphics.FromImage(result))
+                {
+                    g.DrawImage(image, new Rectangle(0, 0, image.Width, image.Height),
+                        0, 0, image.Width, image.Height, GraphicsUnit.Pixel, ia);
+                }
+            }
+
+            return result;
+        }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Deskband.Common;
+using Deskband.Common.Extensions;
 using Deskband.Native;
 using Deskband.Properties;
 using Deskband.Settings.Models;
@@ -131,8 +132,9 @@ namespace Deskband.Controls
                 }
             }
 
-            button.Image = image;
-            button.AdditionalImage = additionalImage;
+            var colorizeColor = model.ColorizeColor.AsDrawingColor();
+            button.Image = ImageHelpers.Colorize(image, colorizeColor);
+            button.AdditionalImage = ImageHelpers.Colorize(additionalImage, colorizeColor);
 
             button.Location = new Point(model.X, model.Y);
             button.Size = new Size(model.Width, model.Height);

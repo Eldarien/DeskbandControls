@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Windows.Media;
 
 namespace Deskband.Settings.Models
 {
@@ -84,6 +85,14 @@ namespace Deskband.Settings.Models
         {
             get { return _additionalIconPath; }
             set { _additionalIconPath = value; RaisePropertyChangedEvent(x => x.AdditionalIconPath); }
+        }
+
+        private Color _colorizeColor;
+
+        public Color ColorizeColor
+        {
+            get { return _colorizeColor; }
+            set { _colorizeColor = value; RaisePropertyChangedEvent(x => x.ColorizeColor); }
         }
     }
 }

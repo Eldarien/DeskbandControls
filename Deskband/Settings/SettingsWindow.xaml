@@ -428,6 +428,7 @@
                             <RowDefinition Height="Auto"></RowDefinition>
                             <RowDefinition Height="Auto"></RowDefinition>
                             <RowDefinition Height="Auto"></RowDefinition>
+                            <RowDefinition Height="Auto"></RowDefinition>
                         </Grid.RowDefinitions>
 
                         <Label Grid.Column="0" Grid.Row="0" Style="{ext:MultiStyle GridControl GridLabel}"
@@ -499,7 +500,14 @@
                                     Visibility="{Binding ButtonAdditionalIconVisibility}"/>
                         </Grid>
 
-                        <CheckBox Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="2"
+                        <Label Grid.Column="0" Grid.Row="3" Style="{ext:MultiStyle GridControl GridLabel}"
+                                   Content="Colorize Color" />
+                        <xctk:ColorPicker Grid.Column="1" Grid.Row="3" Style="{StaticResource GridControl}"
+                                              DisplayColorAndName="True"
+                                              SelectedColor="{Binding ElementName=lbButtons, Path=SelectedItem.ColorizeColor}" />
+
+
+                        <CheckBox Grid.Column="0" Grid.Row="4" Grid.ColumnSpan="2"
                                   VerticalAlignment="Center" VerticalContentAlignment="Center"
                                   IsChecked="{Binding ElementName=lbButtons, Path=SelectedItem.Visible}">
                             <Label Content="Visible" VerticalAlignment="Center" />
