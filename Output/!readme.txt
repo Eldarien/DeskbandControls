@@ -1,5 +1,5 @@
-Foobar 2000 Deskband Controls 1.0.0 beta
-----------------------------------------
+Foobar 2000 Deskband Controls 1.0.0
+-----------------------------------
 
 Hydrogen audio forum topic: http://www.hydrogenaudio.org/forums/index.php?showtopic=78234
 
@@ -35,5 +35,12 @@ Eldarien (eldarien@live.com)
 --
 ** Changelog:
 
+November 27 2013:
+  * Version 1.0.0
+  + Hide if foobar2000 is not running option
+  + Show album art stub image on stop
+  + mouse drag support in trackbars
+  + ability to colorize button icons
+
 November 7 2013:
-  - Version 1.0.0 beta
+  * Version 1.0.0 beta
