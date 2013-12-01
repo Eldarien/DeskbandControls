@@ -76,6 +76,13 @@ namespace Deskband
         {
             if (OnPlaybackState != null)
                 OnPlaybackState(this, new ValueEventArgs<bool>(state));
+
+            var settings = SettingsManager.Instance.Settings;
+            if (settings.General.HideIfFoobar2000IsNotRunning && !_foobarActions.IsFoobarStarted)
+            {
+                if (OnFoobarShowHide != null)
+                    OnFoobarShowHide(this, new ValueEventArgs<bool>(false));
+            }
         }
 
         private void UpdateButtonIcons()

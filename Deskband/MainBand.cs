@@ -121,6 +121,7 @@ namespace Deskband
         private void OnPlaybackState(object sender, ValueEventArgs<bool> e)
         {
             var settings = SettingsManager.Instance.Settings;
+
             if (settings.General.HideIfNotPlaying && !e.Value)
                 ShowHide(false);
             else

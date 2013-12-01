@@ -10,7 +10,7 @@ namespace Deskband.Common.Extensions
     {
         public static System.Drawing.Color AsDrawingColor(this Color color)
         {
-            return System.Drawing.Color.FromArgb(0xFF, color.R, color.G, color.B);
+            return System.Drawing.Color.FromArgb(color.A, color.R, color.G, color.B);
         }
     }
 }

@@ -28,6 +28,11 @@ namespace Deskband.Communication
             _hasVersion = true;
         }
 
+        private IntPtr GetFoobarPluginMessageWindow()
+        {
+            return WinApi.FindWindow(FB2KConstants.FoobarPluginMsgWindowClass, FB2KConstants.FoobarPluginMsgWindowTitle);
+        }
+
         private void SendCommand(int fb2kCommand, byte[] data = null)
         {
             if (!_hasVersion && fb2kCommand != FB2KCommands.GetVersion)
@@ -39,7 +44,7 @@ namespace Deskband.Communication
             if (_locked)
                 return;
 
-            var fw = WinApi.FindWindow(FB2KConstants.FoobarPluginMsgWindowClass, FB2KConstants.FoobarPluginMsgWindowTitle);
+            var fw = GetFoobarPluginMessageWindow();
             if (fw != IntPtr.Zero)
             {
                 GCHandle pinnedData = GCHandle.Alloc(data, GCHandleType.Pinned);
@@ -145,6 +150,11 @@ namespace Deskband.Communication
         public void GetVersion()
         {
             SendCommand(FB2KCommands.GetVersion);
+        }
+
+        public bool IsFoobarStarted
+        {
+            get { return GetFoobarPluginMessageWindow() != IntPtr.Zero; }
         }
     }
 }
