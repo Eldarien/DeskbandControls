@@ -55,5 +55,13 @@ namespace Deskband.Settings.Models
             get { return _stubImagePath; }
             set { _stubImagePath = value; RaisePropertyChangedEvent(x => x.StubImagePath); }
         }
+
+        private bool _doNotShowStubImage;
+
+        public bool DoNotShowStubImage
+        {
+            get { return _doNotShowStubImage; }
+            set { _doNotShowStubImage = value; RaisePropertyChangedEvent(x => x.DoNotShowStubImage); }
+        }
     }
 }

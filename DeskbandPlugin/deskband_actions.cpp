@@ -8,6 +8,7 @@ namespace deskband_actions
 	static bool last_stop_after_current_state = false;
 	static void* last_album_art_buffer = NULL;
 	static t_size last_album_art_buffer_size = 0;
+	static bool last_album_art_stub = false;
 
 	void send_command(int cmd, PVOID data, size_t size)
 	{
@@ -100,7 +101,7 @@ namespace deskband_actions
 		send_command(DESKBAND_CMD_StopAfterCurrentState, &data, sizeof(data));
 	}
 
-	void send_album_art(const void *art, t_size len)
+	void send_album_art(const void *art, t_size len, bool stub)
 	{
 		if (last_album_art_buffer != NULL && (art == NULL || art != NULL && art != last_album_art_buffer))
 		{
@@ -115,12 +116,14 @@ namespace deskband_actions
 				last_album_art_buffer = malloc(len);
 				memcpy(last_album_art_buffer, art, len);
 				last_album_art_buffer_size = len;
+				last_album_art_stub = stub;
 			}
 
-			size_t size = sizeof(len) + len;
+			size_t size = sizeof(len) + len + sizeof(stub);
 			char *data = (char *)malloc(size);
 			memcpy(data, &len, sizeof(len));
 			memcpy(data + sizeof(len), art, len);
+			memcpy(data + sizeof(len) + len, &stub, sizeof(stub));
 
 			send_command(DESKBAND_CMD_AlbumArt, data, size);
 
@@ -133,14 +136,14 @@ namespace deskband_actions
 		send_track_length(last_length);
 		send_track_volume(last_volume);
 		send_stop_after_current(last_stop_after_current_state);
-		send_album_art(last_album_art_buffer, last_album_art_buffer_size);
+		send_album_art(last_album_art_buffer, last_album_art_buffer_size, last_album_art_stub);
 	}
 
 	void resend_last_nontrack_state()
 	{
 		send_track_volume(last_volume);
 		send_stop_after_current(last_stop_after_current_state);
-		send_album_art(last_album_art_buffer, last_album_art_buffer_size);
+		send_album_art(last_album_art_buffer, last_album_art_buffer_size, last_album_art_stub);
 	}
 
 	void send_version()

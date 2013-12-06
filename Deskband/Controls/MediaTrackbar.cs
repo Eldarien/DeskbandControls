@@ -83,24 +83,52 @@ namespace Deskband.Controls
             var bitmap = WinApi.CreateDIBSection(memdc, ref dib, WinApi.DIB_RGB_COLORS, 0, IntPtr.Zero, 0);
             var oldBitmap = WinApi.SelectObject(memdc, bitmap);
 
-            //
-            InternalOnPaint(memdc, rc, color);
+            // background & outline
+            WinApi.DrawThemeParentBackground(Handle, memdc, ref rc);
+            if (this.DrawOutline)
+            {
+                WinApi.SelectObject(memdc, WinApi.GetStockObject(WinApi.StockObjects.HOLLOW_BRUSH));
+                WinApi.SelectObject(memdc, WinApi.GetStockObject(WinApi.StockObjects.WHITE_PEN));
+                WinApi.Rectangle(memdc, 0, 0, rc.right - rc.left, rc.bottom - rc.top);
+            }
+
+            // Redraw background from memdc to dc
+            //WinApi.BitBlt(hdc, rc.left, rc.top, rc.right - rc.left, rc.bottom - rc.top, memdc, 0, 0, WinApi.SRCCOPY);
+
+            // draw trackbar
+            var alphadc = WinApi.CreateCompatibleDC(hdc);
+            var alphabitmap = WinApi.CreateDIBSection(alphadc, ref dib, WinApi.DIB_RGB_COLORS, 0, IntPtr.Zero, 0);
+            var oldalphaBitmap = WinApi.SelectObject(alphadc, alphabitmap);
+            WinApi.SelectObject(alphadc, WinApi.GetStockObject(WinApi.StockObjects.HOLLOW_BRUSH));
+            WinApi.SelectObject(alphadc, WinApi.GetStockObject(WinApi.StockObjects.NULL_PEN));
+            WinApi.Rectangle(alphadc, 0, 0, rc.right - rc.left, rc.bottom - rc.top);
+            InternalOnPaint(alphadc, rc, color);
 
             // Fix alpha channel
             var rgbColor = (color.ColorDWORD & 0x000000FF) << 16 | (color.ColorDWORD & 0x0000FF00) | (color.ColorDWORD & 0x00FF0000) >> 16;
             var pixels = new WinApi.COLORREF[Width * Height];
-            WinApi.GetDIBits(memdc, bitmap, 0, (uint)Height, pixels, ref dib, 0);
+            WinApi.GetDIBits(alphadc, alphabitmap, 0, (uint)Height, pixels, ref dib, 0);
             for (int i = 0; i < pixels.Length; i++)
             {
                 if (pixels[i].ColorDWORD == rgbColor)
                     pixels[i].ColorDWORD |= 0xFF000000;
             }
-            WinApi.SetDIBits(memdc, bitmap, 0, (uint)Height, pixels, ref dib, 0);
+            WinApi.SetDIBits(alphadc, alphabitmap, 0, (uint)Height, pixels, ref dib, 0);
+
+            var blendFunc = new WinApi.BLENDFUNCTION(WinApi.AC_SRC_OVER, 0, ForeColor.A, WinApi.AC_SRC_ALPHA);
+            WinApi.AlphaBlend(memdc, rc.left, rc.top, rc.right - rc.left, rc.bottom - rc.top, alphadc,
+                0, 0, rc.right - rc.left, rc.bottom - rc.top,
+                blendFunc);
 
             WinApi.BitBlt(hdc, rc.left, rc.top, rc.right - rc.left, rc.bottom - rc.top, memdc, 0, 0, WinApi.SRCCOPY);
 
             WinApi.SelectObject(memdc, oldBitmap);
             WinApi.DeleteObject(bitmap);
+
+            WinApi.SelectObject(alphadc, oldalphaBitmap);
+            WinApi.DeleteObject(alphabitmap);
+            WinApi.ReleaseDC(alphadc, -1);
+            WinApi.DeleteDC(alphadc);
 
             WinApi.ReleaseDC(memdc, -1);
             WinApi.DeleteDC(memdc);
@@ -110,14 +138,6 @@ namespace Deskband.Controls
 
         private void InternalOnPaint(IntPtr hdc, WinApi.RECT rc, WinApi.COLORREF color)
         {
-            WinApi.DrawThemeParentBackground(Handle, hdc, ref rc);
-            if (this.DrawOutline)
-            {
-                WinApi.SelectObject(hdc, WinApi.GetStockObject(WinApi.StockObjects.HOLLOW_BRUSH));
-                WinApi.SelectObject(hdc, WinApi.GetStockObject(WinApi.StockObjects.WHITE_PEN));
-                WinApi.Rectangle(hdc, 0, 0, rc.right - rc.left, rc.bottom - rc.top);
-            }
-
             var pen = WinApi.CreatePen(WinApi.PenStyle.PS_SOLID, 0, color);
             var oldPen = WinApi.SelectObject(hdc, pen);
 

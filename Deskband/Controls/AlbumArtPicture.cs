@@ -35,17 +35,25 @@ namespace Deskband.Controls
         public new Image Image
         {
             get { return base.Image; }
-            set
+            set { base.Image = ImageHelpers.HQResize(value, Width, Height); }
+        }
+
+        public void SetImage(Image image, bool stub, bool doNotShowStub)
+        {
+            if (image == null)
             {
-                var image = value;
-                if (image == null)
-                {
-                    image = ImageHelpers.GetImageFromFile(StubImagePath);
-                    if (image == ImageHelpers.Empty)
-                        image = Resources.NoCoverArt;
-                }
-                base.Image = ImageHelpers.HQResize(image, Width, Height);
+                stub = true;
+                image = ImageHelpers.GetImageFromFile(StubImagePath);
+                if (image == ImageHelpers.Empty)
+                    image = Resources.NoCoverArt;
             }
+
+            if (stub && doNotShowStub)
+            {
+                image = ImageHelpers.Empty;
+            }
+
+            Image = image;
         }
 
         public static AlbumArtPicture Create(AlbumArtModel model)
@@ -56,7 +64,7 @@ namespace Deskband.Controls
             pic.Location = new Point(model.X, model.Y);
             pic.Size = new Size(model.Width, model.Height);
             pic.StubImagePath = model.StubImagePath;
-            pic.Image = null;
+            pic.SetImage(null, true, model.DoNotShowStubImage);
 
             return pic;
         }

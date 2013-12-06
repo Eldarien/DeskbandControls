@@ -11,7 +11,7 @@ namespace deskband_actions
 	void send_stop();
 	void send_track_volume(float volume);
 	void send_stop_after_current(bool state);
-	void send_album_art(const void *art, t_size len);
+	void send_album_art(const void *art, t_size len, bool stub);
 	void resend_last_state();
 	void resend_last_nontrack_state();
 	void send_version();

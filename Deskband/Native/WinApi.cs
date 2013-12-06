@@ -119,6 +119,12 @@ namespace Deskband.Native
         [DllImport("gdi32.dll")]
         public static extern bool BitBlt(IntPtr hdc, int nXDest, int nYDest, int nWidth, int nHeight, IntPtr hdcSrc, int nXSrc, int nYSrc, uint dwRop);
 
+        [DllImport("gdi32.dll", EntryPoint = "GdiAlphaBlend")]
+        public static extern bool AlphaBlend(IntPtr hdcDest, int nXOriginDest, int nYOriginDest,
+            int nWidthDest, int nHeightDest,
+            IntPtr hdcSrc, int nXOriginSrc, int nYOriginSrc, int nWidthSrc, int nHeightSrc,
+            BLENDFUNCTION blendFunction);
+
         [DllImport("gdi32.dll")]
         public static extern uint SetTextColor(IntPtr hdc, COLORREF crColor);
 
@@ -245,6 +251,11 @@ namespace Deskband.Native
         public struct COLORREF
         {
             public uint ColorDWORD;
+
+            public COLORREF(uint colorDword)
+            {
+                ColorDWORD = colorDword;
+            }
 
             public COLORREF(System.Drawing.Color color)
             {
@@ -486,6 +497,29 @@ namespace Deskband.Native
             public int m_Top;
             public int m_Buttom;
         }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct BLENDFUNCTION
+        {
+            private byte BlendOp;
+            private byte BlendFlags;
+            private byte SourceConstantAlpha;
+            private byte AlphaFormat;
+
+            public BLENDFUNCTION(byte op, byte flags, byte alpha, byte format)
+            {
+                BlendOp = op;
+                BlendFlags = flags;
+                SourceConstantAlpha = alpha;
+                AlphaFormat = format;
+            }
+        }
+
+        // blend operation
+        public const int AC_SRC_OVER = 0x00;
+
+        // alpha format
+        public const int AC_SRC_ALPHA = 0x01;
 
         // ShowWindow
 

@@ -35,7 +35,7 @@ namespace Deskband.Communication
 
         public event EventHandler<ValueEventArgs<bool>> OnStopAfterCurrentState;
 
-        public event EventHandler<ValueEventArgs<byte[]>> OnAlbumArt;
+        public event EventHandler<ValueEventArgs<Tuple<byte[], bool>>> OnAlbumArt;
 
         public event EventHandler<TrackTextEventArgs> OnFilePath;
 
@@ -151,7 +151,8 @@ namespace Deskband.Communication
                                     int size = (int)Marshal.PtrToStructure(csd.lpData, typeof(int));
                                     byte[] art = new byte[size];
                                     Marshal.Copy(csd.lpData + sizeof(int), art, 0, size);
-                                    FireEvent(OnAlbumArt, new ValueEventArgs<byte[]>(art));
+                                    bool stub = (bool)Marshal.PtrToStructure(csd.lpData + sizeof(int) + size, typeof(bool));
+                                    FireEvent(OnAlbumArt, new ValueEventArgs<Tuple<byte[], bool>>(new Tuple<byte[], bool>(art, stub)));
                                 }
                                 break;
 

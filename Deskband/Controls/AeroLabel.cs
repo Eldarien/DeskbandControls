@@ -172,16 +172,25 @@ namespace Deskband.Controls
             if (isRtlText)
                 textFlags |= WinApi.DT_RTLREADING;
 
+            var dib = new WinApi.BITMAPINFO();
+            dib.bmiHeader.biSize = Marshal.SizeOf(typeof(WinApi.BITMAPINFOHEADER));
+            dib.bmiHeader.biHeight = -(rc.bottom - rc.top); // negative because DrawThemeTextEx() uses a top-down DIB
+            dib.bmiHeader.biWidth = rc.right - rc.left;
+            dib.bmiHeader.biPlanes = 1;
+            dib.bmiHeader.biBitCount = 32;
+            dib.bmiHeader.biCompression = WinApi.BI_RGB;
+
+            var alphadc = WinApi.CreateCompatibleDC(hdc);
+            WinApi.SelectObject(alphadc, _hFont);
+
+            var alphabitmap = WinApi.CreateDIBSection(alphadc, ref dib, WinApi.DIB_RGB_COLORS, 0, IntPtr.Zero, 0);
+            var oldalphaBitmap = WinApi.SelectObject(alphadc, alphabitmap);
+            WinApi.SelectObject(alphadc, WinApi.GetStockObject(WinApi.StockObjects.HOLLOW_BRUSH));
+            WinApi.SelectObject(alphadc, WinApi.GetStockObject(WinApi.StockObjects.NULL_PEN));
+            WinApi.Rectangle(alphadc, 0, 0, rc.right - rc.left, rc.bottom - rc.top);
+
             if (WinApi.DwmIsCompositionEnabled())
             {
-                var dib = new WinApi.BITMAPINFO();
-                dib.bmiHeader.biSize = Marshal.SizeOf(typeof(WinApi.BITMAPINFOHEADER));
-                dib.bmiHeader.biHeight = -(rc.bottom - rc.top); // negative because DrawThemeTextEx() uses a top-down DIB
-                dib.bmiHeader.biWidth = rc.right - rc.left;
-                dib.bmiHeader.biPlanes = 1;
-                dib.bmiHeader.biBitCount = 32;
-                dib.bmiHeader.biCompression = WinApi.BI_RGB;
-
                 var bitmap = WinApi.CreateDIBSection(memdc, ref dib, WinApi.DIB_RGB_COLORS, 0, IntPtr.Zero, 0);
                 var oldBitmap = WinApi.SelectObject(memdc, bitmap);
 
@@ -199,7 +208,13 @@ namespace Deskband.Controls
                     WinApi.Rectangle(memdc, 0, 0, rc.right - rc.left, rc.bottom - rc.top);
                 }
 
-                WinApi.DrawThemeTextEx(hTheme, memdc, 0, 0, text, text.Length, textFlags, ref rc, ref opts);
+                WinApi.DrawThemeTextEx(hTheme, alphadc, 0, 0, text, text.Length, textFlags, ref rc, ref opts);
+
+                var blendFunc = new WinApi.BLENDFUNCTION(WinApi.AC_SRC_OVER, 0, ForeColor.A, WinApi.AC_SRC_ALPHA);
+                WinApi.AlphaBlend(memdc, rc.left, rc.top, rc.right - rc.left, rc.bottom - rc.top, alphadc,
+                    0, 0, rc.right - rc.left, rc.bottom - rc.top,
+                    blendFunc);
+
                 WinApi.BitBlt(hdc, rc.left, rc.top, rc.right - rc.left, rc.bottom - rc.top, memdc, 0, 0, WinApi.SRCCOPY);
 
                 WinApi.SelectObject(memdc, oldBitmap);
@@ -209,9 +224,6 @@ namespace Deskband.Controls
             {
                 var bitmap = WinApi.CreateCompatibleBitmap(hdc, rc.right, rc.bottom);
                 var oldBitmap = WinApi.SelectObject(memdc, bitmap);
-
-                WinApi.SetTextColor(memdc, textColor);
-                WinApi.SetBkMode(memdc, WinApi.TRANSPARENT);
 
                 var dtp = new WinApi.DRAWTEXTPARAMS();
                 dtp.cbSize = (UInt32)Marshal.SizeOf(typeof(WinApi.DRAWTEXTPARAMS));
@@ -225,7 +237,16 @@ namespace Deskband.Controls
                     WinApi.Rectangle(memdc, 0, 0, rc.right - rc.left, rc.bottom - rc.top);
                 }
 
-                WinApi.DrawTextEx(memdc, text, text.Length, ref rc, textFlags, ref dtp);
+                WinApi.SetTextColor(alphadc, textColor);
+                WinApi.SetBkMode(alphadc, WinApi.TRANSPARENT);
+
+                WinApi.DrawTextEx(alphadc, text, text.Length, ref rc, textFlags, ref dtp);
+
+                var blendFunc = new WinApi.BLENDFUNCTION(WinApi.AC_SRC_OVER, 0, ForeColor.A, WinApi.AC_SRC_ALPHA);
+                WinApi.AlphaBlend(memdc, rc.left, rc.top, rc.right - rc.left, rc.bottom - rc.top, alphadc,
+                    0, 0, rc.right - rc.left, rc.bottom - rc.top,
+                    blendFunc);
+
                 WinApi.BitBlt(hdc, rc.left, rc.top, rc.right - rc.left, rc.bottom - rc.top, memdc, 0, 0, WinApi.SRCCOPY);
 
                 WinApi.SelectObject(memdc, oldBitmap);
@@ -233,6 +254,11 @@ namespace Deskband.Controls
             }
 
             // Cleanup
+
+            WinApi.SelectObject(alphadc, oldalphaBitmap);
+            WinApi.DeleteObject(alphabitmap);
+            WinApi.ReleaseDC(alphadc, -1);
+            WinApi.DeleteDC(alphadc);
 
             WinApi.SelectObject(memdc, oldFont);
             //WinApi.DeleteObject(hFont);
@@ -270,7 +296,6 @@ namespace Deskband.Controls
             label.EnableScroll = model.Scroll;
             label.AlignTextToRight = model.AlignToRight;
             label.Visible = model.Visible;
-
             return label;
         }
     }

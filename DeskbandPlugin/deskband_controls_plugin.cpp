@@ -73,6 +73,7 @@ namespace deskband_controls_plugin
 			abort_callback_dummy abort;
 			static_api_ptr_t<album_art_manager_v2> aamv2;
 			album_art_data_ptr aad;
+			bool stub = false;
 			try
 			{
 				album_art_extractor_instance_v2::ptr aaeiv2 = aamv2->open(pfc::list_single_ref_t<metadb_handle_ptr>(p_track),
@@ -81,6 +82,7 @@ namespace deskband_controls_plugin
 			}
 			catch (...)
 			{
+				stub = true;
 				try
 				{
 					album_art_extractor_instance_v2::ptr aaeiv2_stub = aamv2->open_stub(abort);
@@ -89,12 +91,12 @@ namespace deskband_controls_plugin
 			}
 			if (aad.is_valid() && aad->get_size())
 			{
-				deskband_actions::send_album_art(aad->get_ptr(), aad->get_size());
+				deskband_actions::send_album_art(aad->get_ptr(), aad->get_size(), stub);
 				aad.release();
 			}
 			else
 			{
-				deskband_actions::send_album_art(NULL, 0);
+				deskband_actions::send_album_art(NULL, 0, stub);
 			}
 		}
 	};

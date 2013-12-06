@@ -127,11 +127,11 @@ namespace Deskband
             }
         }
 
-        private void UpdateAlbumArt(System.Drawing.Image img)
+        private void UpdateAlbumArt(System.Drawing.Image img, bool stub)
         {
             foreach (var a in _albumArts)
             {
-                a.Image = img;
+                a.SetImage(img, stub, SettingsManager.Instance.Settings.AlbumArt.DoNotShowStubImage);
             }
         }
 
@@ -176,7 +176,7 @@ namespace Deskband
             _paused = false;
             UpdateButtonIcons();
             UpdatePosition(0, (int)e.Value);
-            UpdateAlbumArt(null);
+            UpdateAlbumArt(null, true);
             UpdateTexts();
 
             FirePlaybackState(true);
@@ -224,7 +224,7 @@ namespace Deskband
             _stopped = true;
             UpdateButtonIcons();
             UpdatePosition(0);
-            UpdateAlbumArt(null);
+            UpdateAlbumArt(null, true);
             ClearTexts();
 
             FirePlaybackState(false);
@@ -247,10 +247,11 @@ namespace Deskband
             UpdateButtonIcons();
         }
 
-        private void OnAlbumArt(object sender, ValueEventArgs<byte[]> e)
+        private void OnAlbumArt(object sender, ValueEventArgs<Tuple<byte[], bool>> e)
         {
-            var img = ImageHelpers.GetImageFromByteArray(e.Value);
-            UpdateAlbumArt(img);
+            var img = ImageHelpers.GetImageFromByteArray(e.Value.Item1);
+            var stub = e.Value.Item2;
+            UpdateAlbumArt(img, stub);
         }
 
         private void OnFilePath(object sender, TrackTextEventArgs e)
