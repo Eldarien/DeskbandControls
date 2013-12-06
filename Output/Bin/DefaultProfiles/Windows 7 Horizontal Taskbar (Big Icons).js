@@ -46,7 +46,8 @@
       "Height": 16,
       "Visible": true,
       "IconPath": null,
-      "AdditionalIconPath": null
+      "AdditionalIconPath": null,
+      "ColorizeColor": "#00FFFFFF"
     },
     {
       "Kind": 1,
@@ -56,7 +57,8 @@
       "Height": 16,
       "Visible": true,
       "IconPath": null,
-      "AdditionalIconPath": null
+      "AdditionalIconPath": null,
+      "ColorizeColor": "#00FFFFFF"
     },
     {
       "Kind": 2,
@@ -66,7 +68,8 @@
       "Height": 16,
       "Visible": true,
       "IconPath": null,
-      "AdditionalIconPath": null
+      "AdditionalIconPath": null,
+      "ColorizeColor": "#00FFFFFF"
     },
     {
       "Kind": 3,
@@ -76,7 +79,8 @@
       "Height": 16,
       "Visible": true,
       "IconPath": null,
-      "AdditionalIconPath": null
+      "AdditionalIconPath": null,
+      "ColorizeColor": "#00FFFFFF"
     },
     {
       "Kind": 4,
@@ -86,7 +90,8 @@
       "Height": 16,
       "Visible": false,
       "IconPath": null,
-      "AdditionalIconPath": null
+      "AdditionalIconPath": null,
+      "ColorizeColor": "#00FFFFFF"
     },
     {
       "Kind": 5,
@@ -96,7 +101,8 @@
       "Height": 16,
       "Visible": false,
       "IconPath": null,
-      "AdditionalIconPath": null
+      "AdditionalIconPath": null,
+      "ColorizeColor": "#00FFFFFF"
     }
   ],
   "Trackbars": [

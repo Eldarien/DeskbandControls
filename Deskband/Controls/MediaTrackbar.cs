@@ -66,7 +66,11 @@ namespace Deskband.Controls
 
         protected override void OnPaint(PaintEventArgs e)
         {
-            var color = new WinApi.COLORREF(this.ForeColor);
+            // Fix for black color alpha blend issue
+            if (ForeColor.R == 0 && ForeColor.G == 0 && ForeColor.B == 0)
+                ForeColor = Color.FromArgb(ForeColor.A, 1, 1, 1);
+
+            var color = new WinApi.COLORREF(ForeColor);
             var rc = new WinApi.RECT(ClientRectangle);
             var hdc = e.Graphics.GetHdc();
 

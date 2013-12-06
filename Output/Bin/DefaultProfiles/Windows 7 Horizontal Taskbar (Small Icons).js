@@ -4,6 +4,7 @@
     "TextScrollSpeed": 300,
     "DrawControlsOutline": false,
     "HideIfNotPlaying": false,
+    "HideIfFoobar2000IsNotRunning": false,
     "FloatingMode": false,
     "InternetSearchFormat": "$if(%artist%,%artist%' - ')%title%",
     "InternetSearchUrl": "https://www.google.com/search?q=%q%"
@@ -11,6 +12,8 @@
   "FloatingWindow": {
     "Opacity": 1.0,
     "Color": "#FF708090",
+    "X": 0,
+    "Y": 0,
     "Width": 252,
     "Height": 31,
     "BackgroundImage": null,
@@ -23,12 +26,12 @@
       "Name": "Primary Text",
       "Format": "%artist% - %title% '('%playback_time%')')",
       "FontName": "Segoe UI",
-      "FontSize": 9.0,
+      "FontSize": 8.0,
       "Italic": false,
       "Bold": false,
       "FontColor": "#FFFFFFFF",
       "X": 92,
-      "Y": 1,
+      "Y": 2,
       "Width": 158,
       "Height": 16,
       "Scroll": true,
@@ -46,7 +49,8 @@
       "Height": 16,
       "Visible": true,
       "IconPath": null,
-      "AdditionalIconPath": null
+      "AdditionalIconPath": null,
+      "ColorizeColor": "#00FFFFFF"
     },
     {
       "Kind": 1,
@@ -56,7 +60,8 @@
       "Height": 16,
       "Visible": true,
       "IconPath": null,
-      "AdditionalIconPath": null
+      "AdditionalIconPath": null,
+      "ColorizeColor": "#00FFFFFF"
     },
     {
       "Kind": 2,
@@ -66,7 +71,8 @@
       "Height": 16,
       "Visible": true,
       "IconPath": null,
-      "AdditionalIconPath": null
+      "AdditionalIconPath": null,
+      "ColorizeColor": "#00FFFFFF"
     },
     {
       "Kind": 3,
@@ -76,7 +82,8 @@
       "Height": 16,
       "Visible": true,
       "IconPath": null,
-      "AdditionalIconPath": null
+      "AdditionalIconPath": null,
+      "ColorizeColor": "#00FFFFFF"
     },
     {
       "Kind": 4,
@@ -86,7 +93,8 @@
       "Height": 16,
       "Visible": false,
       "IconPath": null,
-      "AdditionalIconPath": null
+      "AdditionalIconPath": null,
+      "ColorizeColor": "#00FFFFFF"
     },
     {
       "Kind": 5,
@@ -96,15 +104,16 @@
       "Height": 16,
       "Visible": false,
       "IconPath": null,
-      "AdditionalIconPath": null
+      "AdditionalIconPath": null,
+      "ColorizeColor": "#00FFFFFF"
     }
   ],
   "Trackbars": [
     {
       "Kind": 0,
-      "X": 30,
+      "X": 32,
       "Y": 20,
-      "Width": 156,
+      "Width": 154,
       "Height": 6,
       "Color": "#FFFFFFFF",
       "Visible": true
@@ -125,6 +134,7 @@
     "Width": 27,
     "Height": 27,
     "Visible": true,
-    "StubImagePath": null
+    "StubImagePath": null,
+    "DoNotShowStubImage": false
   }
 }
