@@ -320,7 +320,7 @@
                                       SelectedItem="{Binding ElementName=lbTextBlocks, Path=SelectedItem.FontName}"/>
                             <xctk:DoubleUpDown Grid.Column="1" Style="{ext:MultiStyle GridControl Numeric}"
                                                    Value="{Binding ElementName=lbTextBlocks, Path=SelectedItem.FontSize}"
-                                                   Minimum="8" Maximum="20" Increment="1"/>
+                                                   Minimum="1" Maximum="20" Increment="1"/>
                         </Grid>
 
                         <Label Grid.Column="0" Grid.Row="4" Style="{ext:MultiStyle GridControl GridLabel}"

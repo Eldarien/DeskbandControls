@@ -1,4 +1,4 @@
-Foobar 2000 Deskband Controls 1.0.0
+Foobar 2000 Deskband Controls 1.0.1
 -----------------------------------
 
 Hydrogen audio forum topic: http://www.hydrogenaudio.org/forums/index.php?showtopic=78234
@@ -34,6 +34,12 @@ Eldarien (eldarien@live.com)
 
 --
 ** Changelog:
+
+December 6 2013
+  * Version 1.0.1
+  - Fix for deskband always shows up regardless of "Hide if foobar2000 is not running" option
+  + Support for alpha channel on trackbars and text blocks
+  + "Do not show stub image" option
 
 November 27 2013:
   * Version 1.0.0

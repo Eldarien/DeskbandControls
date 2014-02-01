@@ -33,6 +33,9 @@ namespace Deskband.Native
         public static extern IntPtr FindWindow(string lpClassName, string lpWindowName);
 
         [DllImport("user32.dll")]
+        public static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
+
+        [DllImport("user32.dll")]
         public static extern int SendMessage(IntPtr hWnd, int wMsg, IntPtr wParam, IntPtr lParam);
 
         //For use with WM_COPYDATA and COPYDATASTRUCT
@@ -533,6 +536,10 @@ namespace Deskband.Native
 
         // Messages
 
+        public const int WM_SETCURSOR = 0x0020;
+        public const int WM_MOUSEMOVE = 0x0200;
+        public const int WM_LBUTTONDOWN = 0x0201;
+        public const int WM_LBUTTONUP = 0x0202;
         public const int WM_COMMAND = 0x111;
         public const int WM_PAINT = 0xf;
         public const int WM_GETFONT = 0x0031;
