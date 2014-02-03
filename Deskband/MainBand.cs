@@ -145,6 +145,7 @@ namespace Deskband
             if (settings.General.HideIfFoobar2000IsNotRunning)
             {
                 ShowHide(e.Value);
+                OnPlaybackState(sender, new ValueEventArgs<bool>(false));
             }
         }
 
