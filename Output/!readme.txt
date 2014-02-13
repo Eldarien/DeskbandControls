@@ -1,4 +1,4 @@
-Foobar 2000 Deskband Controls 1.0.1
+Foobar 2000 Deskband Controls 1.0.2
 -----------------------------------
 
 Hydrogen audio forum topic: http://www.hydrogenaudio.org/forums/index.php?showtopic=78234
@@ -9,8 +9,8 @@ How to install:
       http://www.microsoft.com/en-us/download/details.aspx?id=24872
     If you are using Windows 7 with Windows Updates turned on you may already have it.
     Windows 8 and 8.1 have it installed by default.
-  - Windows sometimes marks files downloaded from Internet as unsafe and this causes various glitches in downloaded software.
-    So, don't forget to unblock downloaded zip - right click it, select "Properties" and then select "Unblock" in properties window.
+! - Windows sometimes marks files downloaded from Internet as unsafe and this causes various glitches in downloaded software.
+!   So, don't forget to unblock downloaded zip - right click it, select "Properties" and then select "Unblock" in properties window.
   - Right-click "Register Deskband.cmd" file and select "Run as administrator".
     A console window should appear with the following message:
       "Types registered successfully".
@@ -34,6 +34,11 @@ Eldarien (eldarien@live.com)
 
 --
 ** Changelog:
+
+February 13 2014
+  * Version 1.0.2
+  - Minor fixes in UI and startup when autohide is activated
+  - Fonts can be set as small as size "1"
 
 December 6 2013
   * Version 1.0.1
