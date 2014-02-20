@@ -91,6 +91,9 @@ namespace Deskband.Communication
 
         public void FormatString(int index, string format)
         {
+            if (String.IsNullOrEmpty(format))
+                return;
+
             byte[] formatBytes = Encoding.UTF8.GetBytes(format);
             byte[] indexBytes = BitConverter.GetBytes(index);
 
