@@ -72,6 +72,22 @@ namespace Deskband.Settings.Models
             set { _color = value; RaisePropertyChangedEvent(x => x.Color); }
         }
 
+        private Color _backgroundColor;
+
+        public Color BackgroundColor
+        {
+            get { return _backgroundColor; }
+            set { _backgroundColor = value; RaisePropertyChangedEvent(x => x.BackgroundColor); }
+        }
+
+        private bool _useBackgroundColor;
+
+        public bool UseBackgroundColor
+        {
+            get { return _useBackgroundColor; }
+            set { _useBackgroundColor = value; RaisePropertyChangedEvent(x => x.UseBackgroundColor); }
+        }
+
         private Boolean _visible;
 
         public Boolean Visible

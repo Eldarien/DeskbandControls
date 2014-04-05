@@ -540,6 +540,8 @@
                             <RowDefinition Height="Auto"></RowDefinition>
                             <RowDefinition Height="Auto"></RowDefinition>
                             <RowDefinition Height="Auto"></RowDefinition>
+                            <RowDefinition Height="Auto"></RowDefinition>
+                            <RowDefinition Height="Auto"></RowDefinition>
                         </Grid.RowDefinitions>
 
                         <Label Grid.Column="0" Grid.Row="0" Style="{ext:MultiStyle GridControl GridLabel}"
@@ -587,14 +589,25 @@
                                               DisplayColorAndName="True"
                                               SelectedColor="{Binding ElementName=lbTrackbars, Path=SelectedItem.Color}" />
 
+                        <Label Grid.Column="0" Grid.Row="3" Style="{ext:MultiStyle GridControl GridLabel}"
+                                   Content="Background Color" />
+                        <xctk:ColorPicker Grid.Column="1" Grid.Row="3" Style="{StaticResource GridControl}"
+                                              DisplayColorAndName="True" UsingAlphaChannel="False"
+                                              SelectedColor="{Binding ElementName=lbTrackbars, Path=SelectedItem.BackgroundColor}" />
 
-                        <CheckBox Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="2"
+                        <CheckBox Grid.Column="0" Grid.Row="4" Grid.ColumnSpan="2"
+                                  VerticalAlignment="Center" VerticalContentAlignment="Center"
+                                  IsChecked="{Binding ElementName=lbTrackbars, Path=SelectedItem.UseBackgroundColor}">
+                            <Label Content="Use Background Color" VerticalAlignment="Center" />
+                        </CheckBox>
+
+                        <CheckBox Grid.Column="0" Grid.Row="5" Grid.ColumnSpan="2"
                                   VerticalAlignment="Center" VerticalContentAlignment="Center"
                                   IsChecked="{Binding ElementName=lbTrackbars, Path=SelectedItem.Visible}">
                             <Label Content="Visible" VerticalAlignment="Center" />
                         </CheckBox>
 
-                        <CheckBox Grid.Column="0" Grid.Row="4" Grid.ColumnSpan="2"
+                        <CheckBox Grid.Column="0" Grid.Row="6" Grid.ColumnSpan="2"
                                   VerticalAlignment="Center" VerticalContentAlignment="Center"
                                   IsChecked="{Binding ElementName=lbTrackbars, Path=SelectedItem.HideBorders}">
                             <Label Content="Hide Borders" VerticalAlignment="Center" />

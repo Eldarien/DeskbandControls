@@ -35,6 +35,10 @@ namespace Deskband.Controls
             set { base.ForeColor = value; }
         }
 
+        public Color BackgroundColor { get; set; }
+
+        public bool UseBackgroundColor { get; set; }
+
         public Enums.TrackbarKindType Kind { get; set; }
 
         public bool DrawOutline { get; set; }
@@ -72,7 +76,11 @@ namespace Deskband.Controls
             if (ForeColor.R == 0 && ForeColor.G == 0 && ForeColor.B == 0)
                 ForeColor = Color.FromArgb(ForeColor.A, 1, 1, 1);
 
+            if (BackgroundColor.R == 0 && BackgroundColor.G == 0 && BackgroundColor.B == 0)
+                BackgroundColor = Color.FromArgb(BackgroundColor.A, 1, 1, 1);
+
             var color = new WinApi.COLORREF(ForeColor);
+            var backgroundColor = new WinApi.COLORREF(BackgroundColor);
             var rc = new WinApi.RECT(ClientRectangle);
             var hdc = e.Graphics.GetHdc();
 
@@ -108,15 +116,16 @@ namespace Deskband.Controls
             WinApi.SelectObject(alphadc, WinApi.GetStockObject(WinApi.StockObjects.HOLLOW_BRUSH));
             WinApi.SelectObject(alphadc, WinApi.GetStockObject(WinApi.StockObjects.NULL_PEN));
             WinApi.Rectangle(alphadc, 0, 0, rc.right - rc.left, rc.bottom - rc.top);
-            InternalOnPaint(alphadc, rc, color);
+            InternalOnPaint(alphadc, rc, color, backgroundColor);
 
             // Fix alpha channel
             var rgbColor = (color.ColorDWORD & 0x000000FF) << 16 | (color.ColorDWORD & 0x0000FF00) | (color.ColorDWORD & 0x00FF0000) >> 16;
+            var rgbBackgroundColor = (backgroundColor.ColorDWORD & 0x000000FF) << 16 | (backgroundColor.ColorDWORD & 0x0000FF00) | (backgroundColor.ColorDWORD & 0x00FF0000) >> 16;
             var pixels = new WinApi.COLORREF[Width * Height];
             WinApi.GetDIBits(alphadc, alphabitmap, 0, (uint)Height, pixels, ref dib, 0);
             for (int i = 0; i < pixels.Length; i++)
             {
-                if (pixels[i].ColorDWORD == rgbColor)
+                if (pixels[i].ColorDWORD == rgbColor || pixels[i].ColorDWORD == rgbBackgroundColor && UseBackgroundColor)
                     pixels[i].ColorDWORD |= 0xFF000000;
             }
             WinApi.SetDIBits(alphadc, alphabitmap, 0, (uint)Height, pixels, ref dib, 0);
@@ -142,7 +151,7 @@ namespace Deskband.Controls
             e.Graphics.ReleaseHdc(hdc);
         }
 
-        private void InternalOnPaint(IntPtr hdc, WinApi.RECT rc, WinApi.COLORREF color)
+        private void InternalOnPaint(IntPtr hdc, WinApi.RECT rc, WinApi.COLORREF color, WinApi.COLORREF backgroundColor)
         {
             var pen = WinApi.CreatePen(WinApi.PenStyle.PS_SOLID, 0, color);
             var oldPen = WinApi.SelectObject(hdc, pen);
@@ -153,14 +162,33 @@ namespace Deskband.Controls
                 WinApi.RoundRect(hdc, rc.left, rc.top, rc.right, rc.bottom, 3, 3);
             }
 
+            int offset = HideBorders ? 0 : 2;
+
+            if (UseBackgroundColor)
+            {
+                var backgroundPen = WinApi.CreatePen(WinApi.PenStyle.PS_SOLID, 0, backgroundColor);
+                var backgroundOldPen = WinApi.SelectObject(hdc, backgroundPen);
+
+                var backgroundBrush = WinApi.CreateSolidBrush(backgroundColor);
+                var backgroundOldBrush = WinApi.SelectObject(hdc, backgroundBrush);
+
+                WinApi.Rectangle(hdc, rc.left + offset, rc.top + offset, rc.right - offset, rc.bottom - offset);
+
+                WinApi.SelectObject(hdc, backgroundOldPen);
+                WinApi.DeleteObject(backgroundPen);
+
+                WinApi.SelectObject(hdc, backgroundOldBrush);
+                WinApi.DeleteObject(backgroundBrush);
+            }
+
             var brush = WinApi.CreateSolidBrush(color);
             var oldBrush = WinApi.SelectObject(hdc, brush);
 
             if (this.Range > 0) // Range can be 0 for radio streams
             {
-                int wx = (rc.right - 4) * this.Position / this.Range;
+                int wx = (rc.right - offset * 2) * this.Position / this.Range;
 
-                WinApi.Rectangle(hdc, rc.left + 2, rc.top + 2, wx + 2, rc.bottom - 2);
+                WinApi.Rectangle(hdc, rc.left + offset, rc.top + offset, wx + offset, rc.bottom - offset);
             }
 
             WinApi.SelectObject(hdc, oldBrush);
@@ -241,6 +269,8 @@ namespace Deskband.Controls
             tb.Location = new Point(x.X, x.Y); //x.BoundRect.Location;
             tb.Size = new Size(x.Width, x.Height); //x.BoundRect.Size;
             tb.ForeColor = x.Color.AsDrawingColor(); //ColorHelpers.GetThemedColor(x.FgColor);
+            tb.BackgroundColor = x.BackgroundColor.AsDrawingColor();
+            tb.UseBackgroundColor = x.UseBackgroundColor;
             tb.HideBorders = x.HideBorders;
 
             tb.Range = 100;
