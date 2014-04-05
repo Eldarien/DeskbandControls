@@ -2,7 +2,7 @@
 #include "msgwindow.h"
 #include "deskband_actions.h"
 
-DECLARE_COMPONENT_VERSION("Deskband Controls", DESKBAND_CONTROLS_VERSION, "(c) Eldarien (eldarien@live.com)");
+DECLARE_COMPONENT_VERSION("Deskband Controls", DESKBAND_CONTROLS_VERSION, "(c) Eldarien (eldarien@live.com)\nhttp://www.hydrogenaudio.org/forums/index.php?showtopic=78234");
 
 namespace deskband_controls_plugin
 {
