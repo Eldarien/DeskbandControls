@@ -539,6 +539,7 @@
                             <RowDefinition Height="Auto"></RowDefinition>
                             <RowDefinition Height="Auto"></RowDefinition>
                             <RowDefinition Height="Auto"></RowDefinition>
+                            <RowDefinition Height="Auto"></RowDefinition>
                         </Grid.RowDefinitions>
 
                         <Label Grid.Column="0" Grid.Row="0" Style="{ext:MultiStyle GridControl GridLabel}"
@@ -591,6 +592,12 @@
                                   VerticalAlignment="Center" VerticalContentAlignment="Center"
                                   IsChecked="{Binding ElementName=lbTrackbars, Path=SelectedItem.Visible}">
                             <Label Content="Visible" VerticalAlignment="Center" />
+                        </CheckBox>
+
+                        <CheckBox Grid.Column="0" Grid.Row="4" Grid.ColumnSpan="2"
+                                  VerticalAlignment="Center" VerticalContentAlignment="Center"
+                                  IsChecked="{Binding ElementName=lbTrackbars, Path=SelectedItem.HideBorders}">
+                            <Label Content="Hide Borders" VerticalAlignment="Center" />
                         </CheckBox>
                     </Grid>
                 </Grid>

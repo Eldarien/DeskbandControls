@@ -39,6 +39,8 @@ namespace Deskband.Controls
 
         public bool DrawOutline { get; set; }
 
+        public bool HideBorders { get; set; }
+
         private int position = 0;
 
         private bool mousePressed;
@@ -145,8 +147,11 @@ namespace Deskband.Controls
             var pen = WinApi.CreatePen(WinApi.PenStyle.PS_SOLID, 0, color);
             var oldPen = WinApi.SelectObject(hdc, pen);
 
-            WinApi.SelectObject(hdc, WinApi.GetStockObject(WinApi.StockObjects.HOLLOW_BRUSH));
-            WinApi.RoundRect(hdc, rc.left, rc.top, rc.right, rc.bottom, 3, 3);
+            if (!HideBorders)
+            {
+                WinApi.SelectObject(hdc, WinApi.GetStockObject(WinApi.StockObjects.HOLLOW_BRUSH));
+                WinApi.RoundRect(hdc, rc.left, rc.top, rc.right, rc.bottom, 3, 3);
+            }
 
             var brush = WinApi.CreateSolidBrush(color);
             var oldBrush = WinApi.SelectObject(hdc, brush);
@@ -236,6 +241,7 @@ namespace Deskband.Controls
             tb.Location = new Point(x.X, x.Y); //x.BoundRect.Location;
             tb.Size = new Size(x.Width, x.Height); //x.BoundRect.Size;
             tb.ForeColor = x.Color.AsDrawingColor(); //ColorHelpers.GetThemedColor(x.FgColor);
+            tb.HideBorders = x.HideBorders;
 
             tb.Range = 100;
             tb.Position = 0;

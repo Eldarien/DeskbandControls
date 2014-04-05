@@ -79,5 +79,13 @@ namespace Deskband.Settings.Models
             get { return _visible; }
             set { _visible = value; RaisePropertyChangedEvent(x => x.Visible); }
         }
+
+        private bool _hideBorders;
+
+        public bool HideBorders
+        {
+            get { return _hideBorders; }
+            set { _hideBorders = value; RaisePropertyChangedEvent(x => x.HideBorders); }
+        }
     }
 }
