@@ -22,6 +22,7 @@ namespace Deskband.Settings.Models
             Width = width;
             Height = height;
             Visible = visible;
+            ColorizeColor = Color.FromArgb(0, 0xFF, 0xFF, 0xFF);
         }
 
         public Enums.ButtonKindType Kind { get; set; }

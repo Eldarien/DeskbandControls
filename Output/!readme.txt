@@ -1,4 +1,4 @@
-Foobar 2000 Deskband Controls 1.0.2
+Foobar 2000 Deskband Controls 1.0.3
 -----------------------------------
 
 Hydrogen audio forum topic: http://www.hydrogenaudio.org/forums/index.php?showtopic=78234
