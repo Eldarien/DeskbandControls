@@ -63,5 +63,13 @@ namespace Deskband.Settings.Models
             get { return _doNotShowStubImage; }
             set { _doNotShowStubImage = value; RaisePropertyChangedEvent(x => x.DoNotShowStubImage); }
         }
+
+        private bool _preserveAspectRatio;
+
+        public bool PreserveAspectRatio
+        {
+            get { return _preserveAspectRatio; }
+            set { _preserveAspectRatio = value; RaisePropertyChangedEvent(x => x.PreserveAspectRatio); }
+        }
     }
 }

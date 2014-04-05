@@ -608,6 +608,7 @@
                         <RowDefinition Height="Auto"></RowDefinition>
                         <RowDefinition Height="Auto"></RowDefinition>
                         <RowDefinition Height="Auto"></RowDefinition>
+                        <RowDefinition Height="Auto"></RowDefinition>
                     </Grid.RowDefinitions>
 
                     <Label Grid.Column="0" Grid.Row="0" Style="{ext:MultiStyle GridControl GridLabel}"
@@ -675,6 +676,12 @@
                               VerticalAlignment="Center" VerticalContentAlignment="Center"
                               IsChecked="{Binding Path=Settings.AlbumArt.DoNotShowStubImage}">
                         <Label Content="Do Not Show Stub Image" VerticalAlignment="Center" />
+                    </CheckBox>
+
+                    <CheckBox Grid.Column="0" Grid.Row="5" Grid.ColumnSpan="2"
+                              VerticalAlignment="Center" VerticalContentAlignment="Center"
+                              IsChecked="{Binding Path=Settings.AlbumArt.PreserveAspectRatio}">
+                        <Label Content="Preserve Aspect Ratio" VerticalAlignment="Center" />
                     </CheckBox>
                 </Grid>
             </TabItem>

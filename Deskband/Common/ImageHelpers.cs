@@ -60,8 +60,18 @@ namespace Deskband.Common
             return Empty;
         }
 
-        public static Image HQResize(Image image, int width, int height)
+        public static Image HQResize(Image image, int width, int height, bool preserveAspect)
         {
+            if (preserveAspect)
+            {
+                double originalRatio = (double)image.Width / (double)image.Height;
+                double resultRatio = (double)width / (double)height;
+                if (originalRatio > resultRatio)
+                    height = (int)(width / originalRatio);
+                else
+                    width = (int)(height * originalRatio);
+            }
+
             var result = new Bitmap(width, height, PixelFormat.Format32bppArgb);
             result.SetResolution(image.HorizontalResolution, image.VerticalResolution);
 

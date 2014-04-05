@@ -32,10 +32,12 @@ namespace Deskband.Controls
 
         public string StubImagePath { get; set; }
 
+        public bool PreserveAspectRatio { get; set; }
+
         public new Image Image
         {
             get { return base.Image; }
-            set { base.Image = ImageHelpers.HQResize(value, Width, Height); }
+            set { base.Image = ImageHelpers.HQResize(value, Width, Height, PreserveAspectRatio); }
         }
 
         public void SetImage(Image image, bool stub, bool doNotShowStub)
@@ -63,6 +65,7 @@ namespace Deskband.Controls
             pic.Visible = model.Visible;
             pic.Location = new Point(model.X, model.Y);
             pic.Size = new Size(model.Width, model.Height);
+            pic.PreserveAspectRatio = model.PreserveAspectRatio;
             pic.StubImagePath = model.StubImagePath;
             pic.SetImage(null, true, model.DoNotShowStubImage);
 
