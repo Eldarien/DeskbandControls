@@ -206,7 +206,8 @@
                                Content="Background Color" />
                     <xctk:ColorPicker Grid.Column="1" Grid.Row="3" Style="{StaticResource GridControl}"
                                       DisplayColorAndName="True"
-                                      SelectedColor="{Binding Path=Settings.FloatingWindow.Color}" />
+                                      SelectedColor="{Binding Path=Settings.FloatingWindow.Color}"
+                                      UsingAlphaChannel="False"/>
                     
                     <Label Grid.Column="0" Grid.Row="4" Style="{ext:MultiStyle GridControl GridLabel}"
                            Content="Background Image" VerticalAlignment="Top" />

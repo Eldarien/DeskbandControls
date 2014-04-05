@@ -108,7 +108,10 @@ namespace Deskband.Controls
             Location = new Point(fwSettings.X, fwSettings.Y);
             Size = new Size(fwSettings.Width, fwSettings.Height);
             Opacity = fwSettings.Opacity;
-            BackColor = fwSettings.Color.AsDrawingColor();
+
+            // Ignore Alpha part of color for form background to prevent crush
+            var backColor = fwSettings.Color.AsDrawingColor();
+            BackColor = Color.FromArgb(0xFF, backColor.R, backColor.G, backColor.B);
 
             if (fwSettings.UseBackgroundImage)
             {
