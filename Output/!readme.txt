@@ -39,6 +39,7 @@ April 10 2014
   * Version 1.1
   - Default button colorization color set to transparent (a bug when at first start buttons were black)
   - Fix a crush when using alpha channel in floating window background color. Use Opacity setting instead.
+  - Fix text not drawing in WindowsXP
   + Album Art Preserve aspect ratio option
   + Added link to hydrogenaudio forum topic in foobar plugin about window
   + Hide trackbar borders option
