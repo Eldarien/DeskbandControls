@@ -1,4 +1,5 @@
-﻿using Deskband.Common;
+﻿using Deskband.AutoUpdater;
+using Deskband.Common;
 using Deskband.Communication;
 using Deskband.Native;
 using Deskband.Settings;
@@ -38,6 +39,9 @@ namespace Deskband.Controls
         private Container _container;
         private Timer _scrollTimer;
 
+        //private Timer _autoupdateTimer;
+        //private Checker _autoupdateChecker;
+
         // Visible controls
 
         private readonly List<AeroLabel> _labels = new List<AeroLabel>();
@@ -59,6 +63,14 @@ namespace Deskband.Controls
             // Scroll timer
             _scrollTimer = Disposable(new Timer(_container));
             _scrollTimer.Tick += (s, ea) => _labels.ForEach(x => x.ScrollTick());
+
+            // AutoUpdater
+            //_autoupdateChecker = new Checker();
+
+            //_autoupdateTimer = Disposable(new Timer(_container));
+            //_autoupdateTimer.Interval = 1000 * 10;
+            //_autoupdateTimer.Tick += (s, ea) => _autoupdateChecker.TimerTick();
+            //_autoupdateTimer.Enabled = true;
 
             _controller = new Controller(_messageForm, _labels, _buttons, _trackbars, _albumArts);
             _controller.OnApplySettings += (s, ea) => ApplySettings();

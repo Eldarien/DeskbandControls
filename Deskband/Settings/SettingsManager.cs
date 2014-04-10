@@ -23,9 +23,11 @@ namespace Deskband.Settings
 
         public SettingsData Settings { get; set; }
 
-        private string _appProfileDir;
+        public StateData State { get; set; }
 
+        private string _appProfileDir;
         private string _configFilePath;
+        private string _stateFilePath;
         private string _profilesPath;
 
         private SettingsManager()
@@ -49,8 +51,10 @@ namespace Deskband.Settings
             }
 
             _configFilePath = Path.Combine(_appProfileDir, "config.js");
+            _stateFilePath = Path.Combine(_appProfileDir, "state.js");
 
-            Settings = GetDefaults();
+            Settings = GetDefaultSettings();
+            State = GetDefaultState();
         }
 
         public List<String> GetProfiles()
@@ -83,7 +87,7 @@ namespace Deskband.Settings
         public SettingsData LoadProfile(string profileName)
         {
             var profilePath = GetProfileFilePath(profileName);
-            return LoadSettingsData(profilePath);
+            return LoadSettingsData(profilePath, GetDefaultSettings());
         }
 
         public void DeleteProfile(string profileName)
@@ -95,11 +99,9 @@ namespace Deskband.Settings
             }
         }
 
-        private SettingsData LoadSettingsData(string settingsFilePath)
+        private T LoadSettingsData<T>(string settingsFilePath, T defaults)
         {
-            SettingsData settingsData;
-
-            var defaults = GetDefaults();
+            T settingsData;
 
             if (File.Exists(settingsFilePath))
             {
@@ -109,7 +111,7 @@ namespace Deskband.Settings
                     var savedData = (JObject)JsonConvert.DeserializeObject(json);
                     //var newData = JObject.FromObject(defaults);
                     //JsonHelpers.Merge(newData, savedData);
-                    settingsData = savedData.ToObject<SettingsData>();
+                    settingsData = savedData.ToObject<T>();
                 }
                 catch (Exception ex)
                 {
@@ -127,7 +129,7 @@ namespace Deskband.Settings
             return settingsData;
         }
 
-        private void SaveSettingsData(SettingsData settingsData, string settingsFilePath)
+        private void SaveSettingsData<T>(T settingsData, string settingsFilePath)
         {
             string json = JsonConvert.SerializeObject(settingsData, Formatting.Indented);
             File.WriteAllText(settingsFilePath, json);
@@ -135,15 +137,17 @@ namespace Deskband.Settings
 
         public void LoadSettings()
         {
-            Settings = LoadSettingsData(_configFilePath);
+            Settings = LoadSettingsData(_configFilePath, GetDefaultSettings());
+            //State = LoadSettingsData(_stateFilePath, GetDefaultState());
         }
 
         public void SaveSettings()
         {
             SaveSettingsData(Settings, _configFilePath);
+            //SaveSettingsData(State, _stateFilePath);
         }
 
-        private SettingsData GetDefaults()
+        private SettingsData GetDefaultSettings()
         {
             string fontName = Environment.OSVersion.Version.Major < 6 ? "Tahoma" : "Segoe UI";
 
@@ -182,6 +186,13 @@ namespace Deskband.Settings
             settings.AlbumArt.Visible = true;
 
             return settings;
+        }
+
+        private StateData GetDefaultState()
+        {
+            var state = new StateData();
+            state.LastUpdateCheck = DateTime.MinValue;
+            return state;
         }
 
         private string IconPath(string fileName)
