@@ -59,6 +59,10 @@ namespace Deskband.Settings
         private void ApplySettings()
         {
             SettingsManager.Instance.Settings = Settings;
+
+            SelectedTextBlockIndex = 0;
+            SelectedButtonIndex = 0;
+            SelectedTrackbarIndex = 0;
         }
 
         public ICommand OK { get { return new DelegateCommand(CommandOK); } }
@@ -90,6 +94,15 @@ namespace Deskband.Settings
 
             if (OnApply != null)
                 OnApply(this, EventArgs.Empty);
+        }
+
+        // Trackbars
+        private int _selectedTrackbarIndex;
+
+        public int SelectedTrackbarIndex
+        {
+            get { return _selectedTrackbarIndex; }
+            set { _selectedTrackbarIndex = value; RaisePropertyChangedEvent(x => x.SelectedTrackbarIndex); }
         }
 
         // TextBlocks

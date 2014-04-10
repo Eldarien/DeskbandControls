@@ -525,7 +525,7 @@
                     </Grid.ColumnDefinitions>
 
                     <ListBox Name="lbTrackbars"
-                                 SelectedIndex="0"
+                                 SelectedIndex="{Binding SelectedTrackbarIndex}"
                                  ItemsSource="{Binding Path=Settings.Trackbars}">
                     </ListBox>
 
