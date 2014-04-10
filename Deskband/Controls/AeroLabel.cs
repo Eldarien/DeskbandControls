@@ -237,15 +237,19 @@ namespace Deskband.Controls
                     WinApi.Rectangle(memdc, 0, 0, rc.right - rc.left, rc.bottom - rc.top);
                 }
 
-                WinApi.SetTextColor(alphadc, textColor);
-                WinApi.SetBkMode(alphadc, WinApi.TRANSPARENT);
+                //WinApi.SetTextColor(alphadc, textColor);
+                //WinApi.SetBkMode(alphadc, WinApi.TRANSPARENT);
 
-                WinApi.DrawTextEx(alphadc, text, text.Length, ref rc, textFlags, ref dtp);
+                //WinApi.DrawTextEx(alphadc, text, text.Length, ref rc, textFlags, ref dtp);
 
-                var blendFunc = new WinApi.BLENDFUNCTION(WinApi.AC_SRC_OVER, 0, ForeColor.A, WinApi.AC_SRC_ALPHA);
-                WinApi.AlphaBlend(memdc, rc.left, rc.top, rc.right - rc.left, rc.bottom - rc.top, alphadc,
-                    0, 0, rc.right - rc.left, rc.bottom - rc.top,
-                    blendFunc);
+                //var blendFunc = new WinApi.BLENDFUNCTION(WinApi.AC_SRC_OVER, 0, ForeColor.A, WinApi.AC_SRC_ALPHA);
+                //WinApi.AlphaBlend(memdc, rc.left, rc.top, rc.right - rc.left, rc.bottom - rc.top, alphadc,
+                //    0, 0, rc.right - rc.left, rc.bottom - rc.top,
+                //    blendFunc);
+
+                WinApi.SetTextColor(memdc, textColor);
+                WinApi.SetBkMode(memdc, WinApi.TRANSPARENT);
+                WinApi.DrawTextEx(memdc, text, text.Length, ref rc, textFlags, ref dtp);
 
                 WinApi.BitBlt(hdc, rc.left, rc.top, rc.right - rc.left, rc.bottom - rc.top, memdc, 0, 0, WinApi.SRCCOPY);
 
