@@ -1,5 +1,5 @@
-Foobar 2000 Deskband Controls 1.0.3
------------------------------------
+Foobar 2000 Deskband Controls 1.1
+---------------------------------
 
 Hydrogen audio forum topic: http://www.hydrogenaudio.org/forums/index.php?showtopic=78234
 
@@ -29,11 +29,20 @@ How to uninstall:
   - Open foobar2000, go to Preferences - Components page, right click "Deskband Controls" entry and select "Remove".
 
 --
+Greetings from Ukraine!
 Eldarien (eldarien@live.com)
-
 
 --
 ** Changelog:
+
+April 10 2014
+  * Version 1.1
+  - Default button colorization color set to transparent (a bug when at first start buttons were black)
+  - Fix a crush when using alpha channel in floating window background color. Use Opacity setting instead.
+  + Album Art Preserve aspect ratio option
+  + Added link to hydrogenaudio forum topic in foobar plugin about window
+  + Hide trackbar borders option
+  + Trackbars background color support
 
 February 13 2014
   * Version 1.0.2
