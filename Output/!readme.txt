@@ -35,6 +35,10 @@ Eldarien (eldarien@live.com)
 --
 ** Changelog:
 
+October 2 2014
+  * Version 1.1.1
+  - Fix crush for some album art data
+
 April 10 2014
   * Version 1.1
   - Default button colorization color set to transparent (a bug when at first start buttons were black)
