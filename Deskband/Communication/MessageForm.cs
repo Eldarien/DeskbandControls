@@ -148,10 +148,20 @@ namespace Deskband.Communication
 
                             case DeskbandCommands.AlbumArt:
                                 {
-                                    int size = (int)Marshal.PtrToStructure(csd.lpData, typeof(int));
-                                    byte[] art = new byte[size];
-                                    Marshal.Copy(csd.lpData + sizeof(int), art, 0, size);
-                                    bool stub = (bool)Marshal.PtrToStructure(csd.lpData + sizeof(int) + size, typeof(bool));
+                                    int imageLen = (int)Marshal.PtrToStructure(csd.lpData, typeof(int));
+                                    int totalLen = sizeof(int) + imageLen + sizeof(bool);
+                                    byte[] buf = new byte[totalLen];
+                                    Marshal.Copy(csd.lpData, buf, 0, totalLen);
+
+                                    byte[] art = new byte[imageLen];
+                                    Array.Copy(buf, sizeof(int), art, 0, imageLen);
+
+                                    bool stub = buf[totalLen - 1] != 0;
+
+                                    //This marshal stuff breaks on some random image with CoreEngineException in CLR...
+                                    //Marshal.Copy(csd.lpData + sizeof(int), art, 0, imageLen);
+                                    //bool stub = (bool)Marshal.PtrToStructure(csd.lpData + sizeof(int) + imageLen, typeof(bool));
+
                                     FireEvent(OnAlbumArt, new ValueEventArgs<Tuple<byte[], bool>>(new Tuple<byte[], bool>(art, stub)));
                                 }
                                 break;
