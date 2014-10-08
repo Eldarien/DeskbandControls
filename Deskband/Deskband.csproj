@@ -107,6 +107,7 @@
     <Compile Include="AutoUpdater\UpdateInfo.cs" />
     <Compile Include="Common\Enums.cs" />
     <Compile Include="Common\Extensions\EnumExtensions.cs" />
+    <Compile Include="Common\Extensions\IntExtensions.cs" />
     <Compile Include="Common\Extensions\MediaColorExtensions.cs" />
     <Compile Include="Common\ImageHelpers.cs" />
     <Compile Include="Common\JsonHelpers.cs" />
