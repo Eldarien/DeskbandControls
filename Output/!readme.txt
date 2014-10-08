@@ -1,5 +1,5 @@
-Foobar 2000 Deskband Controls 1.1
----------------------------------
+Foobar 2000 Deskband Controls 1.1.2
+-----------------------------------
 
 Hydrogen audio forum topic: http://www.hydrogenaudio.org/forums/index.php?showtopic=78234
 
@@ -34,6 +34,10 @@ Eldarien (eldarien@live.com)
 
 --
 ** Changelog:
+
+October 8 2014
+  * Version 1.1.2
+  - Fix for taskbar not appearing in auto-hide mode when cursor is placed over deskband controls
 
 October 2 2014
   * Version 1.1.1
