@@ -4,7 +4,7 @@
 //	const int MAGIC_NUMBER = 42;
 //}
 
-#define DESKBAND_CONTROLS_VERSION "1.1.1"
+#define DESKBAND_CONTROLS_VERSION "1.1.2"
 #define DESKBAND_CONTROLS_TITLE "Deskband Controls"
 
 #define FOOBAR_PLUGIN_MSGWINDOW_CLASS "FoobarDeskbandControlsWndClass"
