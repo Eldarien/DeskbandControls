@@ -139,9 +139,7 @@
     <Compile Include="Controls\FloatingForm.Designer.cs">
       <DependentUpon>FloatingForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Controls\MediaTrackbar.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
+    <Compile Include="Controls\MediaTrackbar.cs" />
     <Compile Include="Controls\MediaTrackbar.Designer.cs">
       <DependentUpon>MediaTrackbar.cs</DependentUpon>
     </Compile>
