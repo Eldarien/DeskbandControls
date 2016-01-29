@@ -1,5 +1,4 @@
-﻿using Deskband.AutoUpdater;
-using Deskband.Common;
+﻿using Deskband.Common;
 using Deskband.Communication;
 using Deskband.Native;
 using Deskband.Settings;

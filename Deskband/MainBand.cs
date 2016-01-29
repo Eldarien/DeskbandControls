@@ -1,6 +1,7 @@
 ﻿using Deskband.Common;
 using Deskband.Common.Extensions;
 using Deskband.Communication;
+using Deskband.Console;
 using Deskband.Controls;
 using Deskband.Native;
 using Deskband.Settings;
@@ -41,6 +42,8 @@ namespace Deskband
         private ControlHost _host;
         private FloatingForm _floatingForm;
 
+        private ConsoleHandler _consoleHandler;
+
         private MenuItem _miStop;
         private MenuItem _miPlayPause;
         private MenuItem _Prev;
@@ -53,6 +56,7 @@ namespace Deskband
         private MenuItem _miCopyArtist;
         private MenuItem _miOpenContainingFolder;
         private MenuItem _miSearchInInternet;
+        private MenuItem _miConsole;
         private MenuItem _miSettings;
 
         public MainBand()
@@ -77,6 +81,10 @@ namespace Deskband
             DoubleClick += OnActivateFoobar;
             _floatingForm.DoubleClick += OnActivateFoobar;
 
+            // Console
+            _consoleHandler = new ConsoleHandler();
+            _consoleHandler.OnConsoleToggle += (s, e) => _miConsole.Checked = e.Value;
+
             // ContextMenu
             var contextMenu = Disposable(new ContextMenu());
 
@@ -95,9 +103,14 @@ namespace Deskband
             _miSearchInInternet = contextMenu.MenuItems.Add("Search in Internet", OnSearchInInternetClick);
 
             contextMenu.MenuItems.Add("-");
+            _miConsole = contextMenu.MenuItems.Add("Console", (s, e) => _consoleHandler.ToggleConsole());
             _miSettings = contextMenu.MenuItems.Add("Settings", OnSettingsMenuItemClick);
             this.ContextMenu = contextMenu;
             _floatingForm.ContextMenu = contextMenu;
+
+            // Startup complete
+            _consoleHandler.AddLine("Deskband Controls started");
+
 
             _host.ApplySettings();
         }
@@ -118,7 +131,7 @@ namespace Deskband
 
                     if (isHorizontal && point.Y == 0 || !isHorizontal && point.X == 0)
                     {
-                        m.Result = (IntPtr)Deskband.Native.WinApi.HTTRANSPARENT;
+                        m.Result = (IntPtr)WinApi.HTTRANSPARENT;
                         return;
                     }
                 }
@@ -252,8 +265,8 @@ namespace Deskband
 
         private void OnSettingsMenuItemClick(object sender, EventArgs e)
         {
-            var wnd = new Deskband.Settings.SettingsWindow();
-            var context = new Deskband.Settings.SettingsViewModel(wnd);
+            var wnd = new SettingsWindow();
+            var context = new SettingsViewModel(wnd);
             wnd.DataContext = context;
             wnd.Show();
 

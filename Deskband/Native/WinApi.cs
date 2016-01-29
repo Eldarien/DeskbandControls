@@ -67,6 +67,9 @@ namespace Deskband.Native
         [DllImport("user32.dll")]
         public static extern bool GetWindowRect(IntPtr hWnd, out RECT lpRect);
 
+        [DllImport("user32.dll")]
+        public static extern bool HideCaret(IntPtr hWnd);
+
         // DWM
 
         public static bool DwmIsCompositionEnabled()
