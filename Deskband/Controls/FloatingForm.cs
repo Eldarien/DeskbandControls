@@ -15,24 +15,14 @@ namespace Deskband.Controls
 {
     public partial class FloatingForm : Form
     {
+        private SettingsManager _settings;
+
         private bool dragging;
         private Point dragAt = Point.Empty;
 
-        public void Pick(Control control, int x, int y)
+        public FloatingForm(SettingsManager settings)
         {
-            dragging = true;
-            dragAt = new Point(x, y);
-            control.Capture = true;
-        }
-
-        public void Drop(Control control)
-        {
-            dragging = false;
-            control.Capture = false;
-        }
-
-        public FloatingForm()
-        {
+            _settings = settings;
             InitializeComponent();
 
             FormBorderStyle = FormBorderStyle.None;
@@ -48,6 +38,19 @@ namespace Deskband.Controls
             MouseUp += FloatingForm_MouseUp;
             MouseMove += FloatingForm_MouseMove;
             Move += FloatingForm_Move;
+        }
+
+        public void Pick(Control control, int x, int y)
+        {
+            dragging = true;
+            dragAt = new Point(x, y);
+            control.Capture = true;
+        }
+
+        public void Drop(Control control)
+        {
+            dragging = false;
+            control.Capture = false;
         }
 
         private void FloatingForm_Load(object sender, EventArgs e)
@@ -84,8 +87,8 @@ namespace Deskband.Controls
         {
             if (Visible)
             {
-                SettingsManager.Instance.Settings.FloatingWindow.X = Location.X;
-                SettingsManager.Instance.Settings.FloatingWindow.Y = Location.Y;
+                _settings.Settings.FloatingWindow.X = Location.X;
+                _settings.Settings.FloatingWindow.Y = Location.Y;
             }
         }
 
@@ -104,7 +107,7 @@ namespace Deskband.Controls
 
         public void LoadSettings()
         {
-            var fwSettings = SettingsManager.Instance.Settings.FloatingWindow;
+            var fwSettings = _settings.Settings.FloatingWindow;
             Location = new Point(fwSettings.X, fwSettings.Y);
             Size = new Size(fwSettings.Width, fwSettings.Height);
             Opacity = fwSettings.Opacity;

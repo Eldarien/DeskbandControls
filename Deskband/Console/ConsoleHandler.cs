@@ -7,7 +7,7 @@ using System.Windows.Forms;
 
 namespace Deskband.Console
 {
-    public class ConsoleHandler
+    public class ConsoleHandler : IDisposable
     {
         private List<String> _lines;
         private ConsoleForm _form;
@@ -72,6 +72,12 @@ namespace Deskband.Console
 
             if (_form != null)
                 _form.AddLine(line);
+        }
+
+        public void Dispose()
+        {
+            if (_form != null)
+                _form.Dispose();
         }
     }
 }

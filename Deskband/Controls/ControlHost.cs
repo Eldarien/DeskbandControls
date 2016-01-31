@@ -48,8 +48,12 @@ namespace Deskband.Controls
         private readonly List<MediaTrackbar> _trackbars = new List<MediaTrackbar>();
         private readonly List<AlbumArtPicture> _albumArts = new List<AlbumArtPicture>();
 
-        public ControlHost()
+        private SettingsManager _settings;
+
+        public ControlHost(SettingsManager settings)
         {
+            _settings = settings;
+
             BackColor = Color.Transparent;
             Dock = DockStyle.Fill;
 
@@ -71,7 +75,7 @@ namespace Deskband.Controls
             //_autoupdateTimer.Tick += (s, ea) => _autoupdateChecker.TimerTick();
             //_autoupdateTimer.Enabled = true;
 
-            _controller = new Controller(_messageForm, _labels, _buttons, _trackbars, _albumArts);
+            _controller = new Controller(_settings, _messageForm, _labels, _buttons, _trackbars, _albumArts);
             _controller.OnApplySettings += (s, ea) => ApplySettings();
             _controller.OnPlaybackState += (s, ea) => { if (OnPlaybackState != null) OnPlaybackState(s, ea); };
             _controller.OnFoobarShowHide += (s, ea) => { if (OnFoobarShowHide != null) OnFoobarShowHide(s, ea); };
@@ -130,7 +134,7 @@ namespace Deskband.Controls
         {
             SuspendLayout();
 
-            var settings = SettingsManager.Instance.Settings;
+            var settings = _settings.Settings;
             bool outline = settings.General.DrawControlsOutline;
 
             // Scroll timer

@@ -79,6 +79,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Newtonsoft.Json.5.0.6\lib\net40\Newtonsoft.Json.dll</HintPath>
     </Reference>
+    <Reference Include="Ninject, Version=3.2.0.0, Culture=neutral, PublicKeyToken=c7192dc5380945e7, processorArchitecture=MSIL">
+      <HintPath>..\packages\Ninject.3.2.2.0\lib\net40\Ninject.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
@@ -97,6 +101,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="App.cs" />
     <Compile Include="Common\Enums.cs" />
     <Compile Include="Common\Extensions\EnumExtensions.cs" />
     <Compile Include="Common\Extensions\IntExtensions.cs" />
@@ -142,7 +147,7 @@
     <Compile Include="Controls\MediaTrackbar.Designer.cs">
       <DependentUpon>MediaTrackbar.cs</DependentUpon>
     </Compile>
-    <Compile Include="MainBand.cs">
+    <Compile Include="Band.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Controls\BandObject.cs">
@@ -184,10 +189,11 @@
       <DependentUpon>SettingsWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Settings\SettingsViewModel.cs" />
+    <Compile Include="AppConfig.cs" />
+    <Compile Include="UIProviders\MenuProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="DeskbandControls.snk" />
-    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <Page Include="Settings\PromptDialog.xaml">
@@ -218,6 +224,7 @@
     <None Include="bin\Release\1x1.png" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="packages.config" />
     <None Include="Properties\Images\1x1.png" />
   </ItemGroup>
   <ItemGroup>

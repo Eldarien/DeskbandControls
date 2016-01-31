@@ -36,12 +36,18 @@ namespace Deskband
 
         public bool Stopped { get { return _stopped; } }
 
-        public Controller(MessageForm messageForm,
+        private SettingsManager _settings;
+
+        public Controller(
+            SettingsManager settings,
+            MessageForm messageForm,
             List<AeroLabel> labels,
             List<AeroButton> buttons,
             List<MediaTrackbar> trackbars,
             List<AlbumArtPicture> albumArts)
         {
+            _settings = settings;
+
             _messageForm = messageForm;
             _foobarActions = new FoobarActions(_messageForm.Handle);
 
@@ -77,8 +83,7 @@ namespace Deskband
             if (OnPlaybackState != null)
                 OnPlaybackState(this, new ValueEventArgs<bool>(state));
 
-            var settings = SettingsManager.Instance.Settings;
-            if (settings.General.HideIfFoobar2000IsNotRunning && !_foobarActions.IsFoobarStarted)
+            if (_settings.Settings.General.HideIfFoobar2000IsNotRunning && !_foobarActions.IsFoobarStarted)
             {
                 if (OnFoobarShowHide != null)
                     OnFoobarShowHide(this, new ValueEventArgs<bool>(false));
@@ -131,7 +136,7 @@ namespace Deskband
         {
             foreach (var a in _albumArts)
             {
-                a.SetImage(img, stub, SettingsManager.Instance.Settings.AlbumArt.DoNotShowStubImage);
+                a.SetImage(img, stub, _settings.Settings.AlbumArt.DoNotShowStubImage);
             }
         }
 
@@ -269,8 +274,7 @@ namespace Deskband
             {
                 case FormatStringIndex.InternetSearch:
                     {
-                        var url = SettingsManager.Instance.Settings.General.InternetSearchUrl
-                            .Replace("%q%", Uri.EscapeDataString(text));
+                        var url = _settings.Settings.General.InternetSearchUrl.Replace("%q%", Uri.EscapeDataString(text));
 
                         //var url = String.Format("https://www.google.com/search?q={0}", Uri.EscapeDataString(text));
                         WinApi.ShellExecute(IntPtr.Zero, "open", url, null, null, WinApi.SW_SHOWNORMAL);

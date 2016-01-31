@@ -17,10 +17,6 @@ namespace Deskband.Settings
 {
     public class SettingsManager
     {
-        private static SettingsManager _instance = new SettingsManager();
-
-        public static SettingsManager Instance { get { return _instance; } }
-
         public SettingsData Settings { get; set; }
 
         public StateData State { get; set; }
@@ -30,7 +26,7 @@ namespace Deskband.Settings
         private string _stateFilePath;
         private string _profilesPath;
 
-        private SettingsManager()
+        public SettingsManager()
         {
             var _assemblyDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 

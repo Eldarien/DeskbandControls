@@ -41,24 +41,27 @@ namespace Deskband.Settings
 
         public event EventHandler OnApply;
 
-        public SettingsViewModel(Window settingsWindow)
+        private SettingsManager _settings;
+
+        public SettingsViewModel(Window settingsWindow, SettingsManager settings)
         {
             _wnd = settingsWindow;
+            _settings = settings;
 
-            Settings = JsonHelpers.CloneObject(SettingsManager.Instance.Settings);
+            Settings = JsonHelpers.CloneObject(_settings.Settings);
 
             FontsList = new System.Drawing.Text.InstalledFontCollection().Families
                 .Select(x => x.Name)
                 .ToList();
 
-            Profiles = new ObservableCollection<String>(SettingsManager.Instance.GetProfiles());
+            Profiles = new ObservableCollection<String>(_settings.GetProfiles());
             Profiles.Insert(0, NewProfile);
             SelectedProfile = NewProfile;
         }
 
         private void ApplySettings()
         {
-            SettingsManager.Instance.Settings = Settings;
+            _settings.Settings = Settings;
 
             SelectedTextBlockIndex = 0;
             SelectedButtonIndex = 0;
@@ -281,7 +284,7 @@ namespace Deskband.Settings
                 needToAdd = false;
             }
 
-            profileName = SettingsManager.Instance.SaveProfile(profileName, Settings);
+            profileName = _settings.SaveProfile(profileName, Settings);
             if (needToAdd)
             {
                 Profiles.Add(profileName);
@@ -300,7 +303,7 @@ namespace Deskband.Settings
                 FB2KConstants.DeskbandControlsTitle, MessageBoxButton.YesNo, MessageBoxImage.Warning
                 ) == MessageBoxResult.Yes)
             {
-                SettingsManager.Instance.DeleteProfile(SelectedProfile);
+                _settings.DeleteProfile(SelectedProfile);
                 Profiles.Remove(SelectedProfile);
                 SelectedProfile = NewProfile;
             }
@@ -310,7 +313,7 @@ namespace Deskband.Settings
 
         private void CommandLoadSelectedProfile()
         {
-            Settings = SettingsManager.Instance.LoadProfile(SelectedProfile);
+            Settings = _settings.LoadProfile(SelectedProfile);
             RaisePropertyChangedEvent(x => x.Settings);
 
             CommandApply();

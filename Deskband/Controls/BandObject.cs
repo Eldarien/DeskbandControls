@@ -105,9 +105,9 @@ namespace Deskband.Controls
 
         public void CloseDW(uint dwReserved)
         {
-            //Dispose(true);
-
             OnClose();
+
+            Dispose(true);
         }
 
         public void ResizeBorderDW(IntPtr prcBorder, object punkToolbarSite, bool fReserved)
