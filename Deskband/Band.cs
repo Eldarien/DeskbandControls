@@ -43,9 +43,6 @@ namespace Deskband
                 AssemblyResolver.Initialize();
 
                 _kernel = AppConfig.InitializeKernel(this);
-                _kernel.Get<Console.ConsoleHandler>();
-                _kernel.Get<Console.ConsoleHandler>();
-                _kernel.Get<Console.ConsoleHandler>();
                 var app = _kernel.Get<App>();
                 app.Run();
             }
