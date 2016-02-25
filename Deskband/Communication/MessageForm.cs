@@ -1,5 +1,5 @@
 ﻿using Deskband.Common;
-using Deskband.Native;
+using Deskband.Core.WinApi;
 using DeskbandBridge;
 using System;
 using System.Collections.Generic;
@@ -78,13 +78,13 @@ namespace Deskband.Communication
             {
                 switch (m.Msg)
                 {
-                    case WinApi.WM_THEMECHANGED:
+                    case WinApiTypes.WM_THEMECHANGED:
                         FireEvent(OnThemeChanged, EventArgs.Empty);
                         m.Result = IntPtr.Zero;
                         break;
 
-                    case WinApi.WM_COPYDATA:
-                        var csd = (WinApi.COPYDATASTRUCT)Marshal.PtrToStructure(m.LParam, typeof(WinApi.COPYDATASTRUCT));
+                    case WinApiTypes.WM_COPYDATA:
+                        var csd = (WinApiTypes.COPYDATASTRUCT)Marshal.PtrToStructure(m.LParam, typeof(WinApiTypes.COPYDATASTRUCT));
                         int cmd = (int)csd.dwData;
                         switch (cmd)
                         {

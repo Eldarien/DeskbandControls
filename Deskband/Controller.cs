@@ -1,7 +1,7 @@
 ﻿using Deskband.Common;
 using Deskband.Communication;
 using Deskband.Controls;
-using Deskband.Native;
+using Deskband.Core.WinApi;
 using Deskband.Settings;
 using DeskbandBridge;
 using System;
@@ -264,7 +264,7 @@ namespace Deskband
             if (e.Text.StartsWith("file://"))
             {
                 var args = String.Format("/select,\"{0}\"", e.Text);
-                WinApi.ShellExecute(IntPtr.Zero, "open", "explorer.exe", args, null, WinApi.SW_SHOWNORMAL);
+                Shell32.ShellExecute(IntPtr.Zero, "open", "explorer.exe", args, null, WinApiTypes.SW_SHOWNORMAL);
             }
         }
 
@@ -277,7 +277,7 @@ namespace Deskband
                         var url = _settings.Settings.General.InternetSearchUrl.Replace("%q%", Uri.EscapeDataString(text));
 
                         //var url = String.Format("https://www.google.com/search?q={0}", Uri.EscapeDataString(text));
-                        WinApi.ShellExecute(IntPtr.Zero, "open", url, null, null, WinApi.SW_SHOWNORMAL);
+                        Shell32.ShellExecute(IntPtr.Zero, "open", url, null, null, WinApiTypes.SW_SHOWNORMAL);
                     }
                     break;
 

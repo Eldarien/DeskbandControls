@@ -1,5 +1,5 @@
-﻿using Deskband.Common.Extensions;
-using Deskband.Native;
+﻿using Deskband.Core.WinApi;
+using Deskband.Extensions;
 using Deskband.Settings.Models;
 using System;
 using System.Collections.Generic;
@@ -12,6 +12,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
 using System.Windows.Forms.VisualStyles;
+using static Deskband.Core.WinApi.WinApiTypes;
 
 namespace Deskband.Controls
 {
@@ -27,7 +28,7 @@ namespace Deskband.Controls
             {
                 if (base.Text != value)
                 {
-                    isRtlText = value.IsRtlText();
+                    isRtlText = WinApiHelpers.IsTextRtl(value);
                     base.Text = value;
 
                     _lastRefresh = DateTime.MinValue; // force refresh
@@ -56,7 +57,7 @@ namespace Deskband.Controls
 
             _lastRefresh = now;
 
-            WinApi.InvalidateRect(this.Handle, IntPtr.Zero, false);
+            User32.InvalidateRect(this.Handle, IntPtr.Zero, false);
         }
 
         private IntPtr _hFont;
@@ -66,14 +67,14 @@ namespace Deskband.Controls
             this.BackColor = Color.Transparent;
             scrollPos = 0;
 
-            int logPixelsY = WinApi.GetDeviceCaps(WinApi.GetDC(IntPtr.Zero), WinApi.LOGPIXELSY);
+            int logPixelsY = Gdi32.GetDeviceCaps(User32.GetDC(IntPtr.Zero), LOGPIXELSY);
             int logFontSize = -(int)Math.Round((fontSize * logPixelsY) / 72.0);
-            _hFont = WinApi.CreateFont(logFontSize, 0, 0, 0, bold ? 700 : 400, italic ? 1u : 0u, 0, 0, 0, 0, 0, 0, 0, fontName);
+            _hFont = Gdi32.CreateFont(logFontSize, 0, 0, 0, bold ? 700 : 400, italic ? 1u : 0u, 0, 0, 0, 0, 0, 0, 0, fontName);
         }
 
         protected override void Dispose(bool disposing)
         {
-            WinApi.DeleteObject(_hFont);
+            Gdi32.DeleteObject(_hFont);
 
             base.Dispose(disposing);
         }
@@ -98,7 +99,7 @@ namespace Deskband.Controls
 
             var len = Text.Length;
             var fullTextSize = Size.Empty;
-            WinApi.GetTextExtentPoint32(hdc, Text, len, out fullTextSize);
+            Gdi32.GetTextExtentPoint32(hdc, Text, len, out fullTextSize);
             if (fullTextSize.Width > this.Size.Width)
             {
                 const string scrollSeparator = " **** ";
@@ -152,89 +153,89 @@ namespace Deskband.Controls
             base.OnPaint(e);
 
             var hdc = e.Graphics.GetHdc();
-            var memdc = WinApi.CreateCompatibleDC(hdc);
+            var memdc = Gdi32.CreateCompatibleDC(hdc);
 
-            var hTheme = WinApi.OpenThemeData(IntPtr.Zero, "BUTTON");
+            var hTheme = UxTheme.OpenThemeData(IntPtr.Zero, "BUTTON");
 
             //var hFont = this.Font.ToHfont();
 
-            var oldFont = WinApi.SelectObject(memdc, _hFont);
+            var oldFont = Gdi32.SelectObject(memdc, _hFont);
 
-            var rc = new WinApi.RECT(ClientRectangle);
+            var rc = new RECT(ClientRectangle);
 
             string text = PrepareScrolledText(memdc);
 
-            var textColor = new WinApi.COLORREF(this.ForeColor);
+            var textColor = new COLORREF(this.ForeColor);
 
-            var textFlags = WinApi.DT_NOPREFIX;
+            var textFlags = DT_NOPREFIX;
             if (this.AlignTextToRight)
-                textFlags |= WinApi.DT_RIGHT;
+                textFlags |= DT_RIGHT;
             if (isRtlText)
-                textFlags |= WinApi.DT_RTLREADING;
+                textFlags |= DT_RTLREADING;
 
-            var dib = new WinApi.BITMAPINFO();
-            dib.bmiHeader.biSize = Marshal.SizeOf(typeof(WinApi.BITMAPINFOHEADER));
+            var dib = new BITMAPINFO();
+            dib.bmiHeader.biSize = Marshal.SizeOf(typeof(BITMAPINFOHEADER));
             dib.bmiHeader.biHeight = -(rc.bottom - rc.top); // negative because DrawThemeTextEx() uses a top-down DIB
             dib.bmiHeader.biWidth = rc.right - rc.left;
             dib.bmiHeader.biPlanes = 1;
             dib.bmiHeader.biBitCount = 32;
-            dib.bmiHeader.biCompression = WinApi.BI_RGB;
+            dib.bmiHeader.biCompression = BI_RGB;
 
-            var alphadc = WinApi.CreateCompatibleDC(hdc);
-            WinApi.SelectObject(alphadc, _hFont);
+            var alphadc = Gdi32.CreateCompatibleDC(hdc);
+            Gdi32.SelectObject(alphadc, _hFont);
 
-            var alphabitmap = WinApi.CreateDIBSection(alphadc, ref dib, WinApi.DIB_RGB_COLORS, 0, IntPtr.Zero, 0);
-            var oldalphaBitmap = WinApi.SelectObject(alphadc, alphabitmap);
-            WinApi.SelectObject(alphadc, WinApi.GetStockObject(WinApi.StockObjects.HOLLOW_BRUSH));
-            WinApi.SelectObject(alphadc, WinApi.GetStockObject(WinApi.StockObjects.NULL_PEN));
-            WinApi.Rectangle(alphadc, 0, 0, rc.right - rc.left, rc.bottom - rc.top);
+            var alphabitmap = Gdi32.CreateDIBSection(alphadc, ref dib, DIB_RGB_COLORS, 0, IntPtr.Zero, 0);
+            var oldalphaBitmap = Gdi32.SelectObject(alphadc, alphabitmap);
+            Gdi32.SelectObject(alphadc, Gdi32.GetStockObject(StockObjects.HOLLOW_BRUSH));
+            Gdi32.SelectObject(alphadc, Gdi32.GetStockObject(StockObjects.NULL_PEN));
+            Gdi32.Rectangle(alphadc, 0, 0, rc.right - rc.left, rc.bottom - rc.top);
 
-            if (WinApi.DwmIsCompositionEnabled())
+            if (DwmApi.DwmIsCompositionEnabled())
             {
-                var bitmap = WinApi.CreateDIBSection(memdc, ref dib, WinApi.DIB_RGB_COLORS, 0, IntPtr.Zero, 0);
-                var oldBitmap = WinApi.SelectObject(memdc, bitmap);
+                var bitmap = Gdi32.CreateDIBSection(memdc, ref dib, DIB_RGB_COLORS, 0, IntPtr.Zero, 0);
+                var oldBitmap = Gdi32.SelectObject(memdc, bitmap);
 
-                WinApi.DTTOPTS opts = new WinApi.DTTOPTS();
-                opts.dwSize = (UInt32)Marshal.SizeOf(typeof(WinApi.DTTOPTS));
-                opts.dwFlags = WinApi.DTT_COMPOSITED | WinApi.DTT_TEXTCOLOR;
+                var opts = new DTTOPTS();
+                opts.dwSize = (UInt32)Marshal.SizeOf(typeof(DTTOPTS));
+                opts.dwFlags = DTT_COMPOSITED | DTT_TEXTCOLOR;
                 opts.crText = textColor;
 
-                WinApi.DrawThemeParentBackground(Handle, memdc, ref rc);
+                UxTheme.DrawThemeParentBackground(Handle, memdc, ref rc);
 
                 if (this.DrawOutline)
                 {
-                    WinApi.SelectObject(memdc, WinApi.GetStockObject(WinApi.StockObjects.HOLLOW_BRUSH));
-                    WinApi.SelectObject(memdc, WinApi.GetStockObject(WinApi.StockObjects.WHITE_PEN));
-                    WinApi.Rectangle(memdc, 0, 0, rc.right - rc.left, rc.bottom - rc.top);
+                    Gdi32.SelectObject(memdc, Gdi32.GetStockObject(StockObjects.HOLLOW_BRUSH));
+                    Gdi32.SelectObject(memdc, Gdi32.GetStockObject(StockObjects.WHITE_PEN));
+                    Gdi32.Rectangle(memdc, 0, 0, rc.right - rc.left, rc.bottom - rc.top);
                 }
 
-                WinApi.DrawThemeTextEx(hTheme, alphadc, 0, 0, text, text.Length, textFlags, ref rc, ref opts);
+                UxTheme.DrawThemeTextEx(hTheme, alphadc, 0, 0, text, text.Length, textFlags, ref rc, ref opts);
 
-                var blendFunc = new WinApi.BLENDFUNCTION(WinApi.AC_SRC_OVER, 0, ForeColor.A, WinApi.AC_SRC_ALPHA);
-                WinApi.AlphaBlend(memdc, rc.left, rc.top, rc.right - rc.left, rc.bottom - rc.top, alphadc,
+                var blendFunc = new BLENDFUNCTION(AC_SRC_OVER, 0, ForeColor.A, AC_SRC_ALPHA);
+                Gdi32.AlphaBlend(memdc, rc.left, rc.top, rc.right - rc.left, rc.bottom - rc.top, alphadc,
                     0, 0, rc.right - rc.left, rc.bottom - rc.top,
                     blendFunc);
 
-                WinApi.BitBlt(hdc, rc.left, rc.top, rc.right - rc.left, rc.bottom - rc.top, memdc, 0, 0, WinApi.SRCCOPY);
+                Gdi32.BitBlt(hdc, rc.left, rc.top, rc.right - rc.left, rc.bottom - rc.top, memdc, 0, 0, SRCCOPY);
 
-                WinApi.SelectObject(memdc, oldBitmap);
-                WinApi.DeleteObject(bitmap);
+                Gdi32.SelectObject(memdc, oldBitmap);
+                Gdi32.DeleteObject(bitmap);
             }
             else
             {
-                var bitmap = WinApi.CreateCompatibleBitmap(hdc, rc.right, rc.bottom);
-                var oldBitmap = WinApi.SelectObject(memdc, bitmap);
+                var bitmap = Gdi32.CreateCompatibleBitmap(hdc, rc.right, rc.bottom);
+                var oldBitmap = Gdi32.SelectObject(memdc, bitmap);
 
-                var dtp = new WinApi.DRAWTEXTPARAMS();
-                dtp.cbSize = (UInt32)Marshal.SizeOf(typeof(WinApi.DRAWTEXTPARAMS));
+                var dtp = new DRAWTEXTPARAMS();
+                dtp.cbSize = (UInt32)Marshal.SizeOf(typeof(DRAWTEXTPARAMS));
 
-                WinApi.DrawThemeParentBackground(Handle, memdc, ref rc);
+                UxTheme.DrawThemeParentBackground(Handle, memdc, ref rc);
 
                 if (this.DrawOutline)
                 {
-                    WinApi.SelectObject(memdc, WinApi.GetStockObject(WinApi.StockObjects.HOLLOW_BRUSH));
-                    WinApi.SelectObject(memdc, WinApi.GetStockObject(WinApi.StockObjects.WHITE_PEN));
-                    WinApi.Rectangle(memdc, 0, 0, rc.right - rc.left, rc.bottom - rc.top);
+                    Gdi32.SelectObject(memdc, Gdi32.GetStockObject(StockObjects.HOLLOW_BRUSH));
+                    Gdi32.SelectObject(memdc, Gdi32.GetStockObject(StockObjects.WHITE_PEN));
+                    Gdi32.Rectangle(memdc, 0, 0, rc.right - rc.left, rc.bottom - rc.top);
                 }
 
                 //WinApi.SetTextColor(alphadc, textColor);
@@ -247,39 +248,39 @@ namespace Deskband.Controls
                 //    0, 0, rc.right - rc.left, rc.bottom - rc.top,
                 //    blendFunc);
 
-                WinApi.SetTextColor(memdc, textColor);
-                WinApi.SetBkMode(memdc, WinApi.TRANSPARENT);
-                WinApi.DrawTextEx(memdc, text, text.Length, ref rc, textFlags, ref dtp);
+                Gdi32.SetTextColor(memdc, textColor);
+                Gdi32.SetBkMode(memdc, TRANSPARENT);
+                User32.DrawTextEx(memdc, text, text.Length, ref rc, textFlags, ref dtp);
 
-                WinApi.BitBlt(hdc, rc.left, rc.top, rc.right - rc.left, rc.bottom - rc.top, memdc, 0, 0, WinApi.SRCCOPY);
+                Gdi32.BitBlt(hdc, rc.left, rc.top, rc.right - rc.left, rc.bottom - rc.top, memdc, 0, 0, SRCCOPY);
 
-                WinApi.SelectObject(memdc, oldBitmap);
-                WinApi.DeleteObject(bitmap);
+                Gdi32.SelectObject(memdc, oldBitmap);
+                Gdi32.DeleteObject(bitmap);
             }
 
             // Cleanup
 
-            WinApi.SelectObject(alphadc, oldalphaBitmap);
-            WinApi.DeleteObject(alphabitmap);
-            WinApi.ReleaseDC(alphadc, -1);
-            WinApi.DeleteDC(alphadc);
+            Gdi32.SelectObject(alphadc, oldalphaBitmap);
+            Gdi32.DeleteObject(alphabitmap);
+            Gdi32.ReleaseDC(alphadc, -1);
+            Gdi32.DeleteDC(alphadc);
 
-            WinApi.SelectObject(memdc, oldFont);
+            Gdi32.SelectObject(memdc, oldFont);
             //WinApi.DeleteObject(hFont);
 
-            WinApi.CloseThemeData(hTheme);
+            UxTheme.CloseThemeData(hTheme);
 
-            WinApi.ReleaseDC(memdc, -1);
-            WinApi.DeleteDC(memdc);
+            Gdi32.ReleaseDC(memdc, -1);
+            Gdi32.DeleteDC(memdc);
 
             e.Graphics.ReleaseHdc(hdc);
         }
 
         protected override void WndProc(ref Message m)
         {
-            if (m.Msg == WinApi.WM_NCHITTEST)
+            if (m.Msg == WM_NCHITTEST)
             {
-                m.Result = (IntPtr)WinApi.HTTRANSPARENT;
+                m.Result = (IntPtr)HTTRANSPARENT;
             }
             else
             {

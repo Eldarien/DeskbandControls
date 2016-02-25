@@ -1,6 +1,6 @@
 ﻿using Deskband.Common;
 using Deskband.Communication;
-using Deskband.Native;
+using Deskband.Core.WinApi;
 using Deskband.Settings;
 using System;
 using System.Collections.Generic;
@@ -37,9 +37,6 @@ namespace Deskband.Controls
         private MessageForm _messageForm;
         private Container _container;
         private Timer _scrollTimer;
-
-        //private Timer _autoupdateTimer;
-        //private Checker _autoupdateChecker;
 
         // Visible controls
 
@@ -94,9 +91,9 @@ namespace Deskband.Controls
 
         protected override void WndProc(ref Message m)
         {
-            if (m.Msg == WinApi.WM_NCHITTEST)
+            if (m.Msg == WinApiTypes.WM_NCHITTEST)
             {
-                m.Result = (IntPtr)WinApi.HTTRANSPARENT;
+                m.Result = (IntPtr)WinApiTypes.HTTRANSPARENT;
             }
             else
             {

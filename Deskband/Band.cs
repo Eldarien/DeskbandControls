@@ -1,7 +1,9 @@
-﻿using Deskband.Common;
-using Deskband.Common.Extensions;
+﻿using Deskband.BandIntegration;
+using Deskband.Common;
 using Deskband.Controls;
-using Deskband.Native;
+using Deskband.Core.Interfaces;
+using Deskband.Core.WinApi;
+using Deskband.Extensions;
 using Ninject;
 using System;
 using System.Collections.Generic;
@@ -18,6 +20,7 @@ namespace Deskband
     [BandObject(Band.ClassTitle)]
     public class Band : BandObject
     {
+        public static readonly Guid ModuleId = Guid.Parse("{2A5AF4C8-25AE-4276-8E29-D9E2198E7114}");
         public const String ClassGuid = "9690ED28-CD24-4534-B380-77103A4E7774";
         public const String ClassTitle = "Deskband Controls";
 
@@ -36,15 +39,18 @@ namespace Deskband
             Title = Band.ClassTitle;
             BackColor = Color.Transparent;
 
-            _taskbarWindowHandle = WinApi.FindWindow("Shell_TrayWnd", null);
+            _taskbarWindowHandle = User32.FindWindow("Shell_TrayWnd", null);
 
             try
             {
                 AssemblyResolver.Initialize();
 
                 _kernel = AppConfig.InitializeKernel(this);
-                var app = _kernel.Get<App>();
-                app.Run();
+                foreach (var m in _kernel.GetAll<IModule>())
+                {
+                    m.Initialize(_kernel);
+                }
+                _kernel.Get<App>().Run();
             }
             catch (Exception ex)
             {
@@ -54,21 +60,21 @@ namespace Deskband
 
         protected override void WndProc(ref Message m)
         {
-            if (m.Msg == WinApi.WM_NCHITTEST)
+            if (m.Msg == WinApiTypes.WM_NCHITTEST)
             {
                 int x = ((int)m.LParam).LowWord();
                 int y = ((int)m.LParam).HighWord();
 
-                var point = new WinApi.POINT { X = x, Y = y };
-                if (WinApi.ScreenToClient(_taskbarWindowHandle, ref point))
+                var point = new WinApiTypes.POINT { X = x, Y = y };
+                if (User32.ScreenToClient(_taskbarWindowHandle, ref point))
                 {
-                    WinApi.RECT r;
-                    WinApi.GetWindowRect(_taskbarWindowHandle, out r);
+                    WinApiTypes.RECT r;
+                    User32.GetWindowRect(_taskbarWindowHandle, out r);
                     bool isHorizontal = (r.right - r.left) > (r.bottom - r.top);
 
                     if (isHorizontal && point.Y == 0 || !isHorizontal && point.X == 0)
                     {
-                        m.Result = (IntPtr)WinApi.HTTRANSPARENT;
+                        m.Result = (IntPtr)WinApiTypes.HTTRANSPARENT;
                         return;
                     }
                 }

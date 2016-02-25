@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Deskband.Common.Extensions
+namespace Deskband.Extensions
 {
     public static class IntExtensions
     {

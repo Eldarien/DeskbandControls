@@ -1,4 +1,4 @@
-﻿using Deskband.Native;
+﻿using Deskband.Core.WinApi;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -16,7 +16,7 @@ namespace Deskband.Console
         {
             InitializeComponent();
 
-            tbLines.GotFocus += (s, e) => WinApi.HideCaret(tbLines.Handle);
+            tbLines.GotFocus += (s, e) => User32.HideCaret(tbLines.Handle);
         }
 
         public void AddLine(string line)

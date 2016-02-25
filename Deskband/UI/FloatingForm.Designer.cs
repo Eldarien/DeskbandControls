@@ -1,4 +1,4 @@
-﻿namespace Deskband.Controls
+﻿namespace Deskband.UI
 {
     partial class FloatingForm
     {

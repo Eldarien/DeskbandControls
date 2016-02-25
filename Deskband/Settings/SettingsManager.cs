@@ -1,5 +1,5 @@
 ﻿using Deskband.Common;
-using Deskband.Common.Extensions;
+using Deskband.Extensions;
 using Deskband.Settings.Models;
 using DeskbandBridge;
 using Newtonsoft.Json;

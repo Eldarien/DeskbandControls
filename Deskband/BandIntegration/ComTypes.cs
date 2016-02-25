@@ -5,7 +5,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace Deskband.Native
+namespace Deskband.BandIntegration
 {
     public static class ComTypes
     {

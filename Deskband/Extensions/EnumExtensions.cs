@@ -5,14 +5,14 @@ using System.Linq;
 using System.Reflection;
 using System.Web;
 
-namespace Deskband.Common.Extensions
+namespace Deskband.Extensions
 {
     public static class ExtensionMethods
     {
         /// <summary>
         /// Returns description of enum item marked with "Description" attribute
         /// </summary>
-        public static string ToDescription(this Enum en) //ext method
+        public static string ToDescription(this Enum en)
         {
             Type type = en.GetType();
             MemberInfo[] memInfo = type.GetMember(en.ToString());

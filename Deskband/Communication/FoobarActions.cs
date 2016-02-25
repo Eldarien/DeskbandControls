@@ -1,4 +1,4 @@
-﻿using Deskband.Native;
+﻿using Deskband.Core.WinApi;
 using DeskbandBridge;
 using Microsoft.Win32;
 using System;
@@ -30,7 +30,7 @@ namespace Deskband.Communication
 
         private IntPtr GetFoobarPluginMessageWindow()
         {
-            return WinApi.FindWindow(FB2KConstants.FoobarPluginMsgWindowClass, FB2KConstants.FoobarPluginMsgWindowTitle);
+            return User32.FindWindow(FB2KConstants.FoobarPluginMsgWindowClass, FB2KConstants.FoobarPluginMsgWindowTitle);
         }
 
         private void SendCommand(int fb2kCommand, byte[] data = null)
@@ -49,11 +49,11 @@ namespace Deskband.Communication
             {
                 GCHandle pinnedData = GCHandle.Alloc(data, GCHandleType.Pinned);
 
-                WinApi.COPYDATASTRUCT cds;
+                WinApiTypes.COPYDATASTRUCT cds;
                 cds.dwData = (IntPtr)fb2kCommand;
                 cds.cbData = data == null ? 0 : data.Length;
                 cds.lpData = data == null ? IntPtr.Zero : pinnedData.AddrOfPinnedObject();
-                WinApi.SendMessage(fw, WinApi.WM_COPYDATA, _msgFormHandle, ref cds);
+                User32.SendMessage(fw, WinApiTypes.WM_COPYDATA, _msgFormHandle, ref cds);
 
                 pinnedData.Free();
             }
@@ -133,7 +133,7 @@ namespace Deskband.Communication
 
         public void ActivateFoobar()
         {
-            var fw = WinApi.FindWindow(FB2KConstants.FoobarPluginMsgWindowClass, FB2KConstants.FoobarPluginMsgWindowTitle);
+            var fw = User32.FindWindow(FB2KConstants.FoobarPluginMsgWindowClass, FB2KConstants.FoobarPluginMsgWindowTitle);
             if (fw == IntPtr.Zero)
             {
                 string installPath = (string)Registry.GetValue(@"HKEY_LOCAL_MACHINE\SOFTWARE\foobar2000", "InstallDir", null);
@@ -142,7 +142,7 @@ namespace Deskband.Communication
                     string foobarExe = Path.Combine(installPath, "foobar2000.exe");
                     if (File.Exists(foobarExe))
                     {
-                        WinApi.ShellExecute(IntPtr.Zero, "open", foobarExe, null, null, WinApi.SW_SHOWNORMAL);
+                        Shell32.ShellExecute(IntPtr.Zero, "open", foobarExe, null, null, WinApiTypes.SW_SHOWNORMAL);
                     }
                 }
             }

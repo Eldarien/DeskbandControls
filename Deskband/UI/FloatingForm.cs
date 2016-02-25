@@ -1,28 +1,27 @@
 ﻿using Deskband.Common;
-using Deskband.Common.Extensions;
-using Deskband.Native;
+using Deskband.Configuration;
+using Deskband.Core.Interfaces;
+using Deskband.Core.WinApi;
+using Deskband.Extensions;
 using Deskband.Settings;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 
-namespace Deskband.Controls
+namespace Deskband.UI
 {
     public partial class FloatingForm : Form
     {
-        private SettingsManager _settings;
+        private IConfigurationProvider _config;
 
         private bool dragging;
         private Point dragAt = Point.Empty;
 
-        public FloatingForm(SettingsManager settings)
+        public FloatingForm(IConfigurationProvider config)
         {
-            _settings = settings;
+            _config = config;
             InitializeComponent();
 
             FormBorderStyle = FormBorderStyle.None;
@@ -55,7 +54,7 @@ namespace Deskband.Controls
 
         private void FloatingForm_Load(object sender, EventArgs e)
         {
-            WinApi.SetWindowPos(Handle, new IntPtr(-1), 0, 0, 0, 0, WinApi.SWP_NOMOVE | WinApi.SWP_NOSIZE);
+            User32.SetWindowPos(Handle, new IntPtr(-1), 0, 0, 0, 0, WinApiTypes.SWP_NOMOVE | WinApiTypes.SWP_NOSIZE);
         }
 
         private void FloatingForm_MouseDown(object sender, MouseEventArgs e)
@@ -87,8 +86,13 @@ namespace Deskband.Controls
         {
             if (Visible)
             {
-                _settings.Settings.FloatingWindow.X = Location.X;
-                _settings.Settings.FloatingWindow.Y = Location.Y;
+                var cfg = _config.GetConfiguration<ConfigurationModel>(Band.ModuleId, null);
+                if (cfg != null)
+                {
+                    cfg.FloatingWindowSettings.X = Location.X;
+                    cfg.FloatingWindowSettings.Y = Location.Y;
+                    _config.UpdateConfiguration(cfg);
+                }
             }
         }
 
@@ -105,21 +109,21 @@ namespace Deskband.Controls
         //    TransparencyKey = BackColor;
         //}
 
-        public void LoadSettings()
+        public void ApplyConfiguration()
         {
-            var fwSettings = _settings.Settings.FloatingWindow;
-            Location = new Point(fwSettings.X, fwSettings.Y);
-            Size = new Size(fwSettings.Width, fwSettings.Height);
-            Opacity = fwSettings.Opacity;
+            var cfg = _config.GetConfiguration<ConfigurationModel>(Band.ModuleId, null);
+
+            Location = new Point(cfg.FloatingWindowSettings.X, cfg.FloatingWindowSettings.Y);
+            Opacity = cfg.FloatingWindowSettings.Opacity;
 
             // Ignore Alpha part of color for form background to prevent crush
-            var backColor = fwSettings.Color.AsDrawingColor();
+            var backColor = cfg.FloatingWindowSettings.Color; //fwSettings.Color.AsDrawingColor();
             BackColor = Color.FromArgb(0xFF, backColor.R, backColor.G, backColor.B);
 
-            if (fwSettings.UseBackgroundImage)
+            if (cfg.FloatingWindowSettings.UseBackgroundImage)
             {
-                BackgroundImage = ImageHelpers.GetImageFromFile(fwSettings.BackgroundImage);
-                BackgroundImageLayout = fwSettings.StretchBackgroundImage ? ImageLayout.Stretch : ImageLayout.None;
+                BackgroundImage = ImageHelpers.GetImageFromFile(cfg.FloatingWindowSettings.BackgroundImagePath);
+                BackgroundImageLayout = cfg.FloatingWindowSettings.StretchBackgroundImage ? ImageLayout.Stretch : ImageLayout.None;
             }
             else
             {
@@ -127,7 +131,7 @@ namespace Deskband.Controls
                 BackgroundImageLayout = ImageLayout.None;
             }
 
-            TransparencyKey = fwSettings.UseTransparencyKey ? Color.Fuchsia : Color.Empty;
+            TransparencyKey = cfg.FloatingWindowSettings.UseTransparencyKey ? Color.Fuchsia : Color.Empty;
         }
     }
 }

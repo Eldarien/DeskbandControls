@@ -1,5 +1,5 @@
 ﻿using Deskband.Common;
-using Deskband.Common.Extensions;
+using Deskband.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;

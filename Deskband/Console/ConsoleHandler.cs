@@ -1,4 +1,5 @@
 ﻿using Deskband.Communication;
+using Deskband.Core.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +8,7 @@ using System.Windows.Forms;
 
 namespace Deskband.Console
 {
-    public class ConsoleHandler : IDisposable
+    public class ConsoleHandler : IDisposable, IConsole
     {
         private List<String> _lines;
         private ConsoleForm _form;

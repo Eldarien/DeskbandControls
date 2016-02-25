@@ -1,32 +1,14 @@
-﻿using Deskband.Native;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace Deskband.Common.Extensions
+namespace Deskband.Extensions
 {
     public static class StringExtensions
     {
-        public static bool IsRtlText(this string s)
-        {
-            int len = s.Length;
-            var info = new WinApi.CharacterTypeFlags[len];
-            if (WinApi.GetStringTypeW(WinApi.CharacterTypes.CT_CTYPE2, s, len, info))
-            {
-                for (int i = 0; i < len; i++)
-                {
-                    if (info[i] == WinApi.CharacterTypeFlags.C2_RIGHTTOLEFT)
-                    {
-                        return true;
-                    }
-                }
-            }
-            return false;
-        }
-
         /// <summary>
         /// Strip illegal chars and reserved words from a candidate filename (should not include the directory path)
         /// </summary>

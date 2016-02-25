@@ -75,9 +75,9 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Newtonsoft.Json.5.0.6\lib\net40\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.8.0.2\lib\net40\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Ninject, Version=3.2.0.0, Culture=neutral, PublicKeyToken=c7192dc5380945e7, processorArchitecture=MSIL">
       <HintPath>..\packages\Ninject.3.2.2.0\lib\net40\Ninject.dll</HintPath>
@@ -103,9 +103,13 @@
   <ItemGroup>
     <Compile Include="App.cs" />
     <Compile Include="Common\Enums.cs" />
-    <Compile Include="Common\Extensions\EnumExtensions.cs" />
-    <Compile Include="Common\Extensions\IntExtensions.cs" />
-    <Compile Include="Common\Extensions\MediaColorExtensions.cs" />
+    <Compile Include="Configuration\ConfigurationModel.cs" />
+    <Compile Include="Configuration\DisplayMode.cs" />
+    <Compile Include="Configuration\FloatingWindowSettings.cs" />
+    <Compile Include="Configuration\ModuleSettings.cs" />
+    <Compile Include="Extensions\EnumExtensions.cs" />
+    <Compile Include="Extensions\IntExtensions.cs" />
+    <Compile Include="Extensions\MediaColorExtensions.cs" />
     <Compile Include="Common\ImageHelpers.cs" />
     <Compile Include="Common\JsonHelpers.cs" />
     <Compile Include="Common\AssemblyResolver.cs" />
@@ -117,6 +121,7 @@
     <Compile Include="Communication\EventArgsTypes.cs" />
     <Compile Include="Communication\FoobarActions.cs" />
     <Compile Include="Communication\FormatStringIndex.cs" />
+    <Compile Include="Configuration\ConfigurationProvider.cs" />
     <Compile Include="Console\ConsoleForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -137,10 +142,10 @@
     <Compile Include="Controls\ControlHost.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Controls\FloatingForm.cs">
+    <Compile Include="UI\FloatingForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Controls\FloatingForm.Designer.cs">
+    <Compile Include="UI\FloatingForm.Designer.cs">
       <DependentUpon>FloatingForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Controls\MediaTrackbar.cs" />
@@ -150,13 +155,13 @@
     <Compile Include="Band.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Controls\BandObject.cs">
+    <Compile Include="BandIntegration\BandObject.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Controls\BandObjectAttribute.cs" />
-    <Compile Include="Native\ComTypes.cs" />
-    <Compile Include="Common\Extensions\StringExtensions.cs" />
-    <Compile Include="Native\WinApi.cs" />
+    <Compile Include="BandIntegration\BandObjectAttribute.cs" />
+    <Compile Include="Extensions\IEnumerableOfTypeExtensions.cs" />
+    <Compile Include="BandIntegration\ComTypes.cs" />
+    <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Controls\AeroLabel.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -190,7 +195,14 @@
     </Compile>
     <Compile Include="Settings\SettingsViewModel.cs" />
     <Compile Include="AppConfig.cs" />
-    <Compile Include="UIProviders\MenuProvider.cs" />
+    <Compile Include="UI\MenuProvider.cs" />
+    <Compile Include="UI\ControlsContainer.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UI\ModuleContainer.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UI\ModuleContainerEntry.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="DeskbandControls.snk" />
@@ -206,6 +218,10 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Deskband.Core\Deskband.Core.csproj">
+      <Project>{c6b667f2-fd55-4bf6-8266-aef34fdf1f62}</Project>
+      <Name>Deskband.Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\DeskbandBridge\DeskbandBridge.vcxproj">
       <Project>{e8118efe-0f51-4bda-a728-a69636c48631}</Project>
       <Name>DeskbandBridge</Name>
@@ -219,9 +235,6 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="bin\Release\1x1.png" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -257,6 +270,7 @@
   <ItemGroup>
     <None Include="Properties\Images\NoCoverArt.png" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PreBuildEvent>start taskkill /im explorer.exe /f</PreBuildEvent>

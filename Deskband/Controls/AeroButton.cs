@@ -1,6 +1,6 @@
 ﻿using Deskband.Common;
-using Deskband.Common.Extensions;
-using Deskband.Native;
+using Deskband.Core.WinApi;
+using Deskband.Extensions;
 using Deskband.Properties;
 using Deskband.Settings.Models;
 using System;
@@ -11,6 +11,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using static Deskband.Core.WinApi.WinApiTypes;
 
 namespace Deskband.Controls
 {
@@ -30,7 +31,7 @@ namespace Deskband.Controls
 
         public override void Refresh()
         {
-            WinApi.InvalidateRect(this.Handle, IntPtr.Zero, false);
+            User32.InvalidateRect(this.Handle, IntPtr.Zero, false);
         }
 
         public AeroButton()
@@ -42,14 +43,14 @@ namespace Deskband.Controls
 
         protected override void OnPaint(PaintEventArgs e)
         {
-            var rc = new WinApi.RECT(ClientRectangle);
+            var rc = new RECT(ClientRectangle);
             var hdc = e.Graphics.GetHdc();
-            WinApi.DrawThemeParentBackground(Handle, hdc, ref rc);
+            UxTheme.DrawThemeParentBackground(Handle, hdc, ref rc);
             if (this.DrawOutline)
             {
-                WinApi.SelectObject(hdc, WinApi.GetStockObject(WinApi.StockObjects.HOLLOW_BRUSH));
-                WinApi.SelectObject(hdc, WinApi.GetStockObject(WinApi.StockObjects.WHITE_PEN));
-                WinApi.Rectangle(hdc, 0, 0, rc.right - rc.left, rc.bottom - rc.top);
+                Gdi32.SelectObject(hdc, Gdi32.GetStockObject(StockObjects.HOLLOW_BRUSH));
+                Gdi32.SelectObject(hdc, Gdi32.GetStockObject(StockObjects.WHITE_PEN));
+                Gdi32.Rectangle(hdc, 0, 0, rc.right - rc.left, rc.bottom - rc.top);
             }
             e.Graphics.ReleaseHdc(hdc);
 
@@ -77,7 +78,7 @@ namespace Deskband.Controls
             if (e.Button == MouseButtons.Left)
             {
                 buttonState = ButtonStateType.Pressed;
-                WinApi.InvalidateRect(this.Handle, IntPtr.Zero, false);
+                User32.InvalidateRect(this.Handle, IntPtr.Zero, false);
             }
         }
 
@@ -88,7 +89,7 @@ namespace Deskband.Controls
             if (e.Button == MouseButtons.Left)
             {
                 buttonState = ButtonStateType.Normal;
-                WinApi.InvalidateRect(this.Handle, IntPtr.Zero, false);
+                User32.InvalidateRect(this.Handle, IntPtr.Zero, false);
             }
         }
 

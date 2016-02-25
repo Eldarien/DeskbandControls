@@ -1,4 +1,4 @@
-﻿using Deskband.Native;
+﻿using Deskband.Core.WinApi;
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
@@ -8,8 +8,9 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
+using static Deskband.Core.WinApi.WinApiTypes;
 
-namespace Deskband.Controls
+namespace Deskband.BandIntegration
 {
     public class BandObject : UserControl,
         ComTypes.IOleWindow, ComTypes.IDockingWindow,
@@ -293,8 +294,8 @@ namespace Deskband.Controls
             if (this.BackColor == Color.Transparent)
             {
                 IntPtr hdc = e.Graphics.GetHdc();
-                WinApi.RECT rc = new WinApi.RECT(e.ClipRectangle);
-                WinApi.DrawThemeParentBackground(this.Handle, hdc, ref rc);
+                RECT rc = new RECT(e.ClipRectangle);
+                UxTheme.DrawThemeParentBackground(this.Handle, hdc, ref rc);
                 e.Graphics.ReleaseHdc(hdc);
             }
             else

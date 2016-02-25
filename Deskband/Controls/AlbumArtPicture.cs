@@ -1,5 +1,5 @@
 ﻿using Deskband.Common;
-using Deskband.Native;
+using Deskband.Core.WinApi;
 using Deskband.Properties;
 using Deskband.Settings.Models;
 using System;
@@ -20,9 +20,9 @@ namespace Deskband.Controls
 
         protected override void WndProc(ref Message m)
         {
-            if (m.Msg == WinApi.WM_NCHITTEST)
+            if (m.Msg == WinApiTypes.WM_NCHITTEST)
             {
-                m.Result = (IntPtr)WinApi.HTTRANSPARENT;
+                m.Result = (IntPtr)WinApiTypes.HTTRANSPARENT;
             }
             else
             {

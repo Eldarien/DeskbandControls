@@ -1,6 +1,6 @@
 ﻿using Deskband.Common;
-using Deskband.Common.Extensions;
-using Deskband.Native;
+using Deskband.Core.WinApi;
+using Deskband.Extensions;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -10,6 +10,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
+using static Deskband.Core.WinApi.WinApiTypes;
 
 namespace Deskband.Controls
 {
@@ -55,7 +56,7 @@ namespace Deskband.Controls
             set
             {
                 position = value;
-                WinApi.InvalidateRect(this.Handle, IntPtr.Zero, false);
+                User32.InvalidateRect(this.Handle, IntPtr.Zero, false);
             }
         }
 
@@ -79,123 +80,123 @@ namespace Deskband.Controls
             if (BackgroundColor.R == 0 && BackgroundColor.G == 0 && BackgroundColor.B == 0)
                 BackgroundColor = Color.FromArgb(BackgroundColor.A, 1, 1, 1);
 
-            var color = new WinApi.COLORREF(ForeColor);
-            var backgroundColor = new WinApi.COLORREF(BackgroundColor);
-            var rc = new WinApi.RECT(ClientRectangle);
+            var color = new COLORREF(ForeColor);
+            var backgroundColor = new COLORREF(BackgroundColor);
+            var rc = new RECT(ClientRectangle);
             var hdc = e.Graphics.GetHdc();
 
-            var memdc = WinApi.CreateCompatibleDC(hdc);
+            var memdc = Gdi32.CreateCompatibleDC(hdc);
 
-            var dib = new WinApi.BITMAPINFO();
-            dib.bmiHeader.biSize = Marshal.SizeOf(typeof(WinApi.BITMAPINFOHEADER));
+            var dib = new BITMAPINFO();
+            dib.bmiHeader.biSize = Marshal.SizeOf(typeof(BITMAPINFOHEADER));
             dib.bmiHeader.biHeight = -(rc.bottom - rc.top); // negative because DrawThemeTextEx() uses a top-down DIB
             dib.bmiHeader.biWidth = rc.right - rc.left;
             dib.bmiHeader.biPlanes = 1;
             dib.bmiHeader.biBitCount = 32;
-            dib.bmiHeader.biCompression = WinApi.BI_RGB;
+            dib.bmiHeader.biCompression = BI_RGB;
 
-            var bitmap = WinApi.CreateDIBSection(memdc, ref dib, WinApi.DIB_RGB_COLORS, 0, IntPtr.Zero, 0);
-            var oldBitmap = WinApi.SelectObject(memdc, bitmap);
+            var bitmap = Gdi32.CreateDIBSection(memdc, ref dib, DIB_RGB_COLORS, 0, IntPtr.Zero, 0);
+            var oldBitmap = Gdi32.SelectObject(memdc, bitmap);
 
             // background & outline
-            WinApi.DrawThemeParentBackground(Handle, memdc, ref rc);
+            UxTheme.DrawThemeParentBackground(Handle, memdc, ref rc);
             if (this.DrawOutline)
             {
-                WinApi.SelectObject(memdc, WinApi.GetStockObject(WinApi.StockObjects.HOLLOW_BRUSH));
-                WinApi.SelectObject(memdc, WinApi.GetStockObject(WinApi.StockObjects.WHITE_PEN));
-                WinApi.Rectangle(memdc, 0, 0, rc.right - rc.left, rc.bottom - rc.top);
+                Gdi32.SelectObject(memdc, Gdi32.GetStockObject(StockObjects.HOLLOW_BRUSH));
+                Gdi32.SelectObject(memdc, Gdi32.GetStockObject(StockObjects.WHITE_PEN));
+                Gdi32.Rectangle(memdc, 0, 0, rc.right - rc.left, rc.bottom - rc.top);
             }
 
             // Redraw background from memdc to dc
             //WinApi.BitBlt(hdc, rc.left, rc.top, rc.right - rc.left, rc.bottom - rc.top, memdc, 0, 0, WinApi.SRCCOPY);
 
             // draw trackbar
-            var alphadc = WinApi.CreateCompatibleDC(hdc);
-            var alphabitmap = WinApi.CreateDIBSection(alphadc, ref dib, WinApi.DIB_RGB_COLORS, 0, IntPtr.Zero, 0);
-            var oldalphaBitmap = WinApi.SelectObject(alphadc, alphabitmap);
-            WinApi.SelectObject(alphadc, WinApi.GetStockObject(WinApi.StockObjects.HOLLOW_BRUSH));
-            WinApi.SelectObject(alphadc, WinApi.GetStockObject(WinApi.StockObjects.NULL_PEN));
-            WinApi.Rectangle(alphadc, 0, 0, rc.right - rc.left, rc.bottom - rc.top);
+            var alphadc = Gdi32.CreateCompatibleDC(hdc);
+            var alphabitmap = Gdi32.CreateDIBSection(alphadc, ref dib, DIB_RGB_COLORS, 0, IntPtr.Zero, 0);
+            var oldalphaBitmap = Gdi32.SelectObject(alphadc, alphabitmap);
+            Gdi32.SelectObject(alphadc, Gdi32.GetStockObject(StockObjects.HOLLOW_BRUSH));
+            Gdi32.SelectObject(alphadc, Gdi32.GetStockObject(StockObjects.NULL_PEN));
+            Gdi32.Rectangle(alphadc, 0, 0, rc.right - rc.left, rc.bottom - rc.top);
             InternalOnPaint(alphadc, rc, color, backgroundColor);
 
             // Fix alpha channel
             var rgbColor = (color.ColorDWORD & 0x000000FF) << 16 | (color.ColorDWORD & 0x0000FF00) | (color.ColorDWORD & 0x00FF0000) >> 16;
             var rgbBackgroundColor = (backgroundColor.ColorDWORD & 0x000000FF) << 16 | (backgroundColor.ColorDWORD & 0x0000FF00) | (backgroundColor.ColorDWORD & 0x00FF0000) >> 16;
-            var pixels = new WinApi.COLORREF[Width * Height];
-            WinApi.GetDIBits(alphadc, alphabitmap, 0, (uint)Height, pixels, ref dib, 0);
+            var pixels = new COLORREF[Width * Height];
+            Gdi32.GetDIBits(alphadc, alphabitmap, 0, (uint)Height, pixels, ref dib, 0);
             for (int i = 0; i < pixels.Length; i++)
             {
                 if (pixels[i].ColorDWORD == rgbColor || pixels[i].ColorDWORD == rgbBackgroundColor && UseBackgroundColor)
                     pixels[i].ColorDWORD |= 0xFF000000;
             }
-            WinApi.SetDIBits(alphadc, alphabitmap, 0, (uint)Height, pixels, ref dib, 0);
+            Gdi32.SetDIBits(alphadc, alphabitmap, 0, (uint)Height, pixels, ref dib, 0);
 
-            var blendFunc = new WinApi.BLENDFUNCTION(WinApi.AC_SRC_OVER, 0, ForeColor.A, WinApi.AC_SRC_ALPHA);
-            WinApi.AlphaBlend(memdc, rc.left, rc.top, rc.right - rc.left, rc.bottom - rc.top, alphadc,
+            var blendFunc = new BLENDFUNCTION(AC_SRC_OVER, 0, ForeColor.A, AC_SRC_ALPHA);
+            Gdi32.AlphaBlend(memdc, rc.left, rc.top, rc.right - rc.left, rc.bottom - rc.top, alphadc,
                 0, 0, rc.right - rc.left, rc.bottom - rc.top,
                 blendFunc);
 
-            WinApi.BitBlt(hdc, rc.left, rc.top, rc.right - rc.left, rc.bottom - rc.top, memdc, 0, 0, WinApi.SRCCOPY);
+            Gdi32.BitBlt(hdc, rc.left, rc.top, rc.right - rc.left, rc.bottom - rc.top, memdc, 0, 0, SRCCOPY);
 
-            WinApi.SelectObject(memdc, oldBitmap);
-            WinApi.DeleteObject(bitmap);
+            Gdi32.SelectObject(memdc, oldBitmap);
+            Gdi32.DeleteObject(bitmap);
 
-            WinApi.SelectObject(alphadc, oldalphaBitmap);
-            WinApi.DeleteObject(alphabitmap);
-            WinApi.ReleaseDC(alphadc, -1);
-            WinApi.DeleteDC(alphadc);
+            Gdi32.SelectObject(alphadc, oldalphaBitmap);
+            Gdi32.DeleteObject(alphabitmap);
+            Gdi32.ReleaseDC(alphadc, -1);
+            Gdi32.DeleteDC(alphadc);
 
-            WinApi.ReleaseDC(memdc, -1);
-            WinApi.DeleteDC(memdc);
+            Gdi32.ReleaseDC(memdc, -1);
+            Gdi32.DeleteDC(memdc);
 
             e.Graphics.ReleaseHdc(hdc);
         }
 
-        private void InternalOnPaint(IntPtr hdc, WinApi.RECT rc, WinApi.COLORREF color, WinApi.COLORREF backgroundColor)
+        private void InternalOnPaint(IntPtr hdc, RECT rc, COLORREF color, COLORREF backgroundColor)
         {
-            var pen = WinApi.CreatePen(WinApi.PenStyle.PS_SOLID, 0, color);
-            var oldPen = WinApi.SelectObject(hdc, pen);
+            var pen = Gdi32.CreatePen(PenStyle.PS_SOLID, 0, color);
+            var oldPen = Gdi32.SelectObject(hdc, pen);
 
             if (!HideBorders)
             {
-                WinApi.SelectObject(hdc, WinApi.GetStockObject(WinApi.StockObjects.HOLLOW_BRUSH));
-                WinApi.RoundRect(hdc, rc.left, rc.top, rc.right, rc.bottom, 3, 3);
+                Gdi32.SelectObject(hdc, Gdi32.GetStockObject(StockObjects.HOLLOW_BRUSH));
+                Gdi32.RoundRect(hdc, rc.left, rc.top, rc.right, rc.bottom, 3, 3);
             }
 
             int offset = HideBorders ? 0 : 2;
 
             if (UseBackgroundColor)
             {
-                var backgroundPen = WinApi.CreatePen(WinApi.PenStyle.PS_SOLID, 0, backgroundColor);
-                var backgroundOldPen = WinApi.SelectObject(hdc, backgroundPen);
+                var backgroundPen = Gdi32.CreatePen(PenStyle.PS_SOLID, 0, backgroundColor);
+                var backgroundOldPen = Gdi32.SelectObject(hdc, backgroundPen);
 
-                var backgroundBrush = WinApi.CreateSolidBrush(backgroundColor);
-                var backgroundOldBrush = WinApi.SelectObject(hdc, backgroundBrush);
+                var backgroundBrush = Gdi32.CreateSolidBrush(backgroundColor);
+                var backgroundOldBrush = Gdi32.SelectObject(hdc, backgroundBrush);
 
-                WinApi.Rectangle(hdc, rc.left + offset, rc.top + offset, rc.right - offset, rc.bottom - offset);
+                Gdi32.Rectangle(hdc, rc.left + offset, rc.top + offset, rc.right - offset, rc.bottom - offset);
 
-                WinApi.SelectObject(hdc, backgroundOldPen);
-                WinApi.DeleteObject(backgroundPen);
+                Gdi32.SelectObject(hdc, backgroundOldPen);
+                Gdi32.DeleteObject(backgroundPen);
 
-                WinApi.SelectObject(hdc, backgroundOldBrush);
-                WinApi.DeleteObject(backgroundBrush);
+                Gdi32.SelectObject(hdc, backgroundOldBrush);
+                Gdi32.DeleteObject(backgroundBrush);
             }
 
-            var brush = WinApi.CreateSolidBrush(color);
-            var oldBrush = WinApi.SelectObject(hdc, brush);
+            var brush = Gdi32.CreateSolidBrush(color);
+            var oldBrush = Gdi32.SelectObject(hdc, brush);
 
             if (this.Range > 0) // Range can be 0 for radio streams
             {
                 int wx = (rc.right - offset * 2) * this.Position / this.Range;
 
-                WinApi.Rectangle(hdc, rc.left + offset, rc.top + offset, wx + offset, rc.bottom - offset);
+                Gdi32.Rectangle(hdc, rc.left + offset, rc.top + offset, wx + offset, rc.bottom - offset);
             }
 
-            WinApi.SelectObject(hdc, oldBrush);
-            WinApi.DeleteObject(brush);
+            Gdi32.SelectObject(hdc, oldBrush);
+            Gdi32.DeleteObject(brush);
 
-            WinApi.SelectObject(hdc, oldPen);
-            WinApi.DeleteObject(pen);
+            Gdi32.SelectObject(hdc, oldPen);
+            Gdi32.DeleteObject(pen);
         }
 
         private void SetPositionByMouseX(int x)
