@@ -8,5 +8,6 @@ namespace Deskband.Core.Interfaces
     public interface IConsole
     {
         void AddLine(string line);
+        void AddDebugLine(string line);
     }
 }

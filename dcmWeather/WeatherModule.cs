@@ -17,23 +17,36 @@ namespace dcmWeather
         public string Name { get { return ModuleName; } }
 
         private IConsole _console;
+        private IMenuProvider _menuProvider;
 
-        public WeatherModule(IConsole console)
+        public WeatherModule(IConsole console, IMenuProvider menuProvider)
         {
             _console = console;
+            _menuProvider = menuProvider;
         }
 
         public void Initialize(IKernel kernel)
         {
             _console.AddLine("Hello console, I am a weather plugin!");
+
+            var gid = _menuProvider.AddItem(ModuleId, null, "Weather Menu Entry", null);
+            _menuProvider.AddItem(ModuleId, gid, "Submenu test 1", null);
+            _menuProvider.AddItem(ModuleId, gid, "Submenu test 2", null);
+
+            _menuProvider.AddItem(ModuleId, null, "-", null);
+        }
+
+        public void Dispose()
+        {
         }
 
         public void ApplyConfiguration()
         {
         }
 
-        public void Dispose()
+        public void DoubleClick()
         {
+            _console.AddDebugLine("Weather plugin was double-clicked!");
         }
     }
 }

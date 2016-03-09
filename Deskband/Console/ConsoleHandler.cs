@@ -1,4 +1,4 @@
-﻿using Deskband.Communication;
+﻿using Deskband.Core.EventArguments;
 using Deskband.Core.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -10,14 +10,14 @@ namespace Deskband.Console
 {
     public class ConsoleHandler : IDisposable, IConsole
     {
-        private List<String> _lines;
+        private List<Tuple<string, bool>> _lines;
         private ConsoleForm _form;
 
         public event EventHandler<ValueEventArgs<bool>> OnConsoleToggle;
 
         public ConsoleHandler()
         {
-            _lines = new List<String>();
+            _lines = new List<Tuple<string, bool>>();
         }
 
         private void InitializeForm()
@@ -25,6 +25,15 @@ namespace Deskband.Console
             _form = new ConsoleForm();
             _form.FormClosed += OnFormClosed;
             _form.OnClear += (s, e) => _lines.Clear();
+            _form.OnShowDebugChanged += (s, e) => { _form.Clear(); SendLinesToForm(e.Value); };
+        }
+
+        private void SendLinesToForm(bool includeDebug)
+        {
+            foreach (var line in _lines)
+            {
+                _form.AddLine(line.Item1, line.Item2);
+            }
         }
 
         private void OnFormClosed(object sender, FormClosedEventArgs e)
@@ -60,7 +69,7 @@ namespace Deskband.Console
             else
             {
                 _form.Show();
-                _form.AddLines(_lines);
+                SendLinesToForm(false);
 
                 if (OnConsoleToggle != null)
                     OnConsoleToggle(this, new ValueEventArgs<bool>(true));
@@ -69,10 +78,18 @@ namespace Deskband.Console
 
         public void AddLine(string line)
         {
-            _lines.Add(line);
+            _lines.Add(new Tuple<string, bool>(line, false));
 
             if (_form != null)
-                _form.AddLine(line);
+                _form.AddLine(line, false);
+        }
+
+        public void AddDebugLine(string line)
+        {
+            _lines.Add(new Tuple<string, bool>(line, true));
+
+            if (_form != null)
+                _form.AddLine(line, true);
         }
 
         public void Dispose()

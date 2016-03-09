@@ -13,7 +13,7 @@ namespace Deskband.UI
         public ControlsContainer()
         {
             BackColor = Color.Transparent;
-            Dock = DockStyle.Fill;
+            //Dock = DockStyle.Fill;
         }
 
         protected override void WndProc(ref Message m)

@@ -1,6 +1,7 @@
 ﻿using Deskband.Common;
 using Deskband.Communication;
 using Deskband.Controls;
+using Deskband.Core.EventArguments;
 using Deskband.Core.WinApi;
 using Deskband.Settings;
 using DeskbandBridge;

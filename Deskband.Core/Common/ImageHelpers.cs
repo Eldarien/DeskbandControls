@@ -1,5 +1,4 @@
-﻿using Deskband.Properties;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
@@ -8,8 +7,9 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using Deskband.Core.Properties;
 
-namespace Deskband.Common
+namespace Deskband.Core.Common
 {
     public static class ImageHelpers
     {

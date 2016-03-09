@@ -5,98 +5,140 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using System.Drawing;
 
 namespace Deskband.UI
 {
     public class MenuProvider : IDisposable, IMenuProvider
     {
-        private Dictionary<string, MenuItem> _items = new Dictionary<string, MenuItem>();
-        private Dictionary<string, MenuItem> _groupItems = new Dictionary<string, MenuItem>();
+        private Dictionary<Guid, MenuItemEntry> _entries = new Dictionary<Guid, MenuItemEntry>();
 
-        private Band _band;
-        private FloatingForm _floatingForm;
-        private ConsoleHandler _console;
-        private ContextMenu _contextMenu;
+        private readonly Band _band;
+        private readonly FloatingForm _floatingForm;
+        private readonly ConsoleHandler _console;
+        private readonly ContextMenu _contextMenu;
+        private readonly ModuleContainer _mcontainer;
 
-        public MenuProvider(Band band, FloatingForm floatingForm, ConsoleHandler console)
+        public MenuProvider(Band band, FloatingForm floatingForm, ConsoleHandler console, ModuleContainer mcontainer)
         {
             _band = band;
             _floatingForm = floatingForm;
             _console = console;
+            _mcontainer = mcontainer;
+
             _contextMenu = new ContextMenu();
             _band.ContextMenu = _contextMenu;
             _floatingForm.ContextMenu = _contextMenu;
+
+            _contextMenu.Popup += _contextMenu_Popup;
         }
 
         public void Dispose()
         {
             _contextMenu.Dispose();
+            foreach (var e in _entries)
+            {
+                e.Value.MenuItem.Dispose();
+            }
+            _entries.Clear();
         }
 
-        public string AddItem(string group, string name, Action handler)
+        private MenuItemEntry FindItemEntry(Guid id)
         {
-            if (String.IsNullOrWhiteSpace(name))
-                throw new ArgumentException("Name can not be null or empty", "name");
-
-            var key = String.Format("{0}/{1}", group, name);
-            if (name != "-" && _items.ContainsKey(key))
-                throw new InvalidOperationException(String.Format("Menu item \"{0}\" is already registered", key));
-
-            Menu.MenuItemCollection menuItems;
-            if (!String.IsNullOrEmpty(group))
-            {
-                MenuItem groupItem;
-                if (!_groupItems.TryGetValue(group, out groupItem))
-                {
-                    groupItem = _contextMenu.MenuItems.Add(group);
-                    _groupItems.Add(group, groupItem);
-                }
-                menuItems = groupItem.MenuItems;
-            }
+            MenuItemEntry entry;
+            if (_entries.TryGetValue(id, out entry))
+                return entry;
             else
-            {
-                menuItems = _contextMenu.MenuItems;
-            }
-
-            var item = menuItems.Add(name, (s, ea) => { if (handler != null) { handler(); } });
-            if (name != "-")
-            {
-                _items.Add(key, item);
-            }
-
-            return key;
+                return null;
         }
 
-        public void AddSeparator(string group)
+        private void _contextMenu_Popup(object sender, EventArgs e)
         {
-            AddItem(group, "-", null);
+            var location = _mcontainer.PointToClient(Cursor.Position);
+            var moduleId = _mcontainer.LocateModuleAtPoint(location);
+            SetItemsVisibility(moduleId ?? Guid.Empty);
         }
 
-        public void ClearGroup(string group)
+        public void SetItemsVisibility(Guid moduleId)
         {
-            MenuItem item;
-            if (_items.TryGetValue(group, out item))
+            foreach (var e in _entries.Where(x => x.Value.ModuleId != Guid.Empty))
+                e.Value.MenuItem.Visible = false;
+
+            foreach (var e in _entries.Where(x => x.Value.ModuleId == moduleId))
+                e.Value.MenuItem.Visible = true;
+        }
+
+        public Guid AddItem(Guid moduleId, Guid? parentId, string text, Action handler)
+        {
+            if (String.IsNullOrWhiteSpace(text))
+                throw new ArgumentException("Text can not be null or empty", "text");
+
+            var item = new MenuItem(text, (s, e) => { if (handler != null) { handler(); } });
+            var entry = new MenuItemEntry { Id = Guid.NewGuid(), ModuleId = moduleId, MenuItem = item };
+            item.Tag = entry;
+
+            var parent = parentId != null ? FindItemEntry(parentId.Value) : null;
+            var menuItemsCollection = parent != null ? parent.MenuItem.MenuItems : _contextMenu.MenuItems;
+
+            int? index = null;
+            if (moduleId != Guid.Empty && parentId == null)
             {
-                _contextMenu.MenuItems.Remove(item);
-                foreach (var i in _items.Where(x => x.Key == group || x.Key.StartsWith(group + "/")).ToList())
+                var firstGlobal = _entries.Where(x => x.Value.ModuleId == Guid.Empty).Select(x => x.Value).FirstOrDefault();
+                if (firstGlobal != null)
                 {
-                    _items.Remove(i.Key);
+                    index = firstGlobal.Collection.IndexOf(firstGlobal.MenuItem);
                 }
             }
+
+            if (index != null)
+                menuItemsCollection.Add(index.Value, item);
+            else
+                menuItemsCollection.Add(item);
+
+            entry.Collection = menuItemsCollection;
+
+            _entries.Add(entry.Id, entry);
+            return entry.Id;
         }
 
-        public void SetItemEnabledState(string key, bool isEnabled)
+        public void RemoveItem(Guid id)
         {
-            MenuItem item;
-            if (_items.TryGetValue(key, out item))
-                item.Enabled = isEnabled;
+            var entry = FindItemEntry(id);
+            if (entry != null)
+            {
+                entry.Collection.Remove(entry.MenuItem);
+                entry.MenuItem.Dispose();
+                _entries.Remove(id);
+            }
         }
 
-        public void SetItemCheckedState(string key, bool isChecked)
+        public void ClearByModule(Guid moduleId)
         {
-            MenuItem item;
-            if (_items.TryGetValue(key, out item))
-                item.Checked = isChecked;
+            var entries = _entries.Where(x => x.Value.ModuleId == moduleId).Select(x => x.Value).ToList();
+            foreach (var entry in entries)
+            {
+                entry.Collection.Remove(entry.MenuItem);
+                entry.MenuItem.Dispose();
+                _entries.Remove(entry.Id);
+            }
+        }
+
+        public void SetItemEnabledState(Guid id, bool isEnabled)
+        {
+            var entry = FindItemEntry(id);
+            if (entry != null)
+            {
+                entry.MenuItem.Enabled = isEnabled;
+            }
+        }
+
+        public void SetItemCheckedState(Guid id, bool isChecked)
+        {
+            var entry = FindItemEntry(id);
+            if (entry != null)
+            {
+                entry.MenuItem.Checked = isChecked;
+            }
         }
     }
 }

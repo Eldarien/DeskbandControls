@@ -59,7 +59,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>copy "$(ProjectDir)bin\Release\*.dll" "$(SolutionDir)Output\Bin" /Y</PostBuildEvent>
+    <PostBuildEvent>copy "$(ProjectDir)bin\$(ConfigurationName)\*.dll" "$(SolutionDir)Output\Bin" /Y</PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
     <PreBuildEvent>start taskkill /im explorer.exe /f</PreBuildEvent>

@@ -1,6 +1,5 @@
 ﻿using Deskband.Configuration;
 using Deskband.Console;
-using Deskband.Controls;
 using Deskband.Core.Interfaces;
 using Deskband.Extensions;
 using Deskband.Settings;
@@ -30,15 +29,17 @@ namespace Deskband
             kernel.Bind<IMenuProvider>().To<MenuProvider>();
             kernel.Bind<ModuleContainer, IModuleContainer>().To<ModuleContainer>();
             kernel.Bind<FloatingForm>().ToSelf();
-
+            kernel.Bind<ISizeProvider>().To<SizeProvider>();
 
             kernel.Bind<SettingsManager>().ToSelf();
-            kernel.Bind<ControlHost>().ToSelf();
+            //kernel.Bind<ControlHost>().ToSelf();
 
 
             kernel.Bind<App>().ToSelf();
 
             LoadModules(kernel);
+
+            kernel.Get<ISizeProvider>(); // Initialize size provider
 
             return kernel;
         }

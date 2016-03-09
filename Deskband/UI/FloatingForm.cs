@@ -1,27 +1,28 @@
-﻿using Deskband.Common;
-using Deskband.Configuration;
-using Deskband.Core.Interfaces;
-using Deskband.Core.WinApi;
-using Deskband.Extensions;
-using Deskband.Settings;
-using System;
+﻿using System;
 using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using Deskband.Configuration;
+using Deskband.Core.Common;
+using Deskband.Core.Interfaces;
+using Deskband.Core.WinApi;
+using Deskband.Extensions;
 
 namespace Deskband.UI
 {
     public partial class FloatingForm : Form
     {
         private IConfigurationProvider _config;
+        private IConsole _console;
 
         private bool dragging;
         private Point dragAt = Point.Empty;
 
-        public FloatingForm(IConfigurationProvider config)
+        public FloatingForm(IConfigurationProvider config, IConsole console)
         {
             _config = config;
+            _console = console;
             InitializeComponent();
 
             FormBorderStyle = FormBorderStyle.None;
@@ -86,7 +87,7 @@ namespace Deskband.UI
         {
             if (Visible)
             {
-                var cfg = _config.GetConfiguration<ConfigurationModel>(Band.ModuleId, null);
+                var cfg = _config.GetConfiguration<ConfigurationModel>(Guid.Empty, null);
                 if (cfg != null)
                 {
                     cfg.FloatingWindowSettings.X = Location.X;
@@ -111,7 +112,7 @@ namespace Deskband.UI
 
         public void ApplyConfiguration()
         {
-            var cfg = _config.GetConfiguration<ConfigurationModel>(Band.ModuleId, null);
+            var cfg = _config.GetConfiguration<ConfigurationModel>(Guid.Empty, null);
 
             Location = new Point(cfg.FloatingWindowSettings.X, cfg.FloatingWindowSettings.Y);
             Opacity = cfg.FloatingWindowSettings.Opacity;

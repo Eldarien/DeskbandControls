@@ -1,4 +1,4 @@
-﻿using Deskband.Common;
+﻿using Deskband.Core.EventArguments;
 using Deskband.Core.WinApi;
 using DeskbandBridge;
 using System;
@@ -11,37 +11,23 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
 
-namespace Deskband.Communication
+namespace dcmFoobar2000.Code
 {
     public partial class MessageForm : Form
     {
         public event EventHandler<EventArgs> OnThemeChanged;
-
         public event EventHandler<EventArgs> OnFoobarShow;
-
         public event EventHandler<EventArgs> OnFoobarHide;
-
         public event EventHandler<ValueEventArgs<double>> OnTrackTime;
-
         public event EventHandler<TrackTextEventArgs> OnTrackText;
-
         public event EventHandler<ValueEventArgs<bool>> OnPauseState;
-
         public event EventHandler<EventArgs> OnStop;
-
         public event EventHandler<ValueEventArgs<double>> OnTrackLength;
-
         public event EventHandler<ValueEventArgs<float>> OnTrackVolume;
-
         public event EventHandler<ValueEventArgs<bool>> OnStopAfterCurrentState;
-
         public event EventHandler<ValueEventArgs<Tuple<byte[], bool>>> OnAlbumArt;
-
         public event EventHandler<TrackTextEventArgs> OnFilePath;
-
         public event EventHandler<ValueEventArgs<string>> OnVersion;
-
-        public TextBox DebugTextBox;
 
         public MessageForm()
         {
@@ -49,14 +35,6 @@ namespace Deskband.Communication
 
             this.Tag = this.Handle; // Access this property to force window handle creation
             this.Text = FB2KConstants.DeskbandMsgWindowTitle;
-
-            //this.Width = 400;
-            //this.Height = 300;
-            //DebugTextBox = new TextBox();
-            //DebugTextBox.Multiline = true;
-            //DebugTextBox.Dock = DockStyle.Fill;
-            //Controls.Add(DebugTextBox);
-            //Show();
         }
 
         private bool _locked;
@@ -68,7 +46,7 @@ namespace Deskband.Communication
 
         private void FireEvent<T>(EventHandler<T> eventHandler, T eventArgs) where T : EventArgs
         {
-            if (eventHandler != null)
+            if (!_locked && eventHandler != null)
                 eventHandler(this, eventArgs);
         }
 

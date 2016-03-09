@@ -1,6 +1,5 @@
 ﻿using Deskband.BandIntegration;
 using Deskband.Common;
-using Deskband.Controls;
 using Deskband.Core.Interfaces;
 using Deskband.Core.WinApi;
 using Deskband.Extensions;
@@ -12,6 +11,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
+using Deskband.Core.EventArguments;
 
 namespace Deskband
 {
@@ -20,7 +20,6 @@ namespace Deskband
     [BandObject(Band.ClassTitle)]
     public class Band : BandObject
     {
-        public static readonly Guid ModuleId = Guid.Parse("{2A5AF4C8-25AE-4276-8E29-D9E2198E7114}");
         public const String ClassGuid = "9690ED28-CD24-4534-B380-77103A4E7774";
         public const String ClassTitle = "Deskband Controls";
 
@@ -30,6 +29,7 @@ namespace Deskband
         }
 
         public event EventHandler Close;
+        public event EventHandler<ValueEventArgs<int>> DPIChanged;
 
         private IntPtr _taskbarWindowHandle;
         private IKernel _kernel;
@@ -46,6 +46,13 @@ namespace Deskband
                 AssemblyResolver.Initialize();
 
                 _kernel = AppConfig.InitializeKernel(this);
+
+                using (var g = CreateGraphics())
+                {
+                    if (DPIChanged != null)
+                        DPIChanged(this, new ValueEventArgs<int>((int)g.DpiX));
+                }
+
                 foreach (var m in _kernel.GetAll<IModule>())
                 {
                     m.Initialize(_kernel);
@@ -78,6 +85,13 @@ namespace Deskband
                         return;
                     }
                 }
+            }
+
+            if (m.Msg == WinApiTypes.WM_DPICHANGED)
+            {
+                int dpi = ((int)m.WParam).LowWord();
+                if (DPIChanged != null)
+                    DPIChanged(this, new ValueEventArgs<int>(dpi));
             }
 
             base.WndProc(ref m);

@@ -312,6 +312,7 @@ namespace Deskband.Core.WinApi
         // Device Caps
 
         public const int LOGPIXELSY = 90;
+        public const int USER_DEFAULT_SCREEN_DPI = 96;
 
         // HitTest
 
@@ -352,6 +353,7 @@ namespace Deskband.Core.WinApi
         public const int WM_NCLBUTTONDOWN = 0xA1;
         public const int WM_NCHITTEST = 0x0084;
         public const int WM_COPYDATA = 0x4A;
+        public const int WM_DPICHANGED = 0x02E0;
 
         public struct COPYDATASTRUCT
         {

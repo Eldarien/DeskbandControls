@@ -1,4 +1,4 @@
-﻿namespace Deskband.Communication
+﻿namespace dcmFoobar2000.Code
 {
     partial class MessageForm
     {

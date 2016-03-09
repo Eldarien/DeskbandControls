@@ -28,7 +28,10 @@ namespace Deskband.UI
         public void AddControl(Guid moduleId, Control control, bool isLastChild = false)
         {
             var entry = Entry(moduleId);
-            entry.Container.Controls.Add(control);
+            if (!entry.Container.Controls.Contains(control))
+            {
+                entry.Container.Controls.Add(control);
+            }
             if (isLastChild)
             {
                 entry.Container.Controls.SetChildIndex(control, entry.Container.Controls.Count - 1);
@@ -48,13 +51,13 @@ namespace Deskband.UI
         public void Hide(Guid moduleId)
         {
             Entry(moduleId).Container.Visible = false;
-            UpdateSize();
+            LayoutModules();
         }
 
         public void Show(Guid moduleId)
         {
             Entry(moduleId).Container.Visible = true;
-            UpdateSize();
+            LayoutModules();
         }
 
         public Control AsControl()
@@ -62,22 +65,29 @@ namespace Deskband.UI
             return this;
         }
 
-        public void SetModuleSize(Guid moduleId, Size size)
+        public void PositionModules(Guid moduleId, Size size, Point location)
         {
-            Entry(moduleId).Container.Size = size;
-            UpdateSize();
+            var entry = Entry(moduleId);
+            entry.Container.Size = size;
+            entry.Container.Location = location;
+            LayoutModules();
         }
 
-        private void UpdateSize()
+        private void LayoutModules()
         {
             //TODO: layout controls, then calculate bounding box for visible controls and call OnResize event
-            var entry = _entries.FirstOrDefault(x => x.Container.Visible && x.Container.Size.Width > 0);
-            if (entry != null)
-            {
-                this.Size = entry.Container.Size;
-            }
-            this.OnResize(EventArgs.Empty);
+            var width = _entries.Where(x => x.Container.Visible).Sum(x => x.Container.Size.Width);
+            var height = _entries.Where(x => x.Container.Visible).Max(x => x.Container.Size.Height);
+            this.Size = new Size(width, height);
+            //this.OnResize(EventArgs.Empty);
             this.Refresh();
+        }
+
+        public Guid? LocateModuleAtPoint(Point location)
+        {
+            var container = GetChildAtPoint(location);
+            var entry = _entries.FirstOrDefault(e => e.Container == container);
+            return entry != null ? entry.Id : (Guid?)null;
         }
     }
 }

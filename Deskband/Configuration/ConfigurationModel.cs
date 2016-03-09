@@ -16,12 +16,12 @@ namespace Deskband.Configuration
         {
             return new ConfigurationModel
             {
-                ModuleId = Band.ModuleId,
+                ModuleId = Guid.Empty,
                 DisplayMode = DisplayMode.Deskband,
                 ModulesSettings = modules.Select(x => new ModuleSettings
                 {
                     Id = x.Id,
-                    Width = 100,
+                    Width = 260,
                     Height = 30
                 }).ToList()
             };

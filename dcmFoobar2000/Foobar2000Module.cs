@@ -31,10 +31,16 @@ namespace dcmFoobar2000
         {
             _console.AddLine("Hello console, I am a foobar2000 plugin!");
 
-            kernel.Bind<Actions>().ToSelf();
+            kernel.Bind<MessageForm>().ToSelf();
+            kernel.Bind<Foobar2000Actions>().ToSelf();
             kernel.Bind<Controller>().ToSelf();
 
             _controller = kernel.Get<Controller>();
+        }
+
+        public void Dispose()
+        {
+            _controller.Dispose();
         }
 
         public void ApplyConfiguration()
@@ -42,9 +48,9 @@ namespace dcmFoobar2000
             _controller.ApplyConfiguration();
         }
 
-        public void Dispose()
+        public void DoubleClick()
         {
-            _controller.Dispose();
+            _controller.DoubleClick();
         }
     }
 }

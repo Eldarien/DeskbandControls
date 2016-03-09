@@ -1,30 +1,85 @@
-﻿using Deskband.Core.Interfaces;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Windows.Forms;
+using dcmFoobar2000.Configuration;
+using dcmFoobar2000.Properties;
+using Deskband.Core.Common;
+using Deskband.Core.Controls;
+using Deskband.Core.Interfaces;
+using Deskband.Core.WinApi;
+using DeskbandBridge;
 
 namespace dcmFoobar2000.Code
 {
     public class Controller : IDisposable
     {
+        private Guid _id;
+        private ISizeProvider _sp;
+        private IConsole _console;
         private IConfigurationProvider _config;
         private IMenuProvider _menu;
-        private IModuleContainer _container;
-        private Actions _actions;
+        private IModuleContainer _mcontainer;
+        private Foobar2000Actions _actions;
 
         private ConfigurationModel _cfg;
 
+
+        private MessageForm _messageForm;
+
+        private DisposableContainer _disposable;
+        private Container _container;
+        private Timer _scrollTimer;
+
+        private bool _eventsInitialized;
+
+        private bool _stopped = true;
+        private bool _paused;
+        private bool _stop_after_current;
+
+        // Controls
+
+        private dcPicture _picAlbumArt;
+
+        private dcButton _btnStop;
+        private dcButton _btnPlayPause;
+        private dcButton _btnPrev;
+        private dcButton _btnNext;
+        private dcButton _btnRandom;
+        private dcButton _btnStopAC;
+
+        private dcTrackbar _trbPosition;
+        private dcTrackbar _trbVolume;
+
+        private List<dcLabel> _labels = new List<dcLabel>();
+
+
         public Controller(
+            ISizeProvider sp,
+            IConsole console,
             IConfigurationProvider config,
             IMenuProvider menu,
-            IModuleContainer container,
-            Actions actions)
+            IModuleContainer mcontainer,
+            Foobar2000Actions actions,
+            MessageForm messageForm
+            )
         {
+            _id = Foobar2000Module.ModuleId;
+            _sp = sp;
+            _console = console;
             _config = config;
             _menu = menu;
-            _container = container;
+            _mcontainer = mcontainer;
             _actions = actions;
+            _messageForm = messageForm;
+
+            _disposable = new DisposableContainer();
+            _container = _disposable.Add(new Container());
+            _scrollTimer = _disposable.Add(new Timer(_container));
+            _scrollTimer.Tick += (s, e) => HandleScrollTick();
         }
 
         public void ApplyConfiguration()
@@ -32,57 +87,468 @@ namespace dcmFoobar2000.Code
             _cfg = _config.GetConfiguration(Foobar2000Module.ModuleId, ConfigurationModel.Default);
             _config.UpdateConfiguration(_cfg);
 
+            _scrollTimer.Interval = _cfg.TextScrollSpeed;
+            _scrollTimer.Enabled = _cfg.TextScrollSpeed > 0;
+
             RegisterMenu();
             RegisterControls();
+
+            if (!_eventsInitialized)
+            {
+                InitMessageFormEvents();
+                _eventsInitialized = true;
+            }
+
+            UpdateControlsState();
         }
 
         public void Dispose()
         {
             _config.UpdateConfiguration(_cfg);
+
+            _messageForm.Lock();
+            DestroyControls();
+            _disposable.Dispose();
         }
 
-        private string _miStop;
-        private string _miPlayPause;
-        private string _miPrev;
-        private string _miNext;
-        private string _miRandom;
-        private string _miToggleStopAfterCurrent;
-        private string _miCopyArtistAndTitle;
-        private string _miCopyTitle;
-        private string _miCopyArtist;
-        private string _miOpenContainingFolder;
-        private string _miSearchInInternet;
+        private List<IDisposable> _controls = new List<IDisposable>();
+        private void DestroyControls()
+        {
+            _controls.Reverse();
+            foreach (var x in _controls)
+            {
+                x.Dispose();
+            }
+            _controls.Clear();
+        }
+        private T CreateControl<T>() where T : Control, new()
+        {
+            var control = new T();
+            return AddControl(control);
+        }
+        private T AddControl<T>(T control) where T : Control
+        {
+            _controls.Add(control);
+            return control;
+        }
+
+        private void AddControlToModuleContainer(Control control)
+        {
+            _mcontainer.AddControl(Foobar2000Module.ModuleId, control);
+        }
+
+        private Guid _miStop;
+        private Guid _miPlayPause;
+        private Guid _miPrev;
+        private Guid _miNext;
+        private Guid _miRandom;
+        private Guid _miToggleStopAC;
+        private Guid _miCopyArtistAndTitle;
+        private Guid _miCopyTitle;
+        private Guid _miCopyArtist;
+        private Guid _miOpenContainingFolder;
+        private Guid _miSearchInInternet;
 
         private void RegisterMenu()
         {
-            var group = Foobar2000Module.ModuleName;
-            _menu.ClearGroup(group);
+            //var group = Foobar2000Module.ModuleName;
+            //_menu.ClearGroup(group);
+            _menu.ClearByModule(_id);
 
-            _miStop = _menu.AddItem(group, "Stop", _actions.Stop);
-            _miPlayPause = _menu.AddItem(group, "Play / Pause", _actions.PlayPause);
-            _miPrev = _menu.AddItem(group, "Previous", _actions.Prev);
-            _miNext = _menu.AddItem(group, "Next", _actions.Next);
-            _miRandom = _menu.AddItem(group, "Random", _actions.Random);
-            _miToggleStopAfterCurrent = _menu.AddItem(group, "Toggle Stop After Current", _actions.ToggleStopAfterCurrent);
+            _miStop = _menu.AddItem(_id, null, "Stop", _actions.Stop);
+            _miPlayPause = _menu.AddItem(_id, null, "Play / Pause", _actions.PlayPause);
+            _miPrev = _menu.AddItem(_id, null, "Previous", _actions.Prev);
+            _miNext = _menu.AddItem(_id, null, "Next", _actions.Next);
+            _miRandom = _menu.AddItem(_id, null, "Random", _actions.Random);
+            _miToggleStopAC = _menu.AddItem(_id, null, "Toggle Stop After Current", _actions.ToggleStopAfterCurrent);
 
-            _menu.AddSeparator(group);
+            _menu.AddItem(_id, null, "-", null);
 
-            _miCopyArtistAndTitle = _menu.AddItem(group, "Copy Artist and Title", _actions.CopyArtistAndTitle);
-            _miCopyTitle = _menu.AddItem(group, "Copy Title", _actions.CopyTitle);
-            _miCopyArtist = _menu.AddItem(group, "Copy Artist", _actions.CopyArtist);
-            _miOpenContainingFolder = _menu.AddItem(group, "Open Containing Folder", _actions.OpenContainingFolder);
-            _miSearchInInternet = _menu.AddItem(group, "Search in Internet", _actions.SearchInInternet);
+            _miCopyArtistAndTitle = _menu.AddItem(_id, null, "Copy Artist and Title", CopyArtistAndTitle);
+            _miCopyTitle = _menu.AddItem(_id, null, "Copy Title", CopyTitle);
+            _miCopyArtist = _menu.AddItem(_id, null, "Copy Artist", CopyArtist);
+            _miOpenContainingFolder = _menu.AddItem(_id, null, "Open Containing Folder", OpenContainingFolder);
+            _miSearchInInternet = _menu.AddItem(_id, null, "Search in Internet", SearchInInternet);
+
+            _menu.AddItem(_id, null, "-", null);
         }
+
+
 
         private void RegisterControls()
         {
-            _container.ClearControls(Foobar2000Module.ModuleId);
+            _mcontainer.ClearControls(Foobar2000Module.ModuleId);
+            DestroyControls();
 
-            var btn = new System.Windows.Forms.Button();
-            btn.Size = new System.Drawing.Size(150, 20);
-            btn.Text = "button test";
-            btn.Click += (s, e) => _container.Hide(Foobar2000Module.ModuleId);
-            _container.AddControl(Foobar2000Module.ModuleId, btn);
+            _picAlbumArt = CreateAlbumArt(_cfg.AlbumArt);
+            AddControlToModuleContainer(_picAlbumArt);
+
+            _btnStop = CreateButton(_cfg.BtnStop, Resources.Icon_Stop, null, _actions.Stop);
+            AddControlToModuleContainer(_btnStop);
+
+            _btnPlayPause = CreateButton(_cfg.BtnPlayPause, Resources.Icon_Play, Resources.Icon_Pause, () => { _console.AddLine("Play/Pause pressed!"); _actions.PlayPause(); });
+            AddControlToModuleContainer(_btnPlayPause);
+
+            _btnPrev = CreateButton(_cfg.BtnPrev, Resources.Icon_Prev, null, _actions.Prev);
+            AddControlToModuleContainer(_btnPrev);
+
+            _btnNext = CreateButton(_cfg.BtnNext, Resources.Icon_Next, null, _actions.Next);
+            AddControlToModuleContainer(_btnNext);
+
+            _btnRandom = CreateButton(_cfg.BtnRandom, Resources.Icon_Random, null, _actions.Random);
+            AddControlToModuleContainer(_btnRandom);
+
+            _btnStopAC = CreateButton(_cfg.BtnStopAC, Resources.Icon_StopAfterCurrentOn, Resources.Icon_StopAfterCurrentOff, _actions.ToggleStopAfterCurrent);
+            AddControlToModuleContainer(_btnStopAC);
+
+            _trbPosition = CreateTrackbar(_cfg.PositionBar, p => _actions.Seek(p));
+            AddControlToModuleContainer(_trbPosition);
+
+            _trbVolume = CreateTrackbar(_cfg.VolumeBar, p => SetVolume(p));
+            AddControlToModuleContainer(_trbVolume);
+
+            _labels.Clear();
+            foreach (var text in _cfg.Texts)
+            {
+                var label = CreateLabel(text);
+                _labels.Add(label);
+                AddControlToModuleContainer(label);
+            }
+        }
+
+        private dcButton CreateButton(ButtonSettings settings, Icon icon1, Icon icon2, Action action)
+        {
+            var btn = CreateControl<dcButton>();
+            btn.Visible = settings.Visible;
+            btn.Location = _sp.MakePoint(settings.X, settings.Y);
+            btn.Size = _sp.MakeSize(settings.Width, settings.Height);
+            if (icon1 != null) btn.Image = icon1.ToBitmap();
+            if (icon2 != null) btn.AdditionalImage = icon2.ToBitmap();
+            btn.Click += (s, e) => action();
+            return btn;
+        }
+
+        private dcPicture CreateAlbumArt(AlbumArtSettings settings)
+        {
+            var aa = CreateControl<dcPicture>();
+            aa.Visible = settings.Visible;
+            aa.Location = _sp.MakePoint(settings.X, settings.Y);
+            aa.Size = _sp.MakeSize(settings.Width, settings.Height);
+            aa.PreserveAspectRatio = settings.PreserveAspectRatio;
+            aa.EnableStubImage = !settings.DoNotShowStubImage;
+            var stubImage = ImageHelpers.GetImageFromFile(settings.StubImagePath);
+            if (stubImage == ImageHelpers.Empty)
+                stubImage = Resources.Image_NoCoverArt;
+            aa.SetStubImage(stubImage);
+            aa.SetImage(null);
+            return aa;
+        }
+
+        private dcTrackbar CreateTrackbar(TrackbarSettings settings, Action<int> action)
+        {
+            var trb = CreateControl<dcTrackbar>();
+            trb.Visible = settings.Visible;
+            trb.Location = _sp.MakePoint(settings.X, settings.Y);
+            trb.Size = _sp.MakeSize(settings.Width, settings.Heigth);
+            trb.ForeColor = settings.Color;
+            trb.BackgroundColor = settings.BackgroundColor;
+            trb.UseBackgroundColor = settings.UseBackgroundColor;
+            trb.HideBorders = settings.HideBorders;
+            trb.Range = 100;
+            trb.Position = 0;
+            trb.OnPositionChanged += (s, e) => action(e.Value);
+            return trb;
+        }
+
+        private dcLabel CreateLabel(TextSettings settings)
+        {
+            var lbl = new dcLabel(_sp.DPI, settings.FontName, settings.FontSize, settings.FontStyleItalic, settings.FontStyleBold);
+            AddControl(lbl);
+            lbl.Visible = settings.Visible;
+            lbl.Location = _sp.MakePoint(settings.X, settings.Y);
+            lbl.Size = _sp.MakeSize(settings.Width, settings.Height);
+            lbl.ForeColor = settings.FontColor;
+            lbl.AlignTextToRight = settings.AlightToRight;
+            lbl.EnableScroll = settings.EnableScroll;
+            return lbl;
+        }
+
+        private void UpdateButtonIcons()
+        {
+            bool isPlaying = !_stopped && !_paused;
+
+            _btnPlayPause.ShowAdditionalImage = isPlaying;
+            _btnPlayPause.Refresh();
+
+            _btnStopAC.ShowAdditionalImage = _stop_after_current;
+            _btnStopAC.Refresh();
+        }
+
+        private void UpdateAlbumArt(Image image, bool stub)
+        {
+            _picAlbumArt.SetImage(stub && _cfg.AlbumArt.DoNotShowStubImage ? null : image);
+        }
+
+        private void UpdatePosition(int pos, int? range = null)
+        {
+            if (range != null)
+                _trbPosition.Range = range.Value;
+            _trbPosition.Position = pos;
+        }
+
+        private void UpdateTexts()
+        {
+            for (int i = 0; i < _labels.Count(); i++)
+            {
+                _actions.FormatString(i, _cfg.Texts[i].Format);
+            }
+        }
+
+        private void ClearTexts()
+        {
+            _cfg.Texts.Zip(_labels, (settings, lbl) => new { settings, lbl }).ToList().ForEach(x => { x.lbl.Text = x.settings.StoppedText; });
+        }
+
+        private void HandleScrollTick()
+        {
+            _labels.ForEach(x => x.ScrollTick());
+        }
+
+        private void InitMessageFormEvents()
+        {
+            _messageForm.OnThemeChanged += (s, e) => ApplyConfiguration();
+            _messageForm.OnFoobarShow += (s, e) => ShowOrHide(true);
+            _messageForm.OnFoobarHide += (s, e) => ShowOrHide(false);
+            _messageForm.OnTrackLength += (s, e) => HandleTrackLength(e.Value);
+            _messageForm.OnTrackTime += (s, e) => HandleTrackTime(e.Value);
+            _messageForm.OnTrackText += (s, e) => HandleTrackText(e.Text, e.Index);
+            _messageForm.OnPauseState += (s, e) => HandlePauseState(e.Value);
+            _messageForm.OnStop += (s, e) => HandleStop();
+            _messageForm.OnTrackVolume += (s, e) => HandleVolume(e.Value);
+            _messageForm.OnStopAfterCurrentState += (s, e) => HandleStopAfterCurrent(e.Value);
+            _messageForm.OnAlbumArt += (s, e) => HandleAlbumArt(e.Value.Item1, e.Value.Item2);
+            _messageForm.OnFilePath += (s, e) => HandleFilePath(e.Text, e.Index);
+            _messageForm.OnVersion += (s, e) => HandleVersion(e.Value);
+        }
+
+        private void ShowOrHide(bool state)
+        {
+            if (_cfg.HideIfFoobar2000IsNotRunning)
+            {
+                if (state)
+                {
+                    _mcontainer.Show(Foobar2000Module.ModuleId);
+                    HandlePlaybackState_Ex(state);
+                }
+                else
+                {
+                    _mcontainer.Hide(Foobar2000Module.ModuleId);
+                }
+            }
+        }
+
+        private void HandleTrackLength(double length)
+        {
+            _stopped = false;
+            _paused = false;
+            UpdateButtonIcons();
+            UpdatePosition(0, (int)length);
+            UpdateAlbumArt(null, true);
+            UpdateTexts();
+
+            HandlePlaybackState(true);
+        }
+
+        private void HandleTrackTime(double time)
+        {
+            UpdateTexts();
+            UpdatePosition((int)time);
+
+            // If we receive 'time' message and current state is stopped
+            // it means that we have no track info, ask for it.
+            if (_stopped)
+                _actions.ResendLastState();
+        }
+
+        private void HandleTrackText(string text, int index)
+        {
+            if (index >= 0)
+            {
+                if (index < _labels.Count())
+                {
+                    var lbl = _labels[index];
+                    lbl.Text = text;
+                }
+            }
+            else
+            {
+                HandleFormatString(text, index);
+            }
+        }
+
+        private void HandlePauseState(bool state)
+        {
+            _paused = state;
+            UpdateButtonIcons();
+            UpdateTexts();
+
+            HandlePlaybackState(!state);
+        }
+
+        private void HandleStop()
+        {
+            _paused = false;
+            _stopped = true;
+            UpdateButtonIcons();
+            UpdatePosition(0);
+            UpdateAlbumArt(null, true);
+            ClearTexts();
+
+            HandlePlaybackState(false);
+        }
+
+        private void HandleVolume(float volume)
+        {
+            //volume_in_percent = pow(10, (volume_in_db / 30)) * 100
+            int percent = (int)(Math.Pow(10.0, (volume / 30.0)) * 100.0);
+            _trbVolume.Position = percent;
+        }
+
+        private void SetVolume(int percent)
+        {
+            // volume_in_db = 30 * log10 (volume_in_percent / 100)
+            float vdb = (float)(30.0 * Math.Log10((float)percent / 100.0));
+            if (vdb < -100.0f) vdb = -100.0f;
+            _actions.Volume(vdb);
+        }
+
+        private void HandleStopAfterCurrent(bool state)
+        {
+            _stop_after_current = state;
+            UpdateButtonIcons();
+        }
+
+        private void HandleAlbumArt(byte[] imageBytes, bool stub)
+        {
+            var img = ImageHelpers.GetImageFromByteArray(imageBytes);
+            UpdateAlbumArt(img, stub);
+        }
+
+        private void HandleFilePath(string text, int index)
+        {
+            if (text.StartsWith("file://"))
+            {
+                var args = String.Format("/select,\"{0}\"", text);
+                Shell32.ShellExecute(IntPtr.Zero, "open", "explorer.exe", args, null, WinApiTypes.SW_SHOWNORMAL);
+            }
+        }
+
+        private void HandleVersion(string version)
+        {
+            if (version != FB2KConstants.DeskbandControlsVersion)
+            {
+                var msg = String.Format("Plugin version mismatch! Expected \"{0}\" but found \"{1}\".\r\nPlease update plugin to expected version.", FB2KConstants.DeskbandControlsVersion, version);
+                MessageBox.Show(msg, FB2KConstants.DeskbandControlsTitle, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                _messageForm.Lock();
+                _actions.SetVersion(true);
+            }
+            else
+            {
+                _actions.SetVersion(false);
+            }
+        }
+
+        private void HandlePlaybackState(bool state)
+        {
+            HandlePlaybackState_Ex(state);
+
+            if (_cfg.HideIfFoobar2000IsNotRunning && !_actions.IsFoobarStarted)
+            {
+                ShowOrHide(state);
+            }
+        }
+
+        private void HandlePlaybackState_Ex(bool state)
+        {
+            if (_cfg.HideIfNotPlaying && !state)
+                _mcontainer.Hide(Foobar2000Module.ModuleId);
+            else
+                _mcontainer.Show(Foobar2000Module.ModuleId);
+
+            _menu.SetItemEnabledState(_miStop, !_stopped);
+            _menu.SetItemEnabledState(_miToggleStopAC, !_stopped);
+            _menu.SetItemEnabledState(_miCopyArtistAndTitle, !_stopped);
+            _menu.SetItemEnabledState(_miCopyArtist, !_stopped);
+            _menu.SetItemEnabledState(_miCopyTitle, !_stopped);
+            _menu.SetItemEnabledState(_miOpenContainingFolder, !_stopped);
+            _menu.SetItemEnabledState(_miSearchInInternet, !_stopped);
+        }
+
+        private void HandleFormatString(string text, int index)
+        {
+            switch (index)
+            {
+                case FormatStringIndex.InternetSearch:
+                    {
+                        var url = _cfg.InternetSearchUrl.Replace("%q%", Uri.EscapeDataString(text));
+
+                        //var url = String.Format("https://www.google.com/search?q={0}", Uri.EscapeDataString(text));
+                        Shell32.ShellExecute(IntPtr.Zero, "open", url, null, null, WinApiTypes.SW_SHOWNORMAL);
+                    }
+                    break;
+
+                case FormatStringIndex.CopyArtistAndTitle:
+                case FormatStringIndex.CopyTitle:
+                case FormatStringIndex.CopyArtist:
+                    {
+                        Clipboard.SetText(text);
+                    }
+                    break;
+            }
+        }
+
+        private void UpdateControlsState()
+        {
+            if (_stopped)
+            {
+                _actions.ResendLastNonTrackState();
+                ClearTexts();
+                HandlePlaybackState(false);
+            }
+            else
+            {
+                _actions.ResendLastState();
+            }
+        }
+
+        public void CopyArtistAndTitle()
+        {
+            _actions.FormatString(FormatStringIndex.CopyArtistAndTitle, "%artist% - %title%");
+        }
+
+        public void CopyTitle()
+        {
+            _actions.FormatString(FormatStringIndex.CopyTitle, "%title%");
+        }
+
+        public void CopyArtist()
+        {
+            _actions.FormatString(FormatStringIndex.CopyArtist, "%artist%");
+        }
+
+        public void OpenContainingFolder()
+        {
+            _actions.FilePath(0);
+        }
+
+        public void SearchInInternet()
+        {
+            _actions.FormatString(FormatStringIndex.InternetSearch, _cfg.InternetSearchFormat);
+        }
+
+        public void DoubleClick()
+        {
+            _actions.ActivateFoobar();
         }
     }
 }

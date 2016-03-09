@@ -31,6 +31,7 @@
             this.tbLines = new System.Windows.Forms.TextBox();
             this.panel1 = new System.Windows.Forms.Panel();
             this.btnClear = new System.Windows.Forms.Button();
+            this.chkDebug = new System.Windows.Forms.CheckBox();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -52,6 +53,7 @@
             // panel1
             // 
             this.panel1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.panel1.Controls.Add(this.chkDebug);
             this.panel1.Controls.Add(this.btnClear);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.panel1.Location = new System.Drawing.Point(0, 258);
@@ -69,6 +71,17 @@
             this.btnClear.UseVisualStyleBackColor = true;
             this.btnClear.Click += new System.EventHandler(this.btnClear_Click);
             // 
+            // chkDebug
+            // 
+            this.chkDebug.AutoSize = true;
+            this.chkDebug.Location = new System.Drawing.Point(93, 8);
+            this.chkDebug.Name = "chkDebug";
+            this.chkDebug.Size = new System.Drawing.Size(110, 17);
+            this.chkDebug.TabIndex = 1;
+            this.chkDebug.Text = "Show debug lines";
+            this.chkDebug.UseVisualStyleBackColor = true;
+            this.chkDebug.CheckedChanged += new System.EventHandler(this.chkDebug_CheckedChanged);
+            // 
             // ConsoleForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -83,6 +96,7 @@
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Deskband Controls Console";
             this.panel1.ResumeLayout(false);
+            this.panel1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -93,5 +107,6 @@
         private System.Windows.Forms.TextBox tbLines;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Button btnClear;
+        private System.Windows.Forms.CheckBox chkDebug;
     }
 }

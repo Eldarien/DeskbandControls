@@ -1,5 +1,4 @@
 ﻿using Deskband.Console;
-using Deskband.Controls;
 using Deskband.Settings;
 using System;
 using System.Collections.Generic;
@@ -27,6 +26,7 @@ namespace Deskband
         private ConsoleHandler _consoleHandler;
         //private ControlHost _controlHost;
         private IMenuProvider _menu;
+        private ISizeProvider _sp;
         private ModuleContainer _moduleContainer;
 
         private FloatingForm _floatingForm;
@@ -43,6 +43,7 @@ namespace Deskband
             //ControlHost controlHost,
 
             IMenuProvider menu,
+            ISizeProvider sp,
             ModuleContainer moduleContainer
             )
         {
@@ -55,6 +56,7 @@ namespace Deskband
             _consoleHandler = consoleHandler;
             //_controlHost = controlHost;
             _menu = menu;
+            _sp = sp;
             _moduleContainer = moduleContainer;
         }
 
@@ -67,14 +69,21 @@ namespace Deskband
 
             ApplyConfiguration();
 
+            //
 
+            // DPI
+            _band.DPIChanged += (s, e) => ApplyConfiguration();
+
+            // DoubleClick
+            _band.MouseDoubleClick += (s, e) => HandleDoubleClick(e.Location);
+            _floatingForm.MouseDoubleClick += (s, e) => HandleDoubleClick(e.Location);
 
             // Console
-            var miConsole = _menu.AddItem("", "Console", _consoleHandler.ToggleConsole);
+            var miConsole = _menu.AddItem(Guid.Empty, null, "Console", _consoleHandler.ToggleConsole);
             _consoleHandler.OnConsoleToggle += (s, e) => _menu.SetItemCheckedState(miConsole, e.Value);
 
             // Settings
-            _menu.AddItem("", "Settings", OnSettingsMenuItemClick);
+            _menu.AddItem(Guid.Empty, null, "Settings", OnSettingsMenuItemClick);
 
 
             //_settingsManager.LoadSettings();
@@ -82,12 +91,6 @@ namespace Deskband
             //_controlHost.OnApplySettings += OnApplySettings;
             //_controlHost.OnPlaybackState += OnPlaybackState;
             //_controlHost.OnFoobarShowHide += OnFoobarShowHide;
-
-
-
-            // DoubleClick
-            //_band.DoubleClick += OnActivateFoobar;
-            //_floatingForm.DoubleClick += OnActivateFoobar;
 
             // Console
             //_consoleHandler.OnConsoleToggle += (s, e) => _menuProvider.SetItemCheckedState(_miConsole, e.Value);
@@ -115,10 +118,6 @@ namespace Deskband
             _menuProvider.AddItem("", "Settings", OnSettingsMenuItemClick);
             */
 
-            // Startup complete
-            _consoleHandler.AddLine("Deskband Controls ready!");
-
-
             //_controlHost.ApplySettings();
         }
 
@@ -131,7 +130,7 @@ namespace Deskband
 
         private void OnResize(object sender, EventArgs e)
         {
-            _consoleHandler.AddLine(String.Format("Module container resized: {0}x{1}", _moduleContainer.Size.Width, _moduleContainer.Size.Height));
+            _consoleHandler.AddDebugLine(String.Format("Module container resized: {0}x{1}", _moduleContainer.Size.Width, _moduleContainer.Size.Height));
 
             _band.MinSize = new Size(_band.Visible ? _moduleContainer.Size.Width : 10, 0); // 10px reserve for accessing context menu
             _band.ExecBandInfoChangedCommand();
@@ -141,7 +140,7 @@ namespace Deskband
 
         private void ApplyConfiguration()
         {
-            var cfg = _config.GetConfiguration(Band.ModuleId, ConfigurationModel.GetDefault(_modules));
+            var cfg = _config.GetConfiguration(Guid.Empty, ConfigurationModel.GetDefault(_modules));
             _config.UpdateConfiguration(cfg);
 
             _band.Controls.Clear();
@@ -163,7 +162,7 @@ namespace Deskband
 
             foreach (var ms in cfg.ModulesSettings)
             {
-                _moduleContainer.SetModuleSize(ms.Id, new Size(ms.Width, ms.Height));
+                _moduleContainer.PositionModules(ms.Id, _sp.MakeSize(ms.Width, ms.Height), _sp.MakePoint(ms.PositionX, ms.PositionY));
             }
 
             foreach (var m in _modules)
@@ -172,36 +171,15 @@ namespace Deskband
             }
         }
 
-        //private void OnPlaybackState(object sender, ValueEventArgs<bool> e)
-        //{
-        //    if (_settingsManager.Settings.General.HideIfNotPlaying && !e.Value)
-        //        ShowHide(false);
-        //    else
-        //        ShowHide(true);
-
-        //    var stopped = _controlHost.Controller.Stopped;
-
-        //    _menuProvider.SetItemEnabledState(_miStop, !stopped);
-        //    _menuProvider.SetItemEnabledState(_ToggleStopAfterCurrent, !stopped);
-
-        //    _menuProvider.SetItemEnabledState(_miCopyArtistAndTitle, !stopped);
-        //    _menuProvider.SetItemEnabledState(_miCopyArtist, !stopped);
-        //    _menuProvider.SetItemEnabledState(_miCopyTitle, !stopped);
-        //    _menuProvider.SetItemEnabledState(_miOpenContainingFolder, !stopped);
-        //    _menuProvider.SetItemEnabledState(_miSearchInInternet, !stopped);
-        //}
-
-        //private void OnFoobarShowHide(object sender, ValueEventArgs<bool> e)
-        //{
-        //    if (_settingsManager.Settings.General.HideIfFoobar2000IsNotRunning)
-        //    {
-        //        ShowHide(e.Value);
-        //        if (e.Value)
-        //        {
-        //            OnPlaybackState(sender, new ValueEventArgs<bool>(false));
-        //        }
-        //    }
-        //}
+        private void HandleDoubleClick(Point location)
+        {
+            var moduleId = _moduleContainer.LocateModuleAtPoint(location);
+            if (moduleId != null)
+            {
+                var module = _modules.First(m => m.Id == moduleId.Value);
+                module.DoubleClick();
+            }
+        }
 
         //private void OnApplySettings(object sender, EventArgs e)
         //{
@@ -238,35 +216,5 @@ namespace Deskband
             context.OnClose += (s, ea) => wnd.Close();
             //context.OnApply += (s, ea) => { _controlHost.ApplySettings(); _settingsManager.SaveSettings(); };
         }
-
-        //private void OnOpenContainingFolderClick()
-        //{
-        //    _controlHost.Controller.FoobarActions.FilePath(0);
-        //}
-
-        //private void OnSearchInInternetClick()
-        //{
-        //    _controlHost.Controller.FoobarActions.FormatString(FormatStringIndex.InternetSearch, _settingsManager.Settings.General.InternetSearchFormat);
-        //}
-
-        //private void OnCopyArtist()
-        //{
-        //    _controlHost.Controller.FoobarActions.FormatString(FormatStringIndex.CopyArtist, "%artist%");
-        //}
-
-        //private void OnCopyTitle()
-        //{
-        //    _controlHost.Controller.FoobarActions.FormatString(FormatStringIndex.CopyTitle, "%title%");
-        //}
-
-        //private void OnCopyArtistAndTitle()
-        //{
-        //    _controlHost.Controller.FoobarActions.FormatString(FormatStringIndex.CopyArtistAndTitle, "%artist% - %title%");
-        //}
-
-        //private void OnActivateFoobar(object sender, EventArgs e)
-        //{
-        //    _controlHost.Controller.FoobarActions.ActivateFoobar();
-        //}
     }
 }
