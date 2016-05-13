@@ -1,14 +1,21 @@
-﻿using Deskband.Core.Interfaces;
+﻿using Deskband.Core.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Drawing;
+using System.ComponentModel;
+using System.Drawing.Design;
 
 namespace dcmFoobar2000.Configuration
 {
     public class ConfigurationModel : ConfigurationObjectBase
     {
+        public override string ToString()
+        {
+            return Foobar2000Module.ModuleName;
+        }
+
         public bool HideIfNotPlaying { get; set; }
         public bool HideIfFoobar2000IsNotRunning { get; set; }
         public string InternetSearchFormat { get; set; }
@@ -27,7 +34,18 @@ namespace dcmFoobar2000.Configuration
         public TrackbarSettings PositionBar { get; set; }
         public TrackbarSettings VolumeBar { get; set; }
 
-        public List<TextSettings> Texts { get; set; }
+        [Description("Text labels with dynamic text (using foobar2000 formatting syntax)")]
+        [SettingsCommand("Add Text", nameof(ConfigurationModel.AddText))]
+        public SettingsList<TextSettings> Texts { get; set; }
+
+        public static void AddText(ConfigurationModel model)
+        {
+            //model.Texts.Add(new TextSettings());
+        }
+
+        public static void RemoveText(ConfigurationModel model, TextSettings item)
+        {
+        }
 
         public static readonly ConfigurationModel Default = new ConfigurationModel
         {
@@ -49,9 +67,9 @@ namespace dcmFoobar2000.Configuration
             PositionBar = new TrackbarSettings { Visible = true, X = 32, Y = 20, Width = 154, Heigth = 6, Color = Color.White },
             VolumeBar = new TrackbarSettings { Visible = true, X = 190, Y = 20, Width = 60, Heigth = 6, Color = Color.White },
 
-            Texts = new List<TextSettings>
+            Texts = new SettingsList<TextSettings>
             {
-                new TextSettings { Visible = true, X = 92, Y = 2, Width = 158, Height = 16, EnableScroll = true, StoppedText = "**Stopped**",
+                new TextSettings { Name = "Default Text", Visible = true, X = 92, Y = 2, Width = 158, Height = 16, EnableScroll = true, StoppedText = "**Stopped**",
                     Format = "%artist% - %title% '('%playback_time%')')", FontName = "Segoe UI", FontSize = 8, FontColor = Color.White }
             }
         };

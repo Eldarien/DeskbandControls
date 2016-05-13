@@ -17,7 +17,7 @@ namespace Deskband.UI
             Id = id;
             Container = new ControlsContainer();
             Container.Dock = DockStyle.None;
-            Container.BorderStyle = BorderStyle.FixedSingle;
+            //Container.BorderStyle = BorderStyle.FixedSingle;
         }
     }
 }

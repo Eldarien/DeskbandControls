@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using Deskband.Core.Configuration;
 
 namespace Deskband.Configuration
 {
@@ -67,6 +68,11 @@ namespace Deskband.Configuration
                 _data.Add(jtoken);
             else
                 _data.ElementAt(index).Replace(jtoken);
+        }
+
+        public object GetAllConfiguration()
+        {
+            return _data.ToObject<List<ConfigurationObjectBase>>().ToArray();
         }
     }
 }

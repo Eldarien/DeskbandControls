@@ -6,12 +6,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Drawing;
+using dcmFoobar2000.Configuration;
 
 namespace dcmFoobar2000
 {
     public class Foobar2000Module : IModule
     {
-        internal static readonly string ModuleName = "Foobar2000";
+        internal static readonly string ModuleName = "foobar2000 plugin";
         internal static readonly Guid ModuleId = Guid.Parse("{FB3F7AB3-A9F4-4C39-8C13-D9CD1110B579}");
 
         public Guid Id { get { return ModuleId; } }
@@ -19,12 +20,14 @@ namespace dcmFoobar2000
 
         private IConsole _console;
         private IMenuProvider _menuProvider;
+        private IConfigurationProvider _config;
         private Controller _controller;
 
-        public Foobar2000Module(IConsole console, IMenuProvider menuProvider)
+        public Foobar2000Module(IConsole console, IMenuProvider menuProvider, IConfigurationProvider config)
         {
             _console = console;
             _menuProvider = menuProvider;
+            _config = config;
         }
 
         public void Initialize(IKernel kernel)
@@ -51,6 +54,11 @@ namespace dcmFoobar2000
         public void DoubleClick()
         {
             _controller.DoubleClick();
+        }
+
+        public object GetConfiguration()
+        {
+            return _config.GetConfiguration(Foobar2000Module.ModuleId, ConfigurationModel.Default);
         }
     }
 }

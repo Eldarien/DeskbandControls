@@ -1,13 +1,19 @@
-﻿using Deskband.Core.Interfaces;
+﻿using Deskband.Core.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Deskband.Core.Interfaces;
 
 namespace Deskband.Configuration
 {
     public class ConfigurationModel : ConfigurationObjectBase
     {
+        public override string ToString()
+        {
+            return "Deskband Controls";
+        }
+
         public DisplayMode DisplayMode { get; set; }
         public List<ModuleSettings> ModulesSettings { get; set; } = new List<ModuleSettings>();
         public FloatingWindowSettings FloatingWindowSettings { get; set; } = FloatingWindowSettings.GetDefault();

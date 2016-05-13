@@ -5,12 +5,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Drawing;
+using dcmWeather.Configuration;
 
 namespace dcmWeather
 {
     public class WeatherModule : IModule
     {
-        internal static readonly string ModuleName = "Weather";
+        internal static readonly string ModuleName = "Weather monitor";
         internal static readonly Guid ModuleId = Guid.Parse("{B362F04C-3015-45E1-9A1B-FB2424FE9878}");
 
         public Guid Id { get { return ModuleId; } }
@@ -18,11 +19,13 @@ namespace dcmWeather
 
         private IConsole _console;
         private IMenuProvider _menuProvider;
+        private IConfigurationProvider _config;
 
-        public WeatherModule(IConsole console, IMenuProvider menuProvider)
+        public WeatherModule(IConsole console, IMenuProvider menuProvider, IConfigurationProvider config)
         {
             _console = console;
             _menuProvider = menuProvider;
+            _config = config;
         }
 
         public void Initialize(IKernel kernel)
@@ -47,6 +50,11 @@ namespace dcmWeather
         public void DoubleClick()
         {
             _console.AddDebugLine("Weather plugin was double-clicked!");
+        }
+
+        public object GetConfiguration()
+        {
+            return _config.GetConfiguration(ModuleId, ConfigurationModel.Default);
         }
     }
 }

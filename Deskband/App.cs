@@ -16,16 +16,16 @@ namespace Deskband
         private Band _band;
         private IEnumerable<IModule> _modules;
 
-
         // Services
 
         private ConfigurationProvider _config;
 
-
         private SettingsManager _settingsManager;
         private ConsoleHandler _consoleHandler;
+
         //private ControlHost _controlHost;
         private IMenuProvider _menu;
+
         private ISizeProvider _sp;
         private ModuleContainer _moduleContainer;
 
@@ -36,7 +36,6 @@ namespace Deskband
             IEnumerable<IModule> modules,
             ConfigurationProvider config,
             FloatingForm floatingForm,
-
 
             SettingsManager settingsManager,
             ConsoleHandler consoleHandler,
@@ -84,7 +83,24 @@ namespace Deskband
 
             // Settings
             _menu.AddItem(Guid.Empty, null, "Settings", OnSettingsMenuItemClick);
+            _menu.AddItem(Guid.Empty, null, "New Settings", () =>
+            {
+                var sf = new SettingsForm(_config, _consoleHandler);
+                sf.OnApply += (s, e) => { ApplyConfiguration(); _config.Save(); };
+                sf.Show();
 
+                var cfg = _config.GetConfiguration(Guid.Empty, ConfigurationModel.GetDefault(_modules));
+                //sf.LoadData(cfg);
+
+                var ms = new SettingsModel
+                {
+                    //Modules = cfg.ModulesSettings,
+                    GlobalSettings = cfg,
+                    ModulesSettings = _modules.Select(x => new ModuleSettingsModel { Name = x.Name, SettingsObject = x.GetConfiguration() })
+                };
+
+                sf.LoadDataAll(ms);
+            });
 
             //_settingsManager.LoadSettings();
 
@@ -141,6 +157,7 @@ namespace Deskband
         private void ApplyConfiguration()
         {
             var cfg = _config.GetConfiguration(Guid.Empty, ConfigurationModel.GetDefault(_modules));
+            cfg.ModulesSettings.RemoveAll(ms => !_modules.Any(m => m.Id == ms.Id));
             _config.UpdateConfiguration(cfg);
 
             _band.Controls.Clear();
