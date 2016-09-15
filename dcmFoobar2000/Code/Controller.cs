@@ -1,17 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Windows.Forms;
-using dcmFoobar2000.Configuration;
+﻿using dcmFoobar2000.Configuration;
 using dcmFoobar2000.Properties;
 using Deskband.Core.Common;
 using Deskband.Core.Controls;
 using Deskband.Core.Interfaces;
 using Deskband.Core.WinApi;
 using DeskbandBridge;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Windows.Forms;
 
 namespace dcmFoobar2000.Code
 {
@@ -26,7 +26,6 @@ namespace dcmFoobar2000.Code
         private Foobar2000Actions _actions;
 
         private ConfigurationModel _cfg;
-
 
         private MessageForm _messageForm;
 
@@ -55,7 +54,6 @@ namespace dcmFoobar2000.Code
         private dcTrackbar _trbVolume;
 
         private List<dcLabel> _labels = new List<dcLabel>();
-
 
         public Controller(
             ISizeProvider sp,
@@ -112,6 +110,7 @@ namespace dcmFoobar2000.Code
         }
 
         private List<IDisposable> _controls = new List<IDisposable>();
+
         private void DestroyControls()
         {
             _controls.Reverse();
@@ -121,11 +120,13 @@ namespace dcmFoobar2000.Code
             }
             _controls.Clear();
         }
+
         private T CreateControl<T>() where T : Control, new()
         {
             var control = new T();
             return AddControl(control);
         }
+
         private T AddControl<T>(T control) where T : Control
         {
             _controls.Add(control);
@@ -173,8 +174,6 @@ namespace dcmFoobar2000.Code
             _menu.AddItem(_id, null, "-", null);
         }
 
-
-
         private void RegisterControls()
         {
             _mcontainer.ClearControls(Foobar2000Module.ModuleId);
@@ -183,22 +182,22 @@ namespace dcmFoobar2000.Code
             _picAlbumArt = CreateAlbumArt(_cfg.AlbumArt);
             AddControlToModuleContainer(_picAlbumArt);
 
-            _btnStop = CreateButton(_cfg.BtnStop, Resources.Icon_Stop, null, _actions.Stop);
+            _btnStop = CreateButton(_cfg.Buttons.BtnStop, Resources.Icon_Stop, null, _actions.Stop);
             AddControlToModuleContainer(_btnStop);
 
-            _btnPlayPause = CreateButton(_cfg.BtnPlayPause, Resources.Icon_Play, Resources.Icon_Pause, () => { _console.AddLine("Play/Pause pressed!"); _actions.PlayPause(); });
+            _btnPlayPause = CreateButton(_cfg.Buttons.BtnPlayPause, Resources.Icon_Play, Resources.Icon_Pause, () => { _console.AddLine("Play/Pause pressed!"); _actions.PlayPause(); });
             AddControlToModuleContainer(_btnPlayPause);
 
-            _btnPrev = CreateButton(_cfg.BtnPrev, Resources.Icon_Prev, null, _actions.Prev);
+            _btnPrev = CreateButton(_cfg.Buttons.BtnPrev, Resources.Icon_Prev, null, _actions.Prev);
             AddControlToModuleContainer(_btnPrev);
 
-            _btnNext = CreateButton(_cfg.BtnNext, Resources.Icon_Next, null, _actions.Next);
+            _btnNext = CreateButton(_cfg.Buttons.BtnNext, Resources.Icon_Next, null, _actions.Next);
             AddControlToModuleContainer(_btnNext);
 
-            _btnRandom = CreateButton(_cfg.BtnRandom, Resources.Icon_Random, null, _actions.Random);
+            _btnRandom = CreateButton(_cfg.Buttons.BtnRandom, Resources.Icon_Random, null, _actions.Random);
             AddControlToModuleContainer(_btnRandom);
 
-            _btnStopAC = CreateButton(_cfg.BtnStopAC, Resources.Icon_StopAfterCurrentOn, Resources.Icon_StopAfterCurrentOff, _actions.ToggleStopAfterCurrent);
+            _btnStopAC = CreateButton(_cfg.Buttons.BtnStopAC, Resources.Icon_StopAfterCurrentOn, Resources.Icon_StopAfterCurrentOff, _actions.ToggleStopAfterCurrent);
             AddControlToModuleContainer(_btnStopAC);
 
             _trbPosition = CreateTrackbar(_cfg.PositionBar, p => _actions.Seek(p));

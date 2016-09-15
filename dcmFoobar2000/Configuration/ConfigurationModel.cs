@@ -1,11 +1,11 @@
 ﻿using Deskband.Core.Configuration;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Drawing;
+using System.Drawing.Design;
 using System.Linq;
 using System.Text;
-using System.Drawing;
-using System.ComponentModel;
-using System.Drawing.Design;
 
 namespace dcmFoobar2000.Configuration
 {
@@ -16,24 +16,34 @@ namespace dcmFoobar2000.Configuration
             return Foobar2000Module.ModuleName;
         }
 
+        [DisplayName("Hide if not playing"), TypeConverter(typeof(YesNoBooleanConverter))]
         public bool HideIfNotPlaying { get; set; }
+
+        [DisplayName("Hide if foobar2000 is not running"), TypeConverter(typeof(YesNoBooleanConverter))]
         public bool HideIfFoobar2000IsNotRunning { get; set; }
+
+        [Category("Search"), DisplayName("Internet Search Format")]
         public string InternetSearchFormat { get; set; }
+
+        [Category("Search"), DisplayName("Internet Search URL")]
         public string InternetSearchUrl { get; set; }
+
+        [DisplayName("Text Scroll Speed")]
         public int TextScrollSpeed { get; set; }
 
+        [Browsable(false), SettingsNode("Album Art")]
         public AlbumArtSettings AlbumArt { get; set; }
 
-        public ButtonSettings BtnStop { get; set; }
-        public ButtonSettings BtnPlayPause { get; set; }
-        public ButtonSettings BtnPrev { get; set; }
-        public ButtonSettings BtnNext { get; set; }
-        public ButtonSettings BtnRandom { get; set; }
-        public ButtonSettings BtnStopAC { get; set; }
+        [Browsable(false), SettingsNode("Buttons")]
+        public ButtonSettingsContainer Buttons { get; set; }
 
+        [Browsable(false), SettingsNode("Position Bar")]
         public TrackbarSettings PositionBar { get; set; }
+
+        [Browsable(false), SettingsNode("Volume Bar")]
         public TrackbarSettings VolumeBar { get; set; }
 
+        [Browsable(false), SettingsNodeList("Texts")]
         [Description("Text labels with dynamic text (using foobar2000 formatting syntax)")]
         [SettingsCommand("Add Text", nameof(ConfigurationModel.AddText))]
         public SettingsList<TextSettings> Texts { get; set; }
@@ -57,12 +67,15 @@ namespace dcmFoobar2000.Configuration
 
             AlbumArt = new AlbumArtSettings { Visible = true, X = 1, Y = 2, Width = 27, Height = 27 },
 
-            BtnStop = new ButtonSettings { Visible = true, X = 30, Y = 1, Width = 16, Height = 16, ColorizeColor = Color.White },
-            BtnPlayPause = new ButtonSettings { Visible = true, X = 44, Y = 1, Width = 16, Height = 16, ColorizeColor = Color.White },
-            BtnPrev = new ButtonSettings { Visible = true, X = 59, Y = 1, Width = 16, Height = 16, ColorizeColor = Color.White },
-            BtnNext = new ButtonSettings { Visible = true, X = 74, Y = 1, Width = 16, Height = 16, ColorizeColor = Color.White },
-            BtnRandom = new ButtonSettings { Visible = false, X = 1, Y = 1, Width = 16, Height = 16, ColorizeColor = Color.White },
-            BtnStopAC = new ButtonSettings { Visible = false, X = 1, Y = 1, Width = 16, Height = 16, ColorizeColor = Color.White },
+            Buttons = new ButtonSettingsContainer
+            {
+                BtnStop = new ButtonSettings { Visible = true, X = 30, Y = 1, Width = 16, Height = 16, ColorizeColor = Color.White },
+                BtnPlayPause = new ButtonSettings { Visible = true, X = 44, Y = 1, Width = 16, Height = 16, ColorizeColor = Color.White },
+                BtnPrev = new ButtonSettings { Visible = true, X = 59, Y = 1, Width = 16, Height = 16, ColorizeColor = Color.White },
+                BtnNext = new ButtonSettings { Visible = true, X = 74, Y = 1, Width = 16, Height = 16, ColorizeColor = Color.White },
+                BtnRandom = new ButtonSettings { Visible = false, X = 1, Y = 1, Width = 16, Height = 16, ColorizeColor = Color.White },
+                BtnStopAC = new ButtonSettings { Visible = false, X = 1, Y = 1, Width = 16, Height = 16, ColorizeColor = Color.White }
+            },
 
             PositionBar = new TrackbarSettings { Visible = true, X = 32, Y = 20, Width = 154, Heigth = 6, Color = Color.White },
             VolumeBar = new TrackbarSettings { Visible = true, X = 190, Y = 20, Width = 60, Heigth = 6, Color = Color.White },

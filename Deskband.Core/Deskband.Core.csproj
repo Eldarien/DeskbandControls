@@ -68,6 +68,8 @@
     <Compile Include="Configuration\NoCollectionEditor.cs" />
     <Compile Include="Configuration\SettingsCommandAttribute.cs" />
     <Compile Include="Configuration\SettingsList.cs" />
+    <Compile Include="Configuration\SettingsNodeListAttribute.cs" />
+    <Compile Include="Configuration\SettingsNodeAttribute.cs" />
     <Compile Include="Configuration\SettingsObject.cs" />
     <Compile Include="Configuration\YesNoBooleanConverter.cs" />
     <Compile Include="Controls\dcButton.cs">

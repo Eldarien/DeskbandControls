@@ -1,4 +1,8 @@
-﻿using System;
+﻿using Deskband.Configuration;
+using Deskband.Console;
+using Deskband.Core.Configuration;
+using Deskband.Core.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -6,10 +10,6 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
-using Deskband.Configuration;
-using Deskband.Core.Configuration;
-using Deskband.Core.Interfaces;
-using Deskband.Console;
 
 namespace Deskband.Settings
 {
@@ -20,22 +20,37 @@ namespace Deskband.Settings
 
         public event EventHandler OnApply;
 
-        public SettingsForm(ConfigurationProvider config, ConsoleHandler console)
+        private SettingsModel _settingsModel;
+
+        public SettingsForm(ConfigurationProvider config, ConsoleHandler console, SettingsModel settingsModel)
         {
             _config = config;
             _console = console;
 
+            _settingsModel = settingsModel;
+
             InitializeComponent();
 
-            pgSettings.SelectedGridItemChanged += PgSettings_SelectedGridItemChanged;
-            lbItems.SelectedIndexChanged += LbItems_SelectedIndexChanged;
             btnApply.Click += BtnApply_Click;
+            tvItems.AfterSelect += TvItems_AfterSelect;
+            pgSettings.SelectedGridItemChanged += PgSettings_SelectedGridItemChanged;
+
+            BuildTreeView();
+            tvItems.ExpandAll();
         }
 
         private void BtnApply_Click(object sender, EventArgs e)
         {
-            foreach (var n in lbItems.Items) _config.UpdateConfiguration(n as ConfigurationObjectBase);
+            _config.UpdateConfiguration(_settingsModel.GlobalSettings);
+            foreach (var m in _settingsModel.ModulesSettings.Cast<ConfigurationObjectBase>())
+                _config.UpdateConfiguration(m);
+
             OnApply?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void TvItems_AfterSelect(object sender, TreeViewEventArgs e)
+        {
+            pgSettings.SelectedObject = e.Node.Tag;
         }
 
         private void PgSettings_SelectedGridItemChanged(object sender, SelectedGridItemChangedEventArgs e)
@@ -65,20 +80,48 @@ namespace Deskband.Settings
             }
         }
 
-        private void LbItems_SelectedIndexChanged(object sender, EventArgs e)
+        private void BuildTreeView()
         {
-            var obj = lbItems.Items[lbItems.SelectedIndex];
-            pgSettings.SelectedObject = obj;
+            AddTreeNode(_settingsModel, "ROOT", null, true);
         }
 
-        public void LoadDataAll(SettingsModel model)
+        private TreeNode AddTreeNode(object data, string text, TreeNode parentNode, bool isRootNode = false)
         {
-            lbItems.Items.Add(model.GlobalSettings);
-            foreach (var ms in model.ModulesSettings)
+            var node = isRootNode ? null : new TreeNode { Text = text, Tag = data };
+            if (!isRootNode)
             {
-                lbItems.Items.Add(ms.SettingsObject);
+                if (parentNode == null)
+                    tvItems.Nodes.Add(node);
+                else
+                    parentNode.Nodes.Add(node);
             }
-            lbItems.SelectedIndex = 0;
+
+            if (data != null)
+            {
+                var props = data.GetType().GetProperties(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
+                foreach (var prop in props)
+                {
+                    foreach (var a in prop.GetCustomAttributes(typeof(SettingsNodeAttribute), false).Cast<SettingsNodeAttribute>())
+                    {
+                        var propData = prop.GetValue(data, null);
+                        AddTreeNode(propData, a.Name, node);
+                    }
+
+                    foreach (var a in prop.GetCustomAttributes(typeof(SettingsNodeListAttribute), false).Cast<SettingsNodeListAttribute>())
+                    {
+                        var list = prop.GetValue(data, null) as IEnumerable<object>;
+                        if (list != null)
+                        {
+                            var listNode = AddTreeNode(null, a.Name, node);
+                            foreach (var item in list)
+                            {
+                                AddTreeNode(item, item.ToString(), listNode);
+                            }
+                        }
+                    }
+                }
+            }
+            return node;
         }
     }
 }

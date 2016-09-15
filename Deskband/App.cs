@@ -1,13 +1,13 @@
-﻿using Deskband.Console;
+﻿using Deskband.Configuration;
+using Deskband.Console;
+using Deskband.Core.Interfaces;
 using Deskband.Settings;
+using Deskband.UI;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
-using Deskband.Core.Interfaces;
-using Deskband.UI;
-using Deskband.Configuration;
-using System.Drawing;
 
 namespace Deskband
 {
@@ -85,21 +85,17 @@ namespace Deskband
             _menu.AddItem(Guid.Empty, null, "Settings", OnSettingsMenuItemClick);
             _menu.AddItem(Guid.Empty, null, "New Settings", () =>
             {
-                var sf = new SettingsForm(_config, _consoleHandler);
-                sf.OnApply += (s, e) => { ApplyConfiguration(); _config.Save(); };
-                sf.Show();
-
                 var cfg = _config.GetConfiguration(Guid.Empty, ConfigurationModel.GetDefault(_modules));
-                //sf.LoadData(cfg);
-
-                var ms = new SettingsModel
+                cfg.ModulesSettings.ForEach(m => m.SetName(_modules.Where(x => x.Id == m.Id).Select(x => x.Name).FirstOrDefault()));
+                var sm = new SettingsModel
                 {
-                    //Modules = cfg.ModulesSettings,
                     GlobalSettings = cfg,
-                    ModulesSettings = _modules.Select(x => new ModuleSettingsModel { Name = x.Name, SettingsObject = x.GetConfiguration() })
+                    ModulesSettings = _modules.Select(x => x.GetConfiguration())
                 };
 
-                sf.LoadDataAll(ms);
+                var sf = new SettingsForm(_config, _consoleHandler, sm);
+                sf.OnApply += (s, e) => { ApplyConfiguration(); _config.Save(); };
+                sf.Show();
             });
 
             //_settingsManager.LoadSettings();
@@ -179,7 +175,7 @@ namespace Deskband
 
             foreach (var ms in cfg.ModulesSettings)
             {
-                _moduleContainer.PositionModules(ms.Id, _sp.MakeSize(ms.Width, ms.Height), _sp.MakePoint(ms.PositionX, ms.PositionY));
+                _moduleContainer.PositionModules(ms.Id, _sp.MakeSize(ms.Width, ms.Height), _sp.MakePoint(ms.Left, ms.Top));
             }
 
             foreach (var m in _modules)
