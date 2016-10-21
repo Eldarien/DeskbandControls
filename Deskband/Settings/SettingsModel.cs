@@ -9,10 +9,13 @@ namespace Deskband.Settings
 {
     public class SettingsModel
     {
-        [SettingsNode("Global Settings")]
-        public ConfigurationModel GlobalSettings { get; set; }
+        //[SettingsNode("Global Settings")]
+        //public ConfigurationModel GlobalSettings { get; set; }
 
-        [SettingsNodeList("Modules Settings")]
-        public IEnumerable<object> ModulesSettings { get; set; }
+        //[SettingsNodeList("Modules Settings")]
+        //public IEnumerable<object> ModulesSettings { get; set; }
+
+        [SettingsNodeList("Settings")]
+        public IEnumerable<object> SettingsModels { get; set; }
     }
 }

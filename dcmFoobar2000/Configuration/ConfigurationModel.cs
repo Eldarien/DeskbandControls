@@ -60,6 +60,8 @@ namespace dcmFoobar2000.Configuration
         public static readonly ConfigurationModel Default = new ConfigurationModel
         {
             ModuleId = Foobar2000Module.ModuleId,
+            Width = 260,
+            Height = 30,
 
             InternetSearchFormat = "$if(%artist%,%artist%' - ')%title%",
             InternetSearchUrl = "https://www.google.com/search?q=%q%",

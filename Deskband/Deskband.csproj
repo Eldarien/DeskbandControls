@@ -107,6 +107,7 @@
     <Compile Include="Configuration\ConfigurationModel.cs" />
     <Compile Include="Configuration\DisplayMode.cs" />
     <Compile Include="Configuration\FloatingWindowSettings.cs" />
+    <Compile Include="Configuration\GeneralSettings.cs" />
     <Compile Include="Configuration\ModuleSettings.cs" />
     <Compile Include="Extensions\EnumExtensions.cs" />
     <Compile Include="Extensions\IntExtensions.cs" />

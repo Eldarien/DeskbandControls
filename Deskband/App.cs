@@ -1,5 +1,6 @@
 ﻿using Deskband.Configuration;
 using Deskband.Console;
+using Deskband.Core.Configuration;
 using Deskband.Core.Interfaces;
 using Deskband.Settings;
 using Deskband.UI;
@@ -85,12 +86,13 @@ namespace Deskband
             _menu.AddItem(Guid.Empty, null, "Settings", OnSettingsMenuItemClick);
             _menu.AddItem(Guid.Empty, null, "New Settings", () =>
             {
-                var cfg = _config.GetConfiguration(Guid.Empty, ConfigurationModel.GetDefault(_modules));
-                cfg.ModulesSettings.ForEach(m => m.SetName(_modules.Where(x => x.Id == m.Id).Select(x => x.Name).FirstOrDefault()));
+                var cfg = _config.GetConfiguration(Guid.Empty, ConfigurationModel.GetDefault());
+                //cfg.ModulesSettings.ForEach(m => m.SetName(_modules.Where(x => x.Id == m.Id).Select(x => x.Name).FirstOrDefault()));
                 var sm = new SettingsModel
                 {
-                    GlobalSettings = cfg,
-                    ModulesSettings = _modules.Select(x => x.GetConfiguration())
+                    //GlobalSettings = cfg,
+                    //ModulesSettings = _modules.Select(x => x.GetConfiguration())
+                    SettingsModels = new List<object> { cfg }.Concat(_modules.Select(x => x.GetConfiguration()))
                 };
 
                 var sf = new SettingsForm(_config, _consoleHandler, sm);
@@ -152,20 +154,20 @@ namespace Deskband
 
         private void ApplyConfiguration()
         {
-            var cfg = _config.GetConfiguration(Guid.Empty, ConfigurationModel.GetDefault(_modules));
-            cfg.ModulesSettings.RemoveAll(ms => !_modules.Any(m => m.Id == ms.Id));
+            var cfg = _config.GetConfiguration(Guid.Empty, ConfigurationModel.GetDefault());
+            //cfg.ModulesSettings.RemoveAll(ms => !_modules.Any(m => m.Id == ms.Id));
             _config.UpdateConfiguration(cfg);
 
             _band.Controls.Clear();
             _floatingForm.Controls.Clear();
 
-            if (cfg.DisplayMode == DisplayMode.Deskband)
+            if (cfg.GeneralSettings.DisplayMode == DisplayMode.Deskband)
             {
                 _floatingForm.Hide();
                 _band.Visible = true;
                 _band.Controls.Add(_moduleContainer.AsControl());
             }
-            else if (cfg.DisplayMode == DisplayMode.FloatingWindow)
+            else if (cfg.GeneralSettings.DisplayMode == DisplayMode.FloatingWindow)
             {
                 _band.Visible = false;
                 _floatingForm.Show();
@@ -173,14 +175,19 @@ namespace Deskband
             }
             _floatingForm.ApplyConfiguration();
 
-            foreach (var ms in cfg.ModulesSettings)
-            {
-                _moduleContainer.PositionModules(ms.Id, _sp.MakeSize(ms.Width, ms.Height), _sp.MakePoint(ms.Left, ms.Top));
-            }
+            //foreach (var ms in cfg.ModulesSettings)
+            //{
+            //    _moduleContainer.PositionModules(ms.Id, _sp.MakeSize(ms.Width, ms.Height), _sp.MakePoint(ms.Left, ms.Top));
+            //}
 
-            foreach (var m in _modules)
+            var modulesWithCfg = _modules
+                .Select(x => new { Module = x, Configuration = x.GetConfiguration() as ConfigurationObjectBase })
+                .OrderBy(x => x.Configuration.Order);
+
+            foreach (var m in modulesWithCfg)
             {
-                m.ApplyConfiguration();
+                _moduleContainer.PositionModules(m.Module.Id, _sp.MakeSize(m.Configuration.Width, m.Configuration.Height));
+                m.Module.ApplyConfiguration();
             }
         }
 

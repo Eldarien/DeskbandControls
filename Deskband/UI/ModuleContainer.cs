@@ -1,11 +1,11 @@
 ﻿using Deskband.Core.Interfaces;
+using Deskband.Core.WinApi;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
-using System.Drawing;
 using System.Windows.Forms;
-using Deskband.Core.WinApi;
 
 namespace Deskband.UI
 {
@@ -65,11 +65,11 @@ namespace Deskband.UI
             return this;
         }
 
-        public void PositionModules(Guid moduleId, Size size, Point location)
+        public void PositionModules(Guid moduleId, Size size)//, Point location)
         {
             var entry = Entry(moduleId);
             entry.Container.Size = size;
-            entry.Container.Location = location;
+            //entry.Container.Location = location;
             LayoutModules();
         }
 

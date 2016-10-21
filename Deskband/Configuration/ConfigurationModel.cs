@@ -1,5 +1,6 @@
 ﻿using Deskband.Core.Configuration;
 using Deskband.Core.Interfaces;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -10,29 +11,37 @@ namespace Deskband.Configuration
 {
     public class ConfigurationModel : ConfigurationObjectBase
     {
-        [DisplayName("Deskband Mode")]
-        public DisplayMode DisplayMode { get; set; }
+        public override string ToString()
+        {
+            return "Deskband Controls Configuration";
+        }
+
+        [Browsable(false), JsonIgnore]
+        public override int Order { get; set; }
+
+        [Browsable(false), JsonIgnore]
+        public override int Width { get; set; }
+
+        [Browsable(false), JsonIgnore]
+        public override int Height { get; set; }
 
         [Browsable(false)]
-        [SettingsNodeList("Modules Settings")]
-        public List<ModuleSettings> ModulesSettings { get; set; } = new List<ModuleSettings>();
+        [SettingsNode("General Settings")]
+        public GeneralSettings GeneralSettings { get; set; } = GeneralSettings.GetDefault();
+
+        //[Browsable(false)]
+        //[SettingsNodeList("Modules Settings")]
+        //public List<ModuleSettings> ModulesSettings { get; set; } = new List<ModuleSettings>();
 
         [Browsable(false)]
         [SettingsNode("Floating Window")]
         public FloatingWindowSettings FloatingWindowSettings { get; set; } = FloatingWindowSettings.GetDefault();
 
-        public static ConfigurationModel GetDefault(IEnumerable<IModule> modules)
+        public static ConfigurationModel GetDefault()
         {
             return new ConfigurationModel
             {
-                ModuleId = Guid.Empty,
-                DisplayMode = DisplayMode.Deskband,
-                ModulesSettings = modules.Select(x => new ModuleSettings
-                {
-                    Id = x.Id,
-                    Width = 260,
-                    Height = 30
-                }).ToList()
+                ModuleId = Guid.Empty
             };
         }
     }

@@ -41,9 +41,9 @@ namespace Deskband.Settings
 
         private void BtnApply_Click(object sender, EventArgs e)
         {
-            _config.UpdateConfiguration(_settingsModel.GlobalSettings);
-            foreach (var m in _settingsModel.ModulesSettings.Cast<ConfigurationObjectBase>())
-                _config.UpdateConfiguration(m);
+            //_config.UpdateConfiguration(_settingsModel.GlobalSettings);
+            //foreach (var m in _settingsModel.ModulesSettings.Cast<ConfigurationObjectBase>())
+            //    _config.UpdateConfiguration(m);
 
             OnApply?.Invoke(this, EventArgs.Empty);
         }
@@ -82,11 +82,44 @@ namespace Deskband.Settings
 
         private void BuildTreeView()
         {
+            //var root = _settingsModel.SettingsModels.Cast<ConfigurationObjectBase>().FirstOrDefault(x => x.ModuleId == Guid.Empty);
+            //var others = _settingsModel.SettingsModels.Cast<ConfigurationObjectBase>().Except(new[] { root });
             AddTreeNode(_settingsModel, "ROOT", null, true);
         }
 
-        private TreeNode AddTreeNode(object data, string text, TreeNode parentNode, bool isRootNode = false)
+        private TreeNode GetTreeNodeByModuleId(TreeNodeCollection nodes, Guid id)
         {
+            foreach (TreeNode node in nodes)
+            {
+                _console.AddDebugLine("Cheking node " + node.Text);
+                var ms = node.Tag as ModuleSettings;
+                if (ms == null) continue;
+                _console.AddDebugLine("Found module settings " + ms.Id);
+                if (ms.Id != id) continue;
+                _console.AddDebugLine("Found It!");
+                return node;
+            }
+            foreach (TreeNode node in nodes)
+            {
+                var result = GetTreeNodeByModuleId(node.Nodes, id);
+                if (result != null) return result;
+            }
+            return null;
+        }
+
+        private TreeNode AddTreeNode(object data, string text, TreeNode parentNode, bool isRootNode = false, bool doNotCheckForModuleNode = false)
+        {
+            // Search for node with specified Id, if found - use it as parent node
+            var confModelData = data as ConfigurationObjectBase;
+            if (!doNotCheckForModuleNode && confModelData != null && confModelData.ModuleId != Guid.Empty)
+            {
+                var moduleNode = GetTreeNodeByModuleId(tvItems.Nodes, confModelData.ModuleId);
+                if (moduleNode != null)
+                {
+                    return AddTreeNode(data, text, moduleNode, isRootNode, true);
+                }
+            }
+
             var node = isRootNode ? null : new TreeNode { Text = text, Tag = data };
             if (!isRootNode)
             {
