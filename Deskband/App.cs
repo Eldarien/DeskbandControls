@@ -70,6 +70,7 @@ namespace Deskband
             ApplyConfiguration();
 
             //
+            _band.TaskbarResized += (s, e) => ApplyConfiguration();
 
             // DPI
             _band.DPIChanged += (s, e) => ApplyConfiguration();
@@ -90,10 +91,9 @@ namespace Deskband
                 //cfg.ModulesSettings.ForEach(m => m.SetName(_modules.Where(x => x.Id == m.Id).Select(x => x.Name).FirstOrDefault()));
                 var sm = new SettingsModel
                 {
-                    //GlobalSettings = cfg,
-                    //ModulesSettings = _modules.Select(x => x.GetConfiguration())
-                    SettingsModels = new List<object> { cfg }.Concat(_modules.Select(x => x.GetConfiguration()))
+                    SettingsModels = new List<object> { cfg }
                 };
+                sm.SettingsModels.AddRange(_modules.Select(x => x.GetConfiguration()));
 
                 var sf = new SettingsForm(_config, _consoleHandler, sm);
                 sf.OnApply += (s, e) => { ApplyConfiguration(); _config.Save(); };
@@ -146,9 +146,16 @@ namespace Deskband
         {
             _consoleHandler.AddDebugLine(String.Format("Module container resized: {0}x{1}", _moduleContainer.Size.Width, _moduleContainer.Size.Height));
 
-            _band.MinSize = new Size(_band.Visible ? _moduleContainer.Size.Width : 10, 0); // 10px reserve for accessing context menu
+            if (_band.Visible)
+            {
+                var tsi = _band.GetTaskbarSizeInfo();
+                _band.MinSize = new Size(tsi.IsHorizontal ? _moduleContainer.Size.Width : _moduleContainer.Size.Height, 0);
+            }
+            else
+            {
+                _band.MinSize = new Size(10, 0);
+            }
             _band.ExecBandInfoChangedCommand();
-
             _floatingForm.Size = _moduleContainer.Size;
         }
 
@@ -180,15 +187,19 @@ namespace Deskband
             //    _moduleContainer.PositionModules(ms.Id, _sp.MakeSize(ms.Width, ms.Height), _sp.MakePoint(ms.Left, ms.Top));
             //}
 
-            var modulesWithCfg = _modules
+            var modulesSizeInfo = _modules
                 .Select(x => new { Module = x, Configuration = x.GetConfiguration() as ConfigurationObjectBase })
-                .OrderBy(x => x.Configuration.Order);
+                .OrderBy(x => x.Configuration.Order)
+                .Select(m => new ModuleSizeInfo(m.Module.Id, _sp.MakeSize(m.Configuration.Width, m.Configuration.Height)));
 
-            foreach (var m in modulesWithCfg)
+            _moduleContainer.PositionModules(modulesSizeInfo);
+
+            foreach (var m in _modules)
             {
-                _moduleContainer.PositionModules(m.Module.Id, _sp.MakeSize(m.Configuration.Width, m.Configuration.Height));
-                m.Module.ApplyConfiguration();
+                //_moduleContainer.PositionModules(m.Module.Id, _sp.MakeSize(m.Configuration.Width, m.Configuration.Height));
+                m.ApplyConfiguration();
             }
+            
         }
 
         private void HandleDoubleClick(Point location)

@@ -12,6 +12,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
 using Deskband.Core.EventArguments;
+using Deskband.UI;
 
 namespace Deskband
 {
@@ -30,6 +31,7 @@ namespace Deskband
 
         public event EventHandler Close;
         public event EventHandler<ValueEventArgs<int>> DPIChanged;
+        public event EventHandler TaskbarResized;
 
         private IntPtr _taskbarWindowHandle;
         private IKernel _kernel;
@@ -49,8 +51,7 @@ namespace Deskband
 
                 using (var g = CreateGraphics())
                 {
-                    if (DPIChanged != null)
-                        DPIChanged(this, new ValueEventArgs<int>((int)g.DpiX));
+                    DPIChanged?.Invoke(this, new ValueEventArgs<int>((int)g.DpiX));
                 }
 
                 foreach (var m in _kernel.GetAll<IModule>())
@@ -75,11 +76,8 @@ namespace Deskband
                 var point = new WinApiTypes.POINT { X = x, Y = y };
                 if (User32.ScreenToClient(_taskbarWindowHandle, ref point))
                 {
-                    WinApiTypes.RECT r;
-                    User32.GetWindowRect(_taskbarWindowHandle, out r);
-                    bool isHorizontal = (r.right - r.left) > (r.bottom - r.top);
-
-                    if (isHorizontal && point.Y == 0 || !isHorizontal && point.X == 0)
+                    var tsi = GetTaskbarSizeInfo();
+                    if (tsi.IsHorizontal && point.Y == 0 || !tsi.IsHorizontal && point.X == 0)
                     {
                         m.Result = (IntPtr)WinApiTypes.HTTRANSPARENT;
                         return;
@@ -90,8 +88,15 @@ namespace Deskband
             if (m.Msg == WinApiTypes.WM_DPICHANGED)
             {
                 int dpi = ((int)m.WParam).LowWord();
-                if (DPIChanged != null)
-                    DPIChanged(this, new ValueEventArgs<int>(dpi));
+                DPIChanged?.Invoke(this, new ValueEventArgs<int>(dpi));
+            }
+
+            if (m.Msg == WinApiTypes.WM_SETTINGCHANGE)
+            {
+                if ((int)m.WParam == WinApiTypes.SPI_SETWORKAREA)
+                {
+                    TaskbarResized?.Invoke(this, EventArgs.Empty);
+                }
             }
 
             base.WndProc(ref m);
@@ -99,9 +104,7 @@ namespace Deskband
 
         protected override void OnClose()
         {
-            if (Close != null)
-                Close(this, EventArgs.Empty);
-
+            Close?.Invoke(this, EventArgs.Empty);
             base.OnClose();
         }
 
@@ -109,6 +112,13 @@ namespace Deskband
         {
             _kernel.Dispose();
             base.Dispose(disposing);
+        }
+
+        public TaskbarSizeInfo GetTaskbarSizeInfo()
+        {
+            WinApiTypes.RECT r;
+            User32.GetWindowRect(_taskbarWindowHandle, out r);
+            return new TaskbarSizeInfo { Rect = r };
         }
     }
 }

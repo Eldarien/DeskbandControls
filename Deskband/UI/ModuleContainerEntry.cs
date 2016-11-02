@@ -19,5 +19,7 @@ namespace Deskband.UI
             Container.Dock = DockStyle.None;
             //Container.BorderStyle = BorderStyle.FixedSingle;
         }
+
+        public int Order { get; set; }
     }
 }

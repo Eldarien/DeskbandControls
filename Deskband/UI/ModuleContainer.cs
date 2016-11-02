@@ -11,7 +11,13 @@ namespace Deskband.UI
 {
     public class ModuleContainer : ControlsContainer, IModuleContainer
     {
+        private readonly Band _band;
         private List<ModuleContainerEntry> _entries = new List<ModuleContainerEntry>();
+
+        public ModuleContainer(Band band)
+        {
+            _band = band;
+        }
 
         private ModuleContainerEntry Entry(Guid moduleId)
         {
@@ -65,10 +71,16 @@ namespace Deskband.UI
             return this;
         }
 
-        public void PositionModules(Guid moduleId, Size size)//, Point location)
+        public void PositionModules(IEnumerable<ModuleSizeInfo> moduleSizeInfo)
         {
-            var entry = Entry(moduleId);
-            entry.Container.Size = size;
+            int index = 0;
+            foreach (var m in moduleSizeInfo)
+            {
+                var entry = Entry(m.Id);
+                entry.Container.Size = m.Size;
+                entry.Order = index;
+                index++;
+            }
             //entry.Container.Location = location;
             LayoutModules();
         }
@@ -76,12 +88,51 @@ namespace Deskband.UI
         private void LayoutModules()
         {
             //TODO: layout controls, then calculate bounding box for visible controls and call OnResize event
-            var width = _entries.Where(x => x.Container.Visible).Sum(x => x.Container.Size.Width);
-            var height = _entries.Where(x => x.Container.Visible).Max(x => x.Container.Size.Height);
-            this.Size = new Size(width, height);
+
+            var tsi = _band.GetTaskbarSizeInfo();
+
+            var resultSize = new Size(10, this.Size.Height);
+
+            var visibleEntries = _entries.Where(x => x.Container.Visible);
+            if (visibleEntries.Any())
+            {
+                // TODO: place controls in a row or column depending on taskbar position
+                // try to put them in squre bounding box if possible
+
+                bool isHorizontal = tsi.IsHorizontal;
+                int coord = 0;
+                foreach (var e in visibleEntries)
+                {
+                    if (isHorizontal)
+                    {
+                        e.Container.Left = coord;
+                        e.Container.Top = 0;
+                        coord += e.Container.Width;
+                    }
+                    else
+                    {
+                        e.Container.Left = 0;
+                        e.Container.Top = coord;
+                        coord += e.Container.Height;
+                    }
+                }
+
+                // calculate bounding box
+                int xMin = visibleEntries.Min(x => x.Container.Left);
+                int yMin = visibleEntries.Min(x => x.Container.Top);
+                int xMax = visibleEntries.Max(x => x.Container.Right);
+                int yMax = visibleEntries.Max(x => x.Container.Bottom);
+                resultSize = new Size(xMax - xMin, yMax - yMin);
+            }
+
+            this.Size = resultSize;
+            this.BackColor = Color.Navy;
+            
             //this.OnResize(EventArgs.Empty);
             this.Refresh();
         }
+
+        
 
         public Guid? LocateModuleAtPoint(Point location)
         {

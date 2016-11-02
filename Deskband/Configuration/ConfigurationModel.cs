@@ -11,10 +11,7 @@ namespace Deskband.Configuration
 {
     public class ConfigurationModel : ConfigurationObjectBase
     {
-        public override string ToString()
-        {
-            return "Deskband Controls Configuration";
-        }
+        public override string ToString() => "Deskband Controls Configuration";
 
         [Browsable(false), JsonIgnore]
         public override int Order { get; set; }
@@ -41,7 +38,9 @@ namespace Deskband.Configuration
         {
             return new ConfigurationModel
             {
-                ModuleId = Guid.Empty
+                ModuleId = Guid.Empty,
+                Width = 200,
+                Height = 32
             };
         }
     }

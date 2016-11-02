@@ -86,8 +86,7 @@
       </Command>
     </PreBuildEvent>
     <PostBuildEvent>
-      <Command>start "" "$(SolutionDir)\Scripts\copy_plugin.cmd"
-start "" "$(SolutionDir)\Scripts\package_plugin.cmd"</Command>
+      <Command>start "" "$(SolutionDir)\Scripts\package_plugin.cmd"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>

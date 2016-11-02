@@ -42,8 +42,8 @@ namespace Deskband.Settings
         private void BtnApply_Click(object sender, EventArgs e)
         {
             //_config.UpdateConfiguration(_settingsModel.GlobalSettings);
-            //foreach (var m in _settingsModel.ModulesSettings.Cast<ConfigurationObjectBase>())
-            //    _config.UpdateConfiguration(m);
+            foreach (var m in _settingsModel.SettingsModels.Cast<ConfigurationObjectBase>())
+                _config.UpdateConfiguration(m);
 
             OnApply?.Invoke(this, EventArgs.Empty);
         }
@@ -56,7 +56,7 @@ namespace Deskband.Settings
         private void PgSettings_SelectedGridItemChanged(object sender, SelectedGridItemChangedEventArgs e)
         {
             var item = e.NewSelection.Value;
-            //MessageBox.Show(item.ToString()); //TODO: display actions/controls supported by selected item
+            //TODO: display actions/controls supported by selected item
 
             //var it = item.GetType();
             //var ci = it.GetInterfaces().Where(x => x.IsGenericType && x.GetGenericTypeDefinition() == typeof(IConfigurationItemCommands<>)).ToList();
@@ -85,6 +85,14 @@ namespace Deskband.Settings
             //var root = _settingsModel.SettingsModels.Cast<ConfigurationObjectBase>().FirstOrDefault(x => x.ModuleId == Guid.Empty);
             //var others = _settingsModel.SettingsModels.Cast<ConfigurationObjectBase>().Except(new[] { root });
             AddTreeNode(_settingsModel, "ROOT", null, true);
+
+            // Remove root node
+            var rootNode = tvItems.Nodes[0];
+            foreach (TreeNode node in rootNode.Nodes)
+            {
+                tvItems.Nodes.Add(node);
+            }
+            tvItems.Nodes.Remove(rootNode);
         }
 
         private TreeNode GetTreeNodeByModuleId(TreeNodeCollection nodes, Guid id)

@@ -330,6 +330,9 @@ namespace Deskband.Core.WinApi
         // alpha format
         public const int AC_SRC_ALPHA = 0x01;
 
+        // SystemParametersInfo
+        public const int SPI_SETWORKAREA = 0x002F;
+
         // ShowWindow
 
         public const int SW_HIDE = 0;
@@ -354,6 +357,7 @@ namespace Deskband.Core.WinApi
         public const int WM_NCHITTEST = 0x0084;
         public const int WM_COPYDATA = 0x4A;
         public const int WM_DPICHANGED = 0x02E0;
+        public const int WM_SETTINGCHANGE = 0x001A;
 
         public struct COPYDATASTRUCT
         {

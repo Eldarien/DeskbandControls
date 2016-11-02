@@ -16,6 +16,6 @@ namespace Deskband.Settings
         //public IEnumerable<object> ModulesSettings { get; set; }
 
         [SettingsNodeList("Settings")]
-        public IEnumerable<object> SettingsModels { get; set; }
+        public List<object> SettingsModels { get; set; }
     }
 }
