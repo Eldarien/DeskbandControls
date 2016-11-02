@@ -101,7 +101,7 @@ namespace Deskband.UI
 
                 bool isHorizontal = tsi.IsHorizontal;
                 int coord = 0;
-                foreach (var e in visibleEntries)
+                foreach (var e in visibleEntries.OrderBy(x => x.Order))
                 {
                     if (isHorizontal)
                     {
