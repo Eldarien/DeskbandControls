@@ -81,24 +81,17 @@ namespace Deskband.UI
                 entry.Order = index;
                 index++;
             }
-            //entry.Container.Location = location;
             LayoutModules();
         }
 
         private void LayoutModules()
         {
-            //TODO: layout controls, then calculate bounding box for visible controls and call OnResize event
-
             var tsi = _band.GetTaskbarSizeInfo();
-
             var resultSize = new Size(10, this.Size.Height);
-
             var visibleEntries = _entries.Where(x => x.Container.Visible);
             if (visibleEntries.Any())
             {
-                // TODO: place controls in a row or column depending on taskbar position
-                // try to put them in squre bounding box if possible
-
+                // place controls in a row or column depending on taskbar position
                 bool isHorizontal = tsi.IsHorizontal;
                 int coord = 0;
                 foreach (var e in visibleEntries.OrderBy(x => x.Order))
@@ -126,13 +119,10 @@ namespace Deskband.UI
             }
 
             this.Size = resultSize;
-            this.BackColor = Color.Navy;
+            this.BorderStyle = BorderStyle.FixedSingle;
             
-            //this.OnResize(EventArgs.Empty);
             this.Refresh();
         }
-
-        
 
         public Guid? LocateModuleAtPoint(Point location)
         {

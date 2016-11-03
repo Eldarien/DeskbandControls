@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Windows.Forms;
 
 namespace Deskband
 {
@@ -146,7 +147,7 @@ namespace Deskband
         {
             _consoleHandler.AddDebugLine(String.Format("Module container resized: {0}x{1}", _moduleContainer.Size.Width, _moduleContainer.Size.Height));
 
-            if (_band.Visible)
+            if (!_floatingForm.Visible)
             {
                 var tsi = _band.GetTaskbarSizeInfo();
                 _band.MinSize = new Size(tsi.IsHorizontal ? _moduleContainer.Size.Width : _moduleContainer.Size.Height, 0);
@@ -155,6 +156,7 @@ namespace Deskband
             {
                 _band.MinSize = new Size(10, 0);
             }
+
             _band.ExecBandInfoChangedCommand();
             _floatingForm.Size = _moduleContainer.Size;
         }
@@ -162,7 +164,6 @@ namespace Deskband
         private void ApplyConfiguration()
         {
             var cfg = _config.GetConfiguration(Guid.Empty, ConfigurationModel.GetDefault());
-            //cfg.ModulesSettings.RemoveAll(ms => !_modules.Any(m => m.Id == ms.Id));
             _config.UpdateConfiguration(cfg);
 
             _band.Controls.Clear();
@@ -170,22 +171,15 @@ namespace Deskband
 
             if (cfg.GeneralSettings.DisplayMode == DisplayMode.Deskband)
             {
-                _floatingForm.Hide();
-                _band.Visible = true;
+                _floatingForm.Visible = false;
                 _band.Controls.Add(_moduleContainer.AsControl());
             }
-            else if (cfg.GeneralSettings.DisplayMode == DisplayMode.FloatingWindow)
+            else
             {
-                _band.Visible = false;
-                _floatingForm.Show();
+                _floatingForm.Visible = true;
                 _floatingForm.Controls.Add(_moduleContainer.AsControl());
+                _floatingForm.ApplyConfiguration();
             }
-            _floatingForm.ApplyConfiguration();
-
-            //foreach (var ms in cfg.ModulesSettings)
-            //{
-            //    _moduleContainer.PositionModules(ms.Id, _sp.MakeSize(ms.Width, ms.Height), _sp.MakePoint(ms.Left, ms.Top));
-            //}
 
             var modulesSizeInfo = _modules
                 .Select(x => new { Module = x, Configuration = x.GetConfiguration() as ConfigurationObjectBase })
@@ -193,13 +187,13 @@ namespace Deskband
                 .Select(m => new ModuleSizeInfo(m.Module.Id, _sp.MakeSize(m.Configuration.Width, m.Configuration.Height)));
 
             _moduleContainer.PositionModules(modulesSizeInfo);
-
+            
             foreach (var m in _modules)
             {
-                //_moduleContainer.PositionModules(m.Module.Id, _sp.MakeSize(m.Configuration.Width, m.Configuration.Height));
                 m.ApplyConfiguration();
             }
-            
+
+            OnResize(this, EventArgs.Empty);
         }
 
         private void HandleDoubleClick(Point location)
@@ -211,31 +205,6 @@ namespace Deskband
                 module.DoubleClick();
             }
         }
-
-        //private void OnApplySettings(object sender, EventArgs e)
-        //{
-        //    if (_floatingForm.Controls.Contains(_controlHost))
-        //        _floatingForm.Controls.Remove(_controlHost);
-        //    if (_band.Controls.Contains(_controlHost))
-        //        _band.Controls.Remove(_controlHost);
-
-        //    if (_settingsManager.Settings.General.FloatingMode)
-        //    {
-        //        _floatingForm.Controls.Add(_controlHost);
-
-        //        ShowFloatingWindow();
-        //        HideBand();
-
-        //        _floatingForm.LoadSettings();
-        //    }
-        //    else
-        //    {
-        //        _band.Controls.Add(_controlHost);
-
-        //        HideFloatingWindow();
-        //        ShowBand();
-        //    }
-        //}
 
         private void OnSettingsMenuItemClick()
         {
