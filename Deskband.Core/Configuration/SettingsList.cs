@@ -6,8 +6,8 @@ using System.Text;
 
 namespace Deskband.Core.Configuration
 {
-    [TypeConverter(typeof(ExpandableCollectionConverter))]
-    [Editor(typeof(NoCollectionEditor), typeof(System.Drawing.Design.UITypeEditor))]
+    //[TypeConverter(typeof(ExpandableCollectionConverter))]
+    //[Editor(typeof(NoCollectionEditor), typeof(System.Drawing.Design.UITypeEditor))]
     public class SettingsList<T> : List<T> where T : SettingsObject
     {
     }

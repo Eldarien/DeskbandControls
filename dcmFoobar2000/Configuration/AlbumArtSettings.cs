@@ -2,8 +2,10 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Drawing.Design;
 using System.Linq;
 using System.Text;
+using System.Windows.Forms.Design;
 
 namespace dcmFoobar2000.Configuration
 {
@@ -24,7 +26,7 @@ namespace dcmFoobar2000.Configuration
         [Category("Size")]
         public int Height { get; set; }
 
-        [Category("Image"), DisplayName("Stub Image Path")]
+        [Category("Image"), DisplayName("Stub Image Path"), Editor(typeof(FileNameEditor), typeof(UITypeEditor))]
         public string StubImagePath { get; set; }
 
         [Category("Image"), DisplayName("Do Not Use Stub Image"), TypeConverter(typeof(YesNoBooleanConverter))]

@@ -3,8 +3,10 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
+using System.Drawing.Design;
 using System.Linq;
 using System.Text;
+using System.Windows.Forms.Design;
 
 namespace dcmFoobar2000.Configuration
 {
@@ -25,10 +27,10 @@ namespace dcmFoobar2000.Configuration
         [Category("Size")]
         public int Height { get; set; }
 
-        [Category("Icon"), DisplayName("Icon Path")]
+        [Category("Icon"), DisplayName("Icon Path"), Editor(typeof(FileNameEditor), typeof(UITypeEditor))]
         public string Icon1Path { get; set; }
 
-        [Category("Icon"), DisplayName("Secondary Icon Path")]
+        [Category("Icon"), DisplayName("Secondary Icon Path"), Editor(typeof(FileNameEditor), typeof(UITypeEditor))]
         public string Icon2Path { get; set; }
 
         [Category("Icon"), DisplayName("Colorize Color")]

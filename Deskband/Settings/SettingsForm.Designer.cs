@@ -77,6 +77,7 @@
             this.Controls.Add(this.tsCommands);
             this.Controls.Add(this.btnApply);
             this.Controls.Add(this.pgSettings);
+            this.Font = new System.Drawing.Font("Segoe UI Semibold", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.Name = "SettingsForm";
             this.Text = "Deskband Controls Settings";
             this.ResumeLayout(false);

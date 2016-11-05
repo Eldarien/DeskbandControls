@@ -8,6 +8,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Windows.Forms;
 
@@ -48,9 +49,46 @@ namespace Deskband.Settings
             OnApply?.Invoke(this, EventArgs.Empty);
         }
 
-        private void TvItems_AfterSelect(object sender, TreeViewEventArgs e)
+        private void TvItems_AfterSelect(object sender, TreeViewEventArgs ea)
         {
-            pgSettings.SelectedObject = e.Node.Tag;
+            tsCommands.Items.Clear();
+            var item = ea.Node.Tag;
+            var prop = item as ModelDataWithPropertyInfo;
+            if (prop == null)
+            {
+                var itemData = item as ModelDataWithParentData;
+                if (itemData != null)
+                {
+                    var commands = itemData.Data.GetType().GetCustomAttributes(typeof(SettingsCommandAttribute), false);
+                    foreach (var cmd in commands.Cast<SettingsCommandAttribute>())
+                    {
+                        _console.AddLine("attribute command, name = " + cmd.Name);
+
+                        var tsItem = new ToolStripButton(cmd.Name);
+                        tsItem.Click += (s, e) => { cmd.ExecuteCommand(itemData.ParentData, itemData.Data); BuildTreeView(); };
+                        tsCommands.Items.Add(tsItem);
+                    }
+                    pgSettings.SelectedObject = itemData.Data;
+                }
+                else
+                {
+                    pgSettings.SelectedObject = item;
+                }
+            }
+            else
+            {
+                var commands = prop.Info.GetCustomAttributes(typeof(SettingsCommandAttribute), false);
+                foreach (var cmd in commands.Cast<SettingsCommandAttribute>())
+                {
+                    _console.AddLine("prop attribute command, name = " + cmd.Name);
+
+                    var tsItem = new ToolStripButton(cmd.Name);
+                    tsItem.Click += (s, e) => { cmd.ExecuteCommand(prop.Data, null); BuildTreeView(); };
+                    tsCommands.Items.Add(tsItem);
+                }
+
+                pgSettings.SelectedObject = null;
+            }
         }
 
         private void PgSettings_SelectedGridItemChanged(object sender, SelectedGridItemChangedEventArgs e)
@@ -71,19 +109,22 @@ namespace Deskband.Settings
             //    _console.AddLine("list " + li);
             //}
 
-            var commands = e.NewSelection.PropertyDescriptor.Attributes.Cast<Attribute>().Where(x => x is SettingsCommandAttribute)
-                .Union(e.NewSelection.Value.GetType().GetCustomAttributes(typeof(SettingsCommandAttribute), false));
-            foreach (var c in commands.Cast<SettingsCommandAttribute>())
-            {
-                //c.ExecuteCommand(pgSettings.SelectedObject, item);
-                _console.AddLine("attribute command, name = " + c.Name);
-            }
+            //var commands = e.NewSelection.PropertyDescriptor
+            //    .Attributes.Cast<Attribute>().Where(x => x is SettingsCommandAttribute)
+            //    .Union(e.NewSelection.Value.GetType().GetCustomAttributes(typeof(SettingsCommandAttribute), false));
+            //foreach (var c in commands.Cast<SettingsCommandAttribute>())
+            //{
+            //    //c.ExecuteCommand(pgSettings.SelectedObject, item);
+            //    _console.AddLine("attribute command, name = " + c.Name);
+            //}
         }
 
         private void BuildTreeView()
         {
             //var root = _settingsModel.SettingsModels.Cast<ConfigurationObjectBase>().FirstOrDefault(x => x.ModuleId == Guid.Empty);
             //var others = _settingsModel.SettingsModels.Cast<ConfigurationObjectBase>().Except(new[] { root });
+            // tvItems.Nodes.Clear(); // ?????????
+
             AddTreeNode(_settingsModel, "ROOT", null, true);
 
             // Remove root node
@@ -115,7 +156,8 @@ namespace Deskband.Settings
             return null;
         }
 
-        private TreeNode AddTreeNode(object data, string text, TreeNode parentNode, bool isRootNode = false, bool doNotCheckForModuleNode = false)
+        private TreeNode AddTreeNode(object data, string text, TreeNode parentNode,
+            bool isRootNode = false, bool doNotCheckForModuleNode = false, object parentData = null)
         {
             // Search for node with specified Id, if found - use it as parent node
             var confModelData = data as ConfigurationObjectBase;
@@ -128,7 +170,7 @@ namespace Deskband.Settings
                 }
             }
 
-            var node = isRootNode ? null : new TreeNode { Text = text, Tag = data };
+            var node = isRootNode ? null : new TreeNode { Text = text, Tag = parentData == null ? data : new ModelDataWithParentData(data, parentData) };
             if (!isRootNode)
             {
                 if (parentNode == null)
@@ -139,7 +181,7 @@ namespace Deskband.Settings
 
             if (data != null)
             {
-                var props = data.GetType().GetProperties(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
+                var props = data.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance);
                 foreach (var prop in props)
                 {
                     foreach (var a in prop.GetCustomAttributes(typeof(SettingsNodeAttribute), false).Cast<SettingsNodeAttribute>())
@@ -153,10 +195,10 @@ namespace Deskband.Settings
                         var list = prop.GetValue(data, null) as IEnumerable<object>;
                         if (list != null)
                         {
-                            var listNode = AddTreeNode(null, a.Name, node);
+                            var listNode = AddTreeNode(new ModelDataWithPropertyInfo(data, prop), a.Name, node);
                             foreach (var item in list)
                             {
-                                AddTreeNode(item, item.ToString(), listNode);
+                                AddTreeNode(item, item.ToString(), listNode, parentData: data);
                             }
                         }
                     }

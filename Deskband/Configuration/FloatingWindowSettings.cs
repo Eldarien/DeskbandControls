@@ -3,8 +3,10 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
+using System.Drawing.Design;
 using System.Linq;
 using System.Text;
+using System.Windows.Forms.Design;
 
 namespace Deskband.Configuration
 {
@@ -19,13 +21,13 @@ namespace Deskband.Configuration
         public double Opacity { get; set; }
         public Color Color { get; set; }
 
-        [DisplayName("Use Background Image"), TypeConverter(typeof(YesNoBooleanConverter))]
+        [Category("Background"), DisplayName("Use Background Image"), TypeConverter(typeof(YesNoBooleanConverter))]
         public bool UseBackgroundImage { get; set; }
 
-        [DisplayName("Background Image Path")]
+        [Category("Background"), DisplayName("Background Image Path"), Editor(typeof(FileNameEditor), typeof(UITypeEditor))]
         public string BackgroundImagePath { get; set; }
 
-        [DisplayName("Stretch Background Image"), TypeConverter(typeof(YesNoBooleanConverter))]
+        [Category("Background"), DisplayName("Stretch Background Image"), TypeConverter(typeof(YesNoBooleanConverter))]
         public bool StretchBackgroundImage { get; set; }
 
         [DisplayName("Use Transparency Key"), TypeConverter(typeof(YesNoBooleanConverter))]

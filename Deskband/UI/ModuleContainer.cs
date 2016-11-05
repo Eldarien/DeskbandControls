@@ -92,11 +92,10 @@ namespace Deskband.UI
             if (visibleEntries.Any())
             {
                 // place controls in a row or column depending on taskbar position
-                bool isHorizontal = tsi.IsHorizontal;
                 int coord = 0;
                 foreach (var e in visibleEntries.OrderBy(x => x.Order))
                 {
-                    if (isHorizontal)
+                    if (tsi.IsHorizontal)
                     {
                         e.Container.Left = coord;
                         e.Container.Top = 0;

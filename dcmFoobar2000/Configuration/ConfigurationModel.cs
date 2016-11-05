@@ -46,15 +46,16 @@ namespace dcmFoobar2000.Configuration
         [Browsable(false), SettingsNodeList("Texts")]
         [Description("Text labels with dynamic text (using foobar2000 formatting syntax)")]
         [SettingsCommand("Add Text", nameof(ConfigurationModel.AddText))]
-        public SettingsList<TextSettings> Texts { get; set; }
+        public List<TextSettings> Texts { get; set; }
 
         public static void AddText(ConfigurationModel model)
         {
-            //model.Texts.Add(new TextSettings());
+            model.Texts.Add(new TextSettings { Name = "Text #" + (model.Texts.Count + 1) });
         }
 
         public static void RemoveText(ConfigurationModel model, TextSettings item)
         {
+            model.Texts.Remove(item);
         }
 
         public static readonly ConfigurationModel Default = new ConfigurationModel
@@ -82,7 +83,7 @@ namespace dcmFoobar2000.Configuration
             PositionBar = new TrackbarSettings { Visible = true, X = 32, Y = 20, Width = 154, Heigth = 6, Color = Color.White },
             VolumeBar = new TrackbarSettings { Visible = true, X = 190, Y = 20, Width = 60, Heigth = 6, Color = Color.White },
 
-            Texts = new SettingsList<TextSettings>
+            Texts = new List<TextSettings>
             {
                 new TextSettings { Name = "Default Text", Visible = true, X = 92, Y = 2, Width = 158, Height = 16, EnableScroll = true, StoppedText = "**Stopped**",
                     Format = "%artist% - %title% '('%playback_time%')')", FontName = "Segoe UI", FontSize = 8, FontColor = Color.White }
