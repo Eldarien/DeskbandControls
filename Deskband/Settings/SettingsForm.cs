@@ -37,16 +37,16 @@ namespace Deskband.Settings
             pgSettings.SelectedGridItemChanged += PgSettings_SelectedGridItemChanged;
 
             BuildTreeView();
-            tvItems.ExpandAll();
         }
 
         private void BtnApply_Click(object sender, EventArgs e)
         {
-            //_config.UpdateConfiguration(_settingsModel.GlobalSettings);
             foreach (var m in _settingsModel.SettingsModels.Cast<ConfigurationObjectBase>())
                 _config.UpdateConfiguration(m);
 
             OnApply?.Invoke(this, EventArgs.Empty);
+
+            BuildTreeView();
         }
 
         private void TvItems_AfterSelect(object sender, TreeViewEventArgs ea)
@@ -121,19 +121,45 @@ namespace Deskband.Settings
 
         private void BuildTreeView()
         {
-            //var root = _settingsModel.SettingsModels.Cast<ConfigurationObjectBase>().FirstOrDefault(x => x.ModuleId == Guid.Empty);
-            //var others = _settingsModel.SettingsModels.Cast<ConfigurationObjectBase>().Except(new[] { root });
-            // tvItems.Nodes.Clear(); // ?????????
+            tvItems.Nodes.Clear();
 
             AddTreeNode(_settingsModel, "ROOT", null, true);
 
             // Remove root node
             var rootNode = tvItems.Nodes[0];
-            foreach (TreeNode node in rootNode.Nodes)
-            {
-                tvItems.Nodes.Add(node);
-            }
             tvItems.Nodes.Remove(rootNode);
+            for (int i = rootNode.Nodes.Count - 1; i >= 0; i--)
+            {
+                var n = rootNode.Nodes[i];
+                rootNode.Nodes.Remove(n);
+                tvItems.Nodes.Insert(0, n);
+            }
+
+            tvItems.ExpandAll();
+
+            if (pgSettings.SelectedObject != null)
+            {
+                var node = FindNode(tvItems.Nodes, pgSettings.SelectedObject);
+                if (node != null)
+                {
+                    tvItems.SelectedNode = node;
+                }
+            }
+        }
+
+        private TreeNode FindNode(TreeNodeCollection nodes, object selectedObject)
+        {
+            foreach (TreeNode n in nodes)
+            {
+                var md = n.Tag as IModelData;
+                if (md != null && md.Data == selectedObject) return n;
+
+                if (n.Tag == selectedObject) return n;
+
+                var nn = FindNode(n.Nodes, selectedObject);
+                if (nn != null) return nn;
+            }
+            return null;
         }
 
         private TreeNode GetTreeNodeByModuleId(TreeNodeCollection nodes, Guid id)

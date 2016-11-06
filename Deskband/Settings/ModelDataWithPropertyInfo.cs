@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Deskband.Settings
 {
-    public class ModelDataWithPropertyInfo
+    public class ModelDataWithPropertyInfo : IModelData
     {
         public object Data { get; private set; }
         public PropertyInfo Info { get; private set; }

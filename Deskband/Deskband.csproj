@@ -133,6 +133,7 @@
       <DependentUpon>ConsoleForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Console\ConsoleHandler.cs" />
+    <Compile Include="Settings\IModelData.cs" />
     <Compile Include="Settings\ModelDataWithParentData.cs" />
     <Compile Include="Settings\ModelDataWithPropertyInfo.cs" />
     <Compile Include="Settings\SettingsForm.cs">

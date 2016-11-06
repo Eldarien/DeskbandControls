@@ -63,6 +63,7 @@
             // 
             // tvItems
             // 
+            this.tvItems.HideSelection = false;
             this.tvItems.Location = new System.Drawing.Point(13, 12);
             this.tvItems.Name = "tvItems";
             this.tvItems.Size = new System.Drawing.Size(246, 382);

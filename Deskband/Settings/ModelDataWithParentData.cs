@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Deskband.Settings
 {
-    public class ModelDataWithParentData
+    public class ModelDataWithParentData : IModelData
     {
         public object Data { get; private set; }
         public object ParentData { get; private set; }

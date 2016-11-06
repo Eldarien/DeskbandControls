@@ -50,7 +50,7 @@ namespace dcmFoobar2000.Configuration
 
         public static void AddText(ConfigurationModel model)
         {
-            model.Texts.Add(new TextSettings { Name = "Text #" + (model.Texts.Count + 1) });
+            model.Texts.Add(GetDefaultTextSettings("New Text", ""));
         }
 
         public static void RemoveText(ConfigurationModel model, TextSettings item)
@@ -83,11 +83,26 @@ namespace dcmFoobar2000.Configuration
             PositionBar = new TrackbarSettings { Visible = true, X = 32, Y = 20, Width = 154, Heigth = 6, Color = Color.White },
             VolumeBar = new TrackbarSettings { Visible = true, X = 190, Y = 20, Width = 60, Heigth = 6, Color = Color.White },
 
-            Texts = new List<TextSettings>
-            {
-                new TextSettings { Name = "Default Text", Visible = true, X = 92, Y = 2, Width = 158, Height = 16, EnableScroll = true, StoppedText = "**Stopped**",
-                    Format = "%artist% - %title% '('%playback_time%')')", FontName = "Segoe UI", FontSize = 8, FontColor = Color.White }
-            }
+            Texts = new List<TextSettings> { GetDefaultTextSettings("%artist% - %title% '('%playback_time%')')", "**Stopped**") }
         };
+
+        static TextSettings GetDefaultTextSettings(string format, string stoppedText)
+        {
+            return new TextSettings
+            {
+                Name = "Default Text",
+                Visible = true,
+                X = 92,
+                Y = 2,
+                Width = 158,
+                Height = 16,
+                EnableScroll = true,
+                StoppedText = stoppedText,
+                Format = format,
+                FontName = "Segoe UI",
+                FontSize = 8,
+                FontColor = Color.White
+            };
+        }
     }
 }
