@@ -48,14 +48,25 @@ namespace dcmFoobar2000.Configuration
         [SettingsCommand("Add Text", nameof(ConfigurationModel.AddText))]
         public List<TextSettings> Texts { get; set; }
 
-        public static void AddText(ConfigurationModel model)
+        public static object AddText(ConfigurationModel model)
         {
-            model.Texts.Add(GetDefaultTextSettings("New Text", ""));
+            int i = 1;
+            string newName;
+            do
+            {
+                newName = $"Text #{i}";
+                i++;
+            } while (model.Texts.Any(x => x.Name == newName));
+
+            var ts = GetDefaultTextSettings(newName, "%title%", "");
+            model.Texts.Add(ts);
+            return ts;
         }
 
-        public static void RemoveText(ConfigurationModel model, TextSettings item)
+        public static object RemoveText(ConfigurationModel model, TextSettings item)
         {
             model.Texts.Remove(item);
+            return model.Texts.Last();
         }
 
         public static readonly ConfigurationModel Default = new ConfigurationModel
@@ -83,14 +94,14 @@ namespace dcmFoobar2000.Configuration
             PositionBar = new TrackbarSettings { Visible = true, X = 32, Y = 20, Width = 154, Heigth = 6, Color = Color.White },
             VolumeBar = new TrackbarSettings { Visible = true, X = 190, Y = 20, Width = 60, Heigth = 6, Color = Color.White },
 
-            Texts = new List<TextSettings> { GetDefaultTextSettings("%artist% - %title% '('%playback_time%')')", "**Stopped**") }
+            Texts = new List<TextSettings> { GetDefaultTextSettings("Default Text", "%artist% - %title% '('%playback_time%')')", "**Stopped**") }
         };
 
-        static TextSettings GetDefaultTextSettings(string format, string stoppedText)
+        static TextSettings GetDefaultTextSettings(string name, string format, string stoppedText)
         {
             return new TextSettings
             {
-                Name = "Default Text",
+                Name = name,
                 Visible = true,
                 X = 92,
                 Y = 2,

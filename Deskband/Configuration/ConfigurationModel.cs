@@ -11,7 +11,7 @@ namespace Deskband.Configuration
 {
     public class ConfigurationModel : ConfigurationObjectBase
     {
-        public override string ToString() => "Deskband Controls Configuration";
+        public override string ToString() => "Deskband Controls";
 
         [Browsable(false), JsonIgnore]
         public override int Order { get; set; }
@@ -26,10 +26,6 @@ namespace Deskband.Configuration
         [SettingsNode("General Settings")]
         public GeneralSettings GeneralSettings { get; set; } = GeneralSettings.GetDefault();
 
-        //[Browsable(false)]
-        //[SettingsNodeList("Modules Settings")]
-        //public List<ModuleSettings> ModulesSettings { get; set; } = new List<ModuleSettings>();
-
         [Browsable(false)]
         [SettingsNode("Floating Window")]
         public FloatingWindowSettings FloatingWindowSettings { get; set; } = FloatingWindowSettings.GetDefault();
@@ -39,8 +35,8 @@ namespace Deskband.Configuration
             return new ConfigurationModel
             {
                 ModuleId = Guid.Empty,
-                Width = 200,
-                Height = 32
+                Width = 10,
+                Height = 40
             };
         }
     }

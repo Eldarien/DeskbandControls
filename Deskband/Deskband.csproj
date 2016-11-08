@@ -79,8 +79,8 @@
     <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.8.0.2\lib\net40\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net40\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Ninject, Version=3.2.0.0, Culture=neutral, PublicKeyToken=c7192dc5380945e7, processorArchitecture=MSIL">
@@ -101,9 +101,6 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
     <Reference Include="WindowsBase" />
-    <Reference Include="Xceed.Wpf.Toolkit">
-      <HintPath>..\packages\Extended.Wpf.Toolkit.2.0.0\lib\net40\Xceed.Wpf.Toolkit.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App.cs" />
@@ -115,7 +112,6 @@
     <Compile Include="Configuration\ModuleSettings.cs" />
     <Compile Include="Extensions\EnumExtensions.cs" />
     <Compile Include="Extensions\IntExtensions.cs" />
-    <Compile Include="Extensions\MediaColorExtensions.cs" />
     <Compile Include="Common\JsonHelpers.cs" />
     <Compile Include="Common\AssemblyResolver.cs" />
     <Compile Include="Common\DelegateCommand.cs" />
@@ -123,8 +119,6 @@
     <Compile Include="Common\MarkupExtensions\BoolRadioButton.cs" />
     <Compile Include="Common\ValueConverters\SelectedIndexToEnabledConverter.cs" />
     <Compile Include="Common\ValueConverters\ValueConverterBase.cs" />
-    <Compile Include="Communication\FoobarActions.cs" />
-    <Compile Include="Communication\FormatStringIndex.cs" />
     <Compile Include="Configuration\ConfigurationProvider.cs" />
     <Compile Include="Console\ConsoleForm.cs">
       <SubType>Form</SubType>
@@ -133,9 +127,7 @@
       <DependentUpon>ConsoleForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Console\ConsoleHandler.cs" />
-    <Compile Include="Settings\IModelData.cs" />
-    <Compile Include="Settings\ModelDataWithParentData.cs" />
-    <Compile Include="Settings\ModelDataWithPropertyInfo.cs" />
+    <Compile Include="Settings\NodeData.cs" />
     <Compile Include="Settings\SettingsForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -159,24 +151,8 @@
     <Compile Include="Extensions\IEnumerableOfTypeExtensions.cs" />
     <Compile Include="BandIntegration\ComTypes.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
-    <Compile Include="Settings\StateData.cs" />
-    <Compile Include="Settings\Models\FloatingWindowModel.cs" />
-    <Compile Include="Settings\PromptDialog.xaml.cs">
-      <DependentUpon>PromptDialog.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Settings\SettingsManager.cs" />
     <Compile Include="Common\ObservableObject.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Settings\Models\AlbumArtModel.cs" />
-    <Compile Include="Settings\Models\ButtonModel.cs" />
-    <Compile Include="Settings\Models\GeneralModel.cs" />
-    <Compile Include="Settings\Models\TextBlockModel.cs" />
-    <Compile Include="Settings\Models\TrackbarModel.cs" />
-    <Compile Include="Settings\SettingsData.cs" />
-    <Compile Include="Settings\SettingsWindow.xaml.cs">
-      <DependentUpon>SettingsWindow.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Settings\SettingsViewModel.cs" />
     <Compile Include="AppConfig.cs" />
     <Compile Include="UI\MenuItemEntry.cs" />
     <Compile Include="UI\MenuProvider.cs" />
@@ -193,16 +169,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="DeskbandControls.snk" />
-  </ItemGroup>
-  <ItemGroup>
-    <Page Include="Settings\PromptDialog.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Settings\SettingsWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Deskband.Core\Deskband.Core.csproj">

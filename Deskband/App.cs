@@ -15,34 +15,22 @@ namespace Deskband
 {
     public class App
     {
-        private Band _band;
-        private IEnumerable<IModule> _modules;
+        readonly Band _band;
+        readonly IEnumerable<IModule> _modules;
 
-        // Services
-
-        private ConfigurationProvider _config;
-
-        private SettingsManager _settingsManager;
-        private ConsoleHandler _consoleHandler;
-
-        //private ControlHost _controlHost;
-        private IMenuProvider _menu;
-
-        private ISizeProvider _sp;
-        private ModuleContainer _moduleContainer;
-
-        private FloatingForm _floatingForm;
+        readonly ConfigurationProvider _config;
+        readonly ConsoleHandler _consoleHandler;
+        readonly IMenuProvider _menu;
+        readonly ISizeProvider _sp;
+        readonly ModuleContainer _moduleContainer;
+        readonly FloatingForm _floatingForm;
 
         public App(
             Band band,
             IEnumerable<IModule> modules,
             ConfigurationProvider config,
             FloatingForm floatingForm,
-
-            SettingsManager settingsManager,
             ConsoleHandler consoleHandler,
-            //ControlHost controlHost,
-
             IMenuProvider menu,
             ISizeProvider sp,
             ModuleContainer moduleContainer
@@ -52,10 +40,7 @@ namespace Deskband
             _modules = modules;
             _config = config;
             _floatingForm = floatingForm;
-
-            _settingsManager = settingsManager;
             _consoleHandler = consoleHandler;
-            //_controlHost = controlHost;
             _menu = menu;
             _sp = sp;
             _moduleContainer = moduleContainer;
@@ -85,11 +70,9 @@ namespace Deskband
             _consoleHandler.OnConsoleToggle += (s, e) => _menu.SetItemCheckedState(miConsole, e.Value);
 
             // Settings
-            _menu.AddItem(Guid.Empty, null, "Settings", OnSettingsMenuItemClick);
-            _menu.AddItem(Guid.Empty, null, "New Settings", () =>
+            _menu.AddItem(Guid.Empty, null, "Settings", () =>
             {
                 var cfg = _config.GetConfiguration(Guid.Empty, ConfigurationModel.GetDefault());
-                //cfg.ModulesSettings.ForEach(m => m.SetName(_modules.Where(x => x.Id == m.Id).Select(x => x.Name).FirstOrDefault()));
                 var sm = new SettingsModel
                 {
                     SettingsModels = new List<object> { cfg }
@@ -100,47 +83,11 @@ namespace Deskband
                 sf.OnApply += (s, e) => { ApplyConfiguration(); _config.Save(); };
                 sf.Show();
             });
-
-            //_settingsManager.LoadSettings();
-
-            //_controlHost.OnApplySettings += OnApplySettings;
-            //_controlHost.OnPlaybackState += OnPlaybackState;
-            //_controlHost.OnFoobarShowHide += OnFoobarShowHide;
-
-            // Console
-            //_consoleHandler.OnConsoleToggle += (s, e) => _menuProvider.SetItemCheckedState(_miConsole, e.Value);
-
-            // ContextMenu
-            /*
-            _miStop = _menuProvider.AddItem("", "Stop", _controlHost.Controller.FoobarActions.Stop);
-            _miPlayPause = _menuProvider.AddItem("", "Play / Pause", _controlHost.Controller.FoobarActions.PlayPause);
-            _Prev = _menuProvider.AddItem("", "Previous", _controlHost.Controller.FoobarActions.Previuos);
-            _Next = _menuProvider.AddItem("", "Next", _controlHost.Controller.FoobarActions.Next);
-            _Random = _menuProvider.AddItem("", "Random", _controlHost.Controller.FoobarActions.Random);
-            _ToggleStopAfterCurrent = _menuProvider.AddItem("", "Toggle Stop After Current", _controlHost.Controller.FoobarActions.ToggleStopAfterCurrent);
-
-            _menuProvider.AddSeparator("");
-
-            _miCopyArtistAndTitle = _menuProvider.AddItem("", "Copy Artist and Title", OnCopyArtistAndTitle);
-            _miCopyTitle = _menuProvider.AddItem("", "Copy Title", OnCopyTitle);
-            _miCopyArtist = _menuProvider.AddItem("", "Copy Artist", OnCopyArtist);
-            _miOpenContainingFolder = _menuProvider.AddItem("", "Open Containing Folder", OnOpenContainingFolderClick);
-            _miSearchInInternet = _menuProvider.AddItem("", "Search in Internet", OnSearchInInternetClick);
-
-            _menuProvider.AddSeparator("");
-
-            _miConsole = _menuProvider.AddItem("", "Console", _consoleHandler.ToggleConsole);
-            _menuProvider.AddItem("", "Settings", OnSettingsMenuItemClick);
-            */
-
-            //_controlHost.ApplySettings();
         }
 
         private void OnClose(object sender, EventArgs e)
         {
             _config.Save();
-
-            //_settingsManager.SaveSettings();
         }
 
         private void OnResize(object sender, EventArgs e)
@@ -204,17 +151,6 @@ namespace Deskband
                 var module = _modules.First(m => m.Id == moduleId.Value);
                 module.DoubleClick();
             }
-        }
-
-        private void OnSettingsMenuItemClick()
-        {
-            var wnd = new SettingsWindow();
-            var context = new SettingsViewModel(wnd, _settingsManager);
-            wnd.DataContext = context;
-            wnd.Show();
-
-            context.OnClose += (s, ea) => wnd.Close();
-            //context.OnApply += (s, ea) => { _controlHost.ApplySettings(); _settingsManager.SaveSettings(); };
         }
     }
 }

@@ -1,42 +1,43 @@
 ﻿using Deskband.Configuration;
 using Deskband.Console;
 using Deskband.Core.Configuration;
-using Deskband.Core.Interfaces;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Drawing;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using System.Windows.Forms;
 
 namespace Deskband.Settings
 {
     public partial class SettingsForm : Form
     {
-        private ConfigurationProvider _config;
-        private ConsoleHandler _console;
+        readonly ConfigurationProvider _config;
+        readonly ConsoleHandler _console;
+        readonly SettingsModel _settingsModel;
 
         public event EventHandler OnApply;
-
-        private SettingsModel _settingsModel;
 
         public SettingsForm(ConfigurationProvider config, ConsoleHandler console, SettingsModel settingsModel)
         {
             _config = config;
             _console = console;
-
             _settingsModel = settingsModel;
 
             InitializeComponent();
 
+            btnOK.Click += BtnOK_Click;
             btnApply.Click += BtnApply_Click;
+            btnCancel.Click += BtnCancel_Click;
             tvItems.AfterSelect += TvItems_AfterSelect;
-            pgSettings.SelectedGridItemChanged += PgSettings_SelectedGridItemChanged;
 
             BuildTreeView();
+        }
+
+        private void BtnOK_Click(object sender, EventArgs e)
+        {
+            BtnApply_Click(sender, e);
+            Close();
         }
 
         private void BtnApply_Click(object sender, EventArgs e)
@@ -46,77 +47,66 @@ namespace Deskband.Settings
 
             OnApply?.Invoke(this, EventArgs.Empty);
 
+            var obj = pgSettings.SelectedObject;
             BuildTreeView();
+            SelectNodeForObject(obj);
+        }
+
+        private void BtnCancel_Click(object sender, EventArgs e)
+        {
+            Close();
         }
 
         private void TvItems_AfterSelect(object sender, TreeViewEventArgs ea)
         {
-            tsCommands.Items.Clear();
-            var item = ea.Node.Tag;
-            var prop = item as ModelDataWithPropertyInfo;
-            if (prop == null)
+            var nodeData = ea.Node.Tag as NodeData;
+            if (nodeData == null)
             {
-                var itemData = item as ModelDataWithParentData;
-                if (itemData != null)
-                {
-                    var commands = itemData.Data.GetType().GetCustomAttributes(typeof(SettingsCommandAttribute), false);
-                    foreach (var cmd in commands.Cast<SettingsCommandAttribute>())
-                    {
-                        _console.AddLine("attribute command, name = " + cmd.Name);
-
-                        var tsItem = new ToolStripButton(cmd.Name);
-                        tsItem.Click += (s, e) => { cmd.ExecuteCommand(itemData.ParentData, itemData.Data); BuildTreeView(); };
-                        tsCommands.Items.Add(tsItem);
-                    }
-                    pgSettings.SelectedObject = itemData.Data;
-                }
-                else
-                {
-                    pgSettings.SelectedObject = item;
-                }
+                pgSettings.SelectedObject = ea.Node.Tag;
+                BindCommands(null, null, null);
             }
-            else
+            else if (nodeData.DataType == NodeDataType.Item)
             {
-                var commands = prop.Info.GetCustomAttributes(typeof(SettingsCommandAttribute), false);
-                foreach (var cmd in commands.Cast<SettingsCommandAttribute>())
-                {
-                    _console.AddLine("prop attribute command, name = " + cmd.Name);
-
-                    var tsItem = new ToolStripButton(cmd.Name);
-                    tsItem.Click += (s, e) => { cmd.ExecuteCommand(prop.Data, null); BuildTreeView(); };
-                    tsCommands.Items.Add(tsItem);
-                }
-
+                pgSettings.SelectedObject = nodeData.ItemData;
+                BindCommands(nodeData.ItemData.GetType(), nodeData.ParentData, nodeData.ItemData);
+            }
+            else if (nodeData.DataType == NodeDataType.List)
+            {
                 pgSettings.SelectedObject = null;
+                BindCommands(nodeData.ListPropertyInfo, nodeData.ItemData, null);
+            }
+
+            ShowStubIfNoSettings();
+        }
+
+        private void BindCommands(MemberInfo memberInfo, object cmdInstance, object cmdArgument)
+        {
+            tsCommands.Items.Clear();
+            if (memberInfo == null) return;
+
+            var commands = memberInfo.GetCustomAttributes(typeof(SettingsCommandAttribute), false);
+            foreach (var cmd in commands.Cast<SettingsCommandAttribute>())
+            {
+                var tsItem = new ToolStripButton(cmd.Name);
+                tsItem.Click += (s, e) =>
+                {
+                    var r = cmd.ExecuteCommand(cmdInstance, cmdArgument);
+                    BuildTreeView();
+                    SelectNodeForObject(r);
+                };
+                tsCommands.Items.Add(tsItem);
             }
         }
 
-        private void PgSettings_SelectedGridItemChanged(object sender, SelectedGridItemChangedEventArgs e)
+        private void ShowStubIfNoSettings()
         {
-            var item = e.NewSelection.Value;
-            //TODO: display actions/controls supported by selected item
-
-            //var it = item.GetType();
-            //var ci = it.GetInterfaces().Where(x => x.IsGenericType && x.GetGenericTypeDefinition() == typeof(IConfigurationItemCommands<>)).ToList();
-            //if (ci != null && ci.Any())
-            //{
-            //    var ca = ci.FirstOrDefault().GetGenericArguments()[0];
-            //    _console.AddLine("item " + ca);
-            //}
-            //else if (it.IsGenericType && it.GetGenericTypeDefinition() == typeof(SettingsList<>))
-            //{
-            //    var li = it.BaseType.GetGenericArguments()[0];
-            //    _console.AddLine("list " + li);
-            //}
-
-            //var commands = e.NewSelection.PropertyDescriptor
-            //    .Attributes.Cast<Attribute>().Where(x => x is SettingsCommandAttribute)
-            //    .Union(e.NewSelection.Value.GetType().GetCustomAttributes(typeof(SettingsCommandAttribute), false));
-            //foreach (var c in commands.Cast<SettingsCommandAttribute>())
-            //{
-            //    //c.ExecuteCommand(pgSettings.SelectedObject, item);
-            //    _console.AddLine("attribute command, name = " + c.Name);
-            //}
+            var view = pgSettings.GetType().GetField("gridView", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(pgSettings);
+            var pgItemList = (GridItemCollection)view.GetType()
+                .InvokeMember("GetAllGridEntries", BindingFlags.InvokeMethod | BindingFlags.NonPublic | BindingFlags.Instance, null, view, null);
+            if (pgItemList == null)
+            {
+                pgSettings.SelectedObject = new { Info = "Please select a subpage" };
+            }
         }
 
         private void BuildTreeView()
@@ -136,10 +126,13 @@ namespace Deskband.Settings
             }
 
             tvItems.ExpandAll();
+        }
 
-            if (pgSettings.SelectedObject != null)
+        private void SelectNodeForObject(object obj)
+        {
+            if (obj != null)
             {
-                var node = FindNode(tvItems.Nodes, pgSettings.SelectedObject);
+                var node = FindNode(tvItems.Nodes, obj);
                 if (node != null)
                 {
                     tvItems.SelectedNode = node;
@@ -147,16 +140,21 @@ namespace Deskband.Settings
             }
         }
 
-        private TreeNode FindNode(TreeNodeCollection nodes, object selectedObject)
+        private TreeNode FindNode(TreeNodeCollection nodes, object obj)
         {
             foreach (TreeNode n in nodes)
             {
-                var md = n.Tag as IModelData;
-                if (md != null && md.Data == selectedObject) return n;
+                if (n.Tag == obj) return n;
 
-                if (n.Tag == selectedObject) return n;
+                var nodeData = n.Tag as NodeData;
+                if (nodeData != null)
+                {
+                    if (nodeData.ItemData == obj) return n;
+                    if (nodeData.DataType == NodeDataType.List
+                        && nodeData.ListPropertyInfo.GetValue(nodeData.ItemData, null) == obj) return n;
+                }
 
-                var nn = FindNode(n.Nodes, selectedObject);
+                var nn = FindNode(n.Nodes, obj);
                 if (nn != null) return nn;
             }
             return null;
@@ -166,12 +164,9 @@ namespace Deskband.Settings
         {
             foreach (TreeNode node in nodes)
             {
-                _console.AddDebugLine("Cheking node " + node.Text);
                 var ms = node.Tag as ModuleSettings;
                 if (ms == null) continue;
-                _console.AddDebugLine("Found module settings " + ms.Id);
                 if (ms.Id != id) continue;
-                _console.AddDebugLine("Found It!");
                 return node;
             }
             foreach (TreeNode node in nodes)
@@ -196,7 +191,7 @@ namespace Deskband.Settings
                 }
             }
 
-            var node = isRootNode ? null : new TreeNode { Text = text, Tag = parentData == null ? data : new ModelDataWithParentData(data, parentData) };
+            var node = isRootNode ? null : new TreeNode { Text = text, Tag = parentData == null ? data : new NodeData(data, parentData) };
             if (!isRootNode)
             {
                 if (parentNode == null)
@@ -221,7 +216,8 @@ namespace Deskband.Settings
                         var list = prop.GetValue(data, null) as IEnumerable<object>;
                         if (list != null)
                         {
-                            var listNode = AddTreeNode(new ModelDataWithPropertyInfo(data, prop), a.Name, node);
+                            var nodeData = new NodeData(data, prop);
+                            var listNode = AddTreeNode(nodeData, a.Name, node);
                             foreach (var item in list)
                             {
                                 AddTreeNode(item, item.ToString(), listNode, parentData: data);

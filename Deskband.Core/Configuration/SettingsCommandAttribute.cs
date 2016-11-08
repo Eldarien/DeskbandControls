@@ -17,15 +17,16 @@ namespace Deskband.Core.Configuration
             _method = method;
         }
 
-        public void ExecuteCommand(object instance, object argument)
+        public object ExecuteCommand(object instance, object argument)
         {
             var m = instance.GetType().GetMethod(_method, System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static);
             if (m != null)
             {
                 var p = m.GetParameters();
 
-                m.Invoke(null, p.Length == 1 ? new[] { instance } : new[] { instance, argument });
+                return m.Invoke(null, p.Length == 1 ? new[] { instance } : new[] { instance, argument });
             }
+            return null;
         }
     }
 }

@@ -2,17 +2,12 @@
 using Deskband.Console;
 using Deskband.Core.Interfaces;
 using Deskband.Extensions;
-using Deskband.Settings;
 using Deskband.UI;
 using Ninject;
 using Ninject.Planning.Bindings.Resolvers;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Windows.Forms;
 
 namespace Deskband
 {
@@ -30,10 +25,6 @@ namespace Deskband
             kernel.Bind<ModuleContainer, IModuleContainer>().To<ModuleContainer>();
             kernel.Bind<FloatingForm>().ToSelf();
             kernel.Bind<ISizeProvider>().To<SizeProvider>();
-
-            kernel.Bind<SettingsManager>().ToSelf();
-            //kernel.Bind<ControlHost>().ToSelf();
-
 
             kernel.Bind<App>().ToSelf();
 
