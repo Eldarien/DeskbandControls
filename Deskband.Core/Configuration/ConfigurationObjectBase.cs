@@ -6,18 +6,18 @@ using System.Text;
 
 namespace Deskband.Core.Configuration
 {
+    // See Deskband.Settings.SettingsModel
+    [SettingsCommand("Move Up", "MoveUp", "IsMoveAvailable")]
+    [SettingsCommand("Move Down", "MoveDown", "IsMoveAvailable")]
     public class ConfigurationObjectBase
     {
         [Browsable(false)]
         public Guid ModuleId { get; set; }
 
-        //[Category("Position")]
-        //public int Left { get; set; }
-
-        //[Category("Position")]
-        //public int Top { get; set; }
-
         [Category("Position")]
+        public virtual int Offset { get; set; }
+
+        [Browsable(false)]
         public virtual int Order { get; set; }
 
         [Category("Size")]

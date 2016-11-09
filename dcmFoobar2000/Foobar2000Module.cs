@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Drawing;
 using dcmFoobar2000.Configuration;
+using Deskband.Core.Configuration;
 
 namespace dcmFoobar2000
 {
@@ -56,7 +57,7 @@ namespace dcmFoobar2000
             _controller.DoubleClick();
         }
 
-        public object GetConfiguration()
+        public ConfigurationObjectBase GetConfiguration()
         {
             return _config.GetConfiguration(Foobar2000Module.ModuleId, ConfigurationModel.Default);
         }

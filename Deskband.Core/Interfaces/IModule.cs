@@ -1,4 +1,5 @@
-﻿using Ninject;
+﻿using Deskband.Core.Configuration;
+using Ninject;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -14,6 +15,6 @@ namespace Deskband.Core.Interfaces
         void Initialize(IKernel kernel);
         void ApplyConfiguration();
         void DoubleClick();
-        object GetConfiguration();
+        ConfigurationObjectBase GetConfiguration();
     }
 }

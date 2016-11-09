@@ -9,24 +9,30 @@ namespace Deskband.Core.Configuration
     public class SettingsCommandAttribute : Attribute
     {
         public string Name { get; private set; }
-        private readonly String _method;
+        private readonly string _execMethod;
+        private readonly string _checkMethod;
 
-        public SettingsCommandAttribute(string name, string method)
+        public SettingsCommandAttribute(string name, string execMethod, string checkMethod = null)
         {
             Name = name;
-            _method = method;
+            _execMethod = execMethod;
+            _checkMethod = checkMethod;
         }
 
         public object ExecuteCommand(object instance, object argument)
         {
-            var m = instance.GetType().GetMethod(_method, System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static);
-            if (m != null)
-            {
-                var p = m.GetParameters();
+            var m = instance.GetType().GetMethod(_execMethod, System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static);
+            var p = m.GetParameters();
+            return m.Invoke(null, p.Length == 1 ? new[] { instance } : new[] { instance, argument });
+            
+        }
 
-                return m.Invoke(null, p.Length == 1 ? new[] { instance } : new[] { instance, argument });
-            }
-            return null;
+        public bool IsAvailable(object instance, object argument)
+        {
+            if (_checkMethod == null) return true;
+            var m = instance.GetType().GetMethod(_checkMethod, System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static);
+            var p = m.GetParameters();
+            return (bool)m.Invoke(null, p.Length == 1 ? new[] { instance } : new[] { instance, argument });
         }
     }
 }

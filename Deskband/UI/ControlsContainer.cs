@@ -10,6 +10,8 @@ namespace Deskband.UI
 {
     public class ControlsContainer : UserControl
     {
+        public int Offset { get; set; }
+
         public ControlsContainer()
         {
             BackColor = Color.Transparent;

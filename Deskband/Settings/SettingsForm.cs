@@ -84,17 +84,20 @@ namespace Deskband.Settings
             tsCommands.Items.Clear();
             if (memberInfo == null) return;
 
-            var commands = memberInfo.GetCustomAttributes(typeof(SettingsCommandAttribute), false);
+            var commands = memberInfo.GetCustomAttributes(typeof(SettingsCommandAttribute), true);
             foreach (var cmd in commands.Cast<SettingsCommandAttribute>())
             {
-                var tsItem = new ToolStripButton(cmd.Name);
-                tsItem.Click += (s, e) =>
+                if (cmd.IsAvailable(cmdInstance, cmdArgument))
                 {
-                    var r = cmd.ExecuteCommand(cmdInstance, cmdArgument);
-                    BuildTreeView();
-                    SelectNodeForObject(r);
-                };
-                tsCommands.Items.Add(tsItem);
+                    var tsItem = new ToolStripButton(cmd.Name);
+                    tsItem.Click += (s, e) =>
+                    {
+                        var r = cmd.ExecuteCommand(cmdInstance, cmdArgument);
+                        BuildTreeView();
+                        SelectNodeForObject(r);
+                    };
+                    tsCommands.Items.Add(tsItem);
+                }
             }
         }
 

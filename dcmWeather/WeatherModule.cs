@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Drawing;
 using dcmWeather.Configuration;
+using Deskband.Core.Configuration;
 
 namespace dcmWeather
 {
@@ -52,7 +53,7 @@ namespace dcmWeather
             _console.AddDebugLine("Weather plugin was double-clicked!");
         }
 
-        public object GetConfiguration()
+        public ConfigurationObjectBase GetConfiguration()
         {
             return _config.GetConfiguration(ModuleId, ConfigurationModel.Default);
         }

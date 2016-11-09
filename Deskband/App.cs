@@ -75,9 +75,9 @@ namespace Deskband
                 var cfg = _config.GetConfiguration(Guid.Empty, ConfigurationModel.GetDefault());
                 var sm = new SettingsModel
                 {
-                    SettingsModels = new List<object> { cfg }
+                    SettingsModels = new List<ConfigurationObjectBase> { cfg }
                 };
-                sm.SettingsModels.AddRange(_modules.Select(x => x.GetConfiguration()));
+                sm.SettingsModels.AddRange(_modules.Select(x => x.GetConfiguration()).OrderBy(x => x.Order));
 
                 var sf = new SettingsForm(_config, _consoleHandler, sm);
                 sf.OnApply += (s, e) => { ApplyConfiguration(); _config.Save(); };
@@ -131,7 +131,7 @@ namespace Deskband
             var modulesSizeInfo = _modules
                 .Select(x => new { Module = x, Configuration = x.GetConfiguration() as ConfigurationObjectBase })
                 .OrderBy(x => x.Configuration.Order)
-                .Select(m => new ModuleSizeInfo(m.Module.Id, _sp.MakeSize(m.Configuration.Width, m.Configuration.Height)));
+                .Select(m => new ModuleSizeInfo(m.Module.Id, _sp.MakeSize(m.Configuration.Width, m.Configuration.Height), _sp.MakePoint(m.Configuration.Offset, 0)));
 
             _moduleContainer.PositionModules(modulesSizeInfo);
             

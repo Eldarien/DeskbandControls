@@ -14,6 +14,9 @@ namespace Deskband.Configuration
         public override string ToString() => "Deskband Controls";
 
         [Browsable(false), JsonIgnore]
+        public override int Offset { get; set; }
+
+        [Browsable(false), JsonIgnore]
         public override int Order { get; set; }
 
         [Browsable(false), JsonIgnore]

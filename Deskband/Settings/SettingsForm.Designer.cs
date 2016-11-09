@@ -63,7 +63,8 @@
             this.tsCommands.Location = new System.Drawing.Point(344, 10);
             this.tsCommands.Name = "tsCommands";
             this.tsCommands.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
-            this.tsCommands.Size = new System.Drawing.Size(102, 25);
+            this.tsCommands.ShowItemToolTips = false;
+            this.tsCommands.Size = new System.Drawing.Size(34, 25);
             this.tsCommands.TabIndex = 4;
             this.tsCommands.Text = "toolStrip1";
             // 

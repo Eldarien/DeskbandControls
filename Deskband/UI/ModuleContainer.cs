@@ -78,6 +78,7 @@ namespace Deskband.UI
             {
                 var entry = Entry(m.Id);
                 entry.Container.Size = m.Size;
+                entry.Container.Offset = m.Offset.X;
                 entry.Order = index;
                 index++;
             }
@@ -98,12 +99,12 @@ namespace Deskband.UI
                     if (tsi.IsHorizontal)
                     {
                         e.Container.Left = coord;
-                        e.Container.Top = 0;
+                        e.Container.Top = e.Container.Offset;
                         coord += e.Container.Width;
                     }
                     else
                     {
-                        e.Container.Left = 0;
+                        e.Container.Left = e.Container.Offset;
                         e.Container.Top = coord;
                         coord += e.Container.Height;
                     }
