@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using Deskband.Core.Configuration;
+using Deskband.Extensions;
 
 namespace Deskband.Configuration
 {
@@ -27,7 +28,7 @@ namespace Deskband.Configuration
                 Directory.CreateDirectory(_configDir);
             }
 
-            _configFilePath = Path.Combine(_configDir, "configuration.js");
+            _configFilePath = Path.Combine(_configDir, "configuration.json");
             _data = new JArray();
 
             _serializerSettings = new JsonSerializerSettings();
@@ -37,18 +38,26 @@ namespace Deskband.Configuration
             _serializer = JsonSerializer.Create(_serializerSettings);
         }
 
-        public void Load()
+        private string GetConfigFilePath(string profileName)
         {
-            if (File.Exists(_configFilePath))
+            if (profileName == null) return _configFilePath;
+            return Path.Combine(_configDir, "_" + profileName.SanitizeFileName() + ".json");
+        }
+
+        public void Load(string profileName = null)
+        {
+            var filePath = GetConfigFilePath(profileName);
+            if (File.Exists(filePath))
             {
-                var json = File.ReadAllText(_configFilePath);
+                var json = File.ReadAllText(filePath);
                 _data = JArray.Parse(json);
             }
         }
 
-        public void Save()
+        public void Save(string profileName = null)
         {
-            File.WriteAllText(_configFilePath, JsonConvert.SerializeObject(_data, Formatting.Indented));
+            var filePath = GetConfigFilePath(profileName);
+            File.WriteAllText(filePath, JsonConvert.SerializeObject(_data, Formatting.Indented));
         }
 
         public T GetConfiguration<T>(Guid moduleId, T defaultConfiguration) where T : ConfigurationObjectBase

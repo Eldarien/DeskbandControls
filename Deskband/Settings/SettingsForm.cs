@@ -26,12 +26,24 @@ namespace Deskband.Settings
 
             InitializeComponent();
 
+            btnSave.Click += BtnSave_Click;
+            btnLoad.Click += BtnLoad_Click;
             btnOK.Click += BtnOK_Click;
             btnApply.Click += BtnApply_Click;
             btnCancel.Click += BtnCancel_Click;
             tvItems.AfterSelect += TvItems_AfterSelect;
 
             BuildTreeView();
+        }
+
+        private void BtnSave_Click(object sender, EventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void BtnLoad_Click(object sender, EventArgs e)
+        {
+            throw new NotImplementedException();
         }
 
         private void BtnOK_Click(object sender, EventArgs e)
