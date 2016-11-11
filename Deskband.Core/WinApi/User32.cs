@@ -59,5 +59,8 @@ namespace Deskband.Core.WinApi
 
         [DllImport("user32.dll")]
         public static extern bool HideCaret(IntPtr hWnd);
+
+        [DllImport("user32.dll")]
+        public static extern IntPtr GetWindowThreadProcessId(IntPtr hWnd, out int processId);
     }
 }

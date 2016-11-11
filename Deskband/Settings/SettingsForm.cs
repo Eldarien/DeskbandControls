@@ -26,6 +26,8 @@ namespace Deskband.Settings
 
             InitializeComponent();
 
+            LoadProfilesList();
+
             btnSave.Click += BtnSave_Click;
             btnLoad.Click += BtnLoad_Click;
             btnOK.Click += BtnOK_Click;
@@ -38,12 +40,21 @@ namespace Deskband.Settings
 
         private void BtnSave_Click(object sender, EventArgs e)
         {
-            throw new NotImplementedException();
+            string profileName = Microsoft.VisualBasic.Interaction.InputBox("Enter new profile name:", " ", "", -1, -1);
+            if (!String.IsNullOrWhiteSpace(profileName))
+            {
+                _config.Save(profileName);
+                LoadProfilesList();
+            }
         }
 
         private void BtnLoad_Click(object sender, EventArgs e)
         {
             throw new NotImplementedException();
+        }
+
+        private void LoadProfilesList()
+        {
         }
 
         private void BtnOK_Click(object sender, EventArgs e)

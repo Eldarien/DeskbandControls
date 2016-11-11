@@ -154,6 +154,14 @@ namespace dcmFoobar2000.Code
             }
 
             SendCommand(FB2KCommands.Activate);
+
+            int processId;
+            User32.GetWindowThreadProcessId(fw, out processId);
+            try
+            {
+                Microsoft.VisualBasic.Interaction.AppActivate(processId);
+            }
+            catch { }
         }
 
         public void GetVersion()

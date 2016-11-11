@@ -126,7 +126,7 @@ namespace Deskband.UI
 
         public Guid? LocateModuleAtPoint(Point location)
         {
-            var container = GetChildAtPoint(location);
+            var container = GetChildAtPoint(location, GetChildAtPointSkip.Invisible);
             var entry = _entries.FirstOrDefault(e => e.Container == container);
             return entry != null ? entry.Id : (Guid?)null;
         }
