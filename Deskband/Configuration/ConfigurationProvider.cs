@@ -44,6 +44,18 @@ namespace Deskband.Configuration
             return Path.Combine(_configDir, "_" + profileName.SanitizeFileName() + ".json");
         }
 
+        public IEnumerable<string> GetProfiles()
+        {
+            return Directory.GetFiles(_configDir, "_*.json", SearchOption.TopDirectoryOnly)
+                .Select(x => Path.GetFileNameWithoutExtension(x).Substring(1));
+        }
+
+        public bool ProfileExists(string profileName)
+        {
+            var filePath = GetConfigFilePath(profileName);
+            return File.Exists(filePath);
+        }
+
         public void Load(string profileName = null)
         {
             var filePath = GetConfigFilePath(profileName);

@@ -1,6 +1,7 @@
 ﻿using Deskband.Configuration;
 using Deskband.Console;
 using Deskband.Core.Configuration;
+using Deskband.Core.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -14,20 +15,24 @@ namespace Deskband.Settings
     {
         readonly ConfigurationProvider _config;
         readonly ConsoleHandler _console;
-        readonly SettingsModel _settingsModel;
+        readonly IEnumerable<IModule> _modules;
 
         public event EventHandler OnApply;
 
-        public SettingsForm(ConfigurationProvider config, ConsoleHandler console, SettingsModel settingsModel)
+        private SettingsModel _settingsModel;
+
+        public SettingsForm(ConfigurationProvider config, ConsoleHandler console, IEnumerable<IModule> modules)
         {
             _config = config;
             _console = console;
-            _settingsModel = settingsModel;
+            _modules = modules;
+            //_settingsModel = settingsModel;
 
             InitializeComponent();
 
             LoadProfilesList();
 
+            cbProfiles.SelectedIndexChanged += CbProfiles_SelectedIndexChanged;
             btnSave.Click += BtnSave_Click;
             btnLoad.Click += BtnLoad_Click;
             btnOK.Click += BtnOK_Click;
@@ -35,26 +40,66 @@ namespace Deskband.Settings
             btnCancel.Click += BtnCancel_Click;
             tvItems.AfterSelect += TvItems_AfterSelect;
 
+            LoadConfiguration();
+        }
+
+        private void LoadConfiguration()
+        {
+            var cfg = _config.GetConfiguration(Guid.Empty, ConfigurationModel.GetDefault());
+            var sm = new SettingsModel { SettingsModels = new List<ConfigurationObjectBase> { cfg } };
+            sm.SettingsModels.AddRange(_modules.Select(x => x.GetConfiguration()).OrderBy(x => x.Order));
+            _settingsModel = sm;
+
             BuildTreeView();
-        }
-
-        private void BtnSave_Click(object sender, EventArgs e)
-        {
-            string profileName = Microsoft.VisualBasic.Interaction.InputBox("Enter new profile name:", " ", "", -1, -1);
-            if (!String.IsNullOrWhiteSpace(profileName))
-            {
-                _config.Save(profileName);
-                LoadProfilesList();
-            }
-        }
-
-        private void BtnLoad_Click(object sender, EventArgs e)
-        {
-            throw new NotImplementedException();
         }
 
         private void LoadProfilesList()
         {
+            cbProfiles.Items.Clear();
+            cbProfiles.Items.Add("< New profile >");
+            cbProfiles.SelectedIndex = 0;
+            foreach (var p in _config.GetProfiles()) cbProfiles.Items.Add(p);
+
+            CbProfiles_SelectedIndexChanged(cbProfiles, EventArgs.Empty);
+        }
+
+        private void CbProfiles_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            var isNew = cbProfiles.SelectedIndex == 0;
+            btnLoad.Enabled = !isNew;
+        }
+
+        private void BtnSave_Click(object sender, EventArgs e)
+        {
+            var profileName = cbProfiles.SelectedItem.ToString();
+            if (profileName.StartsWith("<"))
+            {
+                profileName = Microsoft.VisualBasic.Interaction.InputBox("Enter new profile name:", " ", "", -1, -1);
+            }
+            if (String.IsNullOrWhiteSpace(profileName))
+                return;
+
+            if (_config.ProfileExists(profileName))
+            {
+                var q = MessageBox.Show($"Profile \"{profileName}\" already exists. Overwrite?", "", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                if (q != DialogResult.Yes)
+                    return;
+            }
+
+            BtnApply_Click(sender, e);
+            _config.Save(profileName);
+            LoadProfilesList();
+        }
+
+        private void BtnLoad_Click(object sender, EventArgs e)
+        {
+            var profileName = cbProfiles.SelectedItem.ToString();
+            _config.Load(profileName);
+
+            LoadConfiguration();
+            BtnApply_Click(sender, e);
+
+            tvItems.SelectedNode = tvItems.Nodes[0];
         }
 
         private void BtnOK_Click(object sender, EventArgs e)

@@ -72,14 +72,7 @@ namespace Deskband
             // Settings
             _menu.AddItem(Guid.Empty, null, "Settings", () =>
             {
-                var cfg = _config.GetConfiguration(Guid.Empty, ConfigurationModel.GetDefault());
-                var sm = new SettingsModel
-                {
-                    SettingsModels = new List<ConfigurationObjectBase> { cfg }
-                };
-                sm.SettingsModels.AddRange(_modules.Select(x => x.GetConfiguration()).OrderBy(x => x.Order));
-
-                var sf = new SettingsForm(_config, _consoleHandler, sm);
+                var sf = new SettingsForm(_config, _consoleHandler, _modules);
                 sf.OnApply += (s, e) => { ApplyConfiguration(); _config.Save(); };
                 sf.Show();
             });
