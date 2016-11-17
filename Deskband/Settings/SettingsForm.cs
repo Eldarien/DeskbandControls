@@ -5,6 +5,7 @@ using Deskband.Core.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Drawing;
 using System.Linq;
 using System.Reflection;
 using System.Windows.Forms;
@@ -14,6 +15,7 @@ namespace Deskband.Settings
     public partial class SettingsForm : Form
     {
         readonly ConfigurationProvider _config;
+        readonly ISizeProvider _sp;
         readonly ConsoleHandler _console;
         readonly IEnumerable<IModule> _modules;
 
@@ -21,13 +23,13 @@ namespace Deskband.Settings
 
         private SettingsModel _settingsModel;
 
-        public SettingsForm(ConfigurationProvider config, ConsoleHandler console, IEnumerable<IModule> modules)
+        public SettingsForm(ConfigurationProvider config, ISizeProvider sp, ConsoleHandler console, IEnumerable<IModule> modules)
         {
             _config = config;
+            _sp = sp;
             _console = console;
             _modules = modules;
-            //_settingsModel = settingsModel;
-
+            
             InitializeComponent();
 
             LoadProfilesList();
@@ -128,45 +130,79 @@ namespace Deskband.Settings
         private void TvItems_AfterSelect(object sender, TreeViewEventArgs ea)
         {
             var nodeData = ea.Node.Tag as NodeData;
+            var text = ea.Node.Text;
             if (nodeData == null)
             {
                 pgSettings.SelectedObject = ea.Node.Tag;
-                BindCommands(null, null, null);
+                BindCommands(text, null, null, null);
             }
             else if (nodeData.DataType == NodeDataType.Item)
             {
                 pgSettings.SelectedObject = nodeData.ItemData;
-                BindCommands(nodeData.ItemData.GetType(), nodeData.ParentData, nodeData.ItemData);
+                BindCommands(text, nodeData.ItemData.GetType(), nodeData.ParentData, nodeData.ItemData);
             }
             else if (nodeData.DataType == NodeDataType.List)
             {
                 pgSettings.SelectedObject = null;
-                BindCommands(nodeData.ListPropertyInfo, nodeData.ItemData, null);
+                BindCommands(text, nodeData.ListPropertyInfo, nodeData.ItemData, null);
             }
 
             ShowStubIfNoSettings();
         }
 
-        private void BindCommands(MemberInfo memberInfo, object cmdInstance, object cmdArgument)
-        {
-            tsCommands.Items.Clear();
-            if (memberInfo == null) return;
+        private List<Control> cmdControls = new List<Control>();
 
-            var commands = memberInfo.GetCustomAttributes(typeof(SettingsCommandAttribute), true);
-            foreach (var cmd in commands.Cast<SettingsCommandAttribute>())
+        private void BindCommands(string text, MemberInfo memberInfo, object cmdInstance, object cmdArgument)
+        {
+            cmdControls.ForEach(ctrl => { this.Controls.Remove(ctrl); ctrl.Dispose(); });
+            cmdControls.Clear();
+
+            
+            if (memberInfo != null)
             {
-                if (cmd.IsAvailable(cmdInstance, cmdArgument))
+                var commands = memberInfo.GetCustomAttributes(typeof(SettingsCommandAttribute), true);
+                foreach (var cmd in commands.Cast<SettingsCommandAttribute>())
                 {
-                    var tsItem = new ToolStripButton(cmd.Name);
-                    tsItem.Click += (s, e) =>
+                    if (cmd.IsAvailable(cmdInstance, cmdArgument))
                     {
-                        var r = cmd.ExecuteCommand(cmdInstance, cmdArgument);
-                        BuildTreeView();
-                        SelectNodeForObject(r);
-                    };
-                    tsCommands.Items.Add(tsItem);
+                        var btn = new Button();
+                        btn.Click += (s, e) =>
+                        {
+                            var r = cmd.ExecuteCommand(cmdInstance, cmdArgument);
+                            BuildTreeView();
+                            SelectNodeForObject(r);
+                        };
+                        btn.Text = cmd.Name;
+                        btn.Size = _sp.MakeSize(100, btn.Height);
+                        this.Controls.Add(btn);
+                        btn.BringToFront();
+                        cmdControls.Add(btn);
+                    }
                 }
             }
+
+            int cmdIndex = 0;
+            int offset = _sp.MakeValue(23);
+            int lastBtnLeft = this.Width - offset;
+            foreach (var btn in cmdControls.Reverse<Control>())
+            {
+                btn.Left = this.Width - offset - (btn.Width * cmdIndex + btn.Width);
+                btn.Top = _sp.MakeValue(10);
+                btn.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+                lastBtnLeft = btn.Left;
+                cmdIndex++;
+            }
+
+            var lbl = new Label();
+            lbl.Text = text;
+            lbl.Size = new Size(lastBtnLeft - pgSettings.Left, _sp.MakeValue(25));
+            lbl.Left = pgSettings.Left;
+            lbl.Top = _sp.MakeValue(8);
+            lbl.Font = new Font(this.Font.Name, 14, FontStyle.Bold);
+            lbl.Anchor = AnchorStyles.Left | AnchorStyles.Top | AnchorStyles.Right;
+            this.Controls.Add(lbl);
+            lbl.BringToFront();
+            cmdControls.Add(lbl);
         }
 
         private void ShowStubIfNoSettings()

@@ -40,5 +40,10 @@ namespace Deskband.UI
         {
             return new Size((int)(width * _scale), (int)(height * _scale));
         }
+
+        public int MakeValue(int value)
+        {
+            return (int)(value * _scale);
+        }
     }
 }

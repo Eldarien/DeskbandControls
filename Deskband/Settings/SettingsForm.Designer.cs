@@ -30,7 +30,6 @@
         {
             this.pgSettings = new System.Windows.Forms.PropertyGrid();
             this.btnApply = new System.Windows.Forms.Button();
-            this.tsCommands = new System.Windows.Forms.ToolStrip();
             this.tvItems = new System.Windows.Forms.TreeView();
             this.btnCancel = new System.Windows.Forms.Button();
             this.btnOK = new System.Windows.Forms.Button();
@@ -44,10 +43,12 @@
             this.pgSettings.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.pgSettings.Location = new System.Drawing.Point(265, 10);
+            this.pgSettings.HelpVisible = false;
+            this.pgSettings.Location = new System.Drawing.Point(265, 40);
             this.pgSettings.Name = "pgSettings";
-            this.pgSettings.Size = new System.Drawing.Size(512, 417);
+            this.pgSettings.Size = new System.Drawing.Size(512, 387);
             this.pgSettings.TabIndex = 1;
+            this.pgSettings.ToolbarVisible = false;
             // 
             // btnApply
             // 
@@ -59,24 +60,13 @@
             this.btnApply.Text = "Apply";
             this.btnApply.UseVisualStyleBackColor = true;
             // 
-            // tsCommands
-            // 
-            this.tsCommands.Dock = System.Windows.Forms.DockStyle.None;
-            this.tsCommands.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
-            this.tsCommands.Location = new System.Drawing.Point(344, 10);
-            this.tsCommands.Name = "tsCommands";
-            this.tsCommands.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
-            this.tsCommands.ShowItemToolTips = false;
-            this.tsCommands.Size = new System.Drawing.Size(102, 25);
-            this.tsCommands.TabIndex = 4;
-            this.tsCommands.Text = "toolStrip1";
-            // 
             // tvItems
             // 
             this.tvItems.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
+            this.tvItems.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.tvItems.HideSelection = false;
-            this.tvItems.Location = new System.Drawing.Point(10, 10);
+            this.tvItems.Location = new System.Drawing.Point(8, 10);
             this.tvItems.Name = "tvItems";
             this.tvItems.Size = new System.Drawing.Size(250, 417);
             this.tvItems.TabIndex = 0;
@@ -126,15 +116,15 @@
             this.cbProfiles.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.cbProfiles.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cbProfiles.FormattingEnabled = true;
-            this.cbProfiles.Location = new System.Drawing.Point(10, 434);
+            this.cbProfiles.Location = new System.Drawing.Point(8, 434);
             this.cbProfiles.Name = "cbProfiles";
             this.cbProfiles.Size = new System.Drawing.Size(250, 21);
             this.cbProfiles.TabIndex = 7;
             // 
             // SettingsForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.ClientSize = new System.Drawing.Size(784, 462);
             this.Controls.Add(this.cbProfiles);
             this.Controls.Add(this.btnLoad);
@@ -142,7 +132,6 @@
             this.Controls.Add(this.btnOK);
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.tvItems);
-            this.Controls.Add(this.tsCommands);
             this.Controls.Add(this.btnApply);
             this.Controls.Add(this.pgSettings);
             this.Font = new System.Drawing.Font("Segoe UI Semibold", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
@@ -154,7 +143,6 @@
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Deskband Controls Settings";
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
@@ -162,7 +150,6 @@
 
         private System.Windows.Forms.PropertyGrid pgSettings;
         private System.Windows.Forms.Button btnApply;
-        private System.Windows.Forms.ToolStrip tsCommands;
         private System.Windows.Forms.TreeView tvItems;
         private System.Windows.Forms.Button btnCancel;
         private System.Windows.Forms.Button btnOK;

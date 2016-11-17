@@ -13,5 +13,6 @@ namespace Deskband.Core.Interfaces
 
         Point MakePoint(int x, int y);
         Size MakeSize(int width, int height);
+        int MakeValue(int value);
     }
 }

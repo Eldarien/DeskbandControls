@@ -72,7 +72,7 @@ namespace Deskband
             // Settings
             _menu.AddItem(Guid.Empty, null, "Settings", () =>
             {
-                var sf = new SettingsForm(_config, _consoleHandler, _modules);
+                var sf = new SettingsForm(_config, _sp, _consoleHandler, _modules);
                 sf.OnApply += (s, e) => { ApplyConfiguration(); _config.Save(); };
                 sf.Show();
             });
