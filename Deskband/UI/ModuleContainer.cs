@@ -1,4 +1,5 @@
-﻿using Deskband.Core.Interfaces;
+﻿using Deskband.Core.Common;
+using Deskband.Core.Interfaces;
 using Deskband.Core.WinApi;
 using System;
 using System.Collections.Generic;
@@ -11,13 +12,13 @@ namespace Deskband.UI
 {
     public class ModuleContainer : ControlsContainer, IModuleContainer
     {
-        private readonly Band _band;
+        //private readonly Band _band;
         private List<ModuleContainerEntry> _entries = new List<ModuleContainerEntry>();
-
-        public ModuleContainer(Band band)
-        {
-            _band = band;
-        }
+        private LayoutMode _layoutMode;
+        //public ModuleContainer(Band band)
+        //{
+        //    _band = band;
+        //}
 
         private ModuleContainerEntry Entry(Guid moduleId)
         {
@@ -75,8 +76,9 @@ namespace Deskband.UI
             return this;
         }
 
-        public void PositionModules(IEnumerable<ModuleSizeInfo> moduleSizeInfo, bool drawBorders)
+        public void PositionModules(IEnumerable<ModuleSizeInfo> moduleSizeInfo, bool drawBorders, LayoutMode layoutMode)
         {
+            _layoutMode = layoutMode;
             BorderStyle = drawBorders ? BorderStyle.FixedSingle : BorderStyle.None;
 
             int index = 0;
@@ -96,7 +98,7 @@ namespace Deskband.UI
         {
             _entries.ForEach(x => x.Container.Visible = !x.Hidden && !x.Disabled);
 
-            var tsi = _band.GetTaskbarSizeInfo();
+            //var tsi = _band.GetTaskbarSizeInfo();
             var resultSize = new Size(10, this.Size.Height);
             var visibleEntries = _entries.Where(x => x.Container.Visible);
             if (visibleEntries.Any())
@@ -105,7 +107,7 @@ namespace Deskband.UI
                 int coord = 0;
                 foreach (var e in visibleEntries.OrderBy(x => x.Order))
                 {
-                    if (tsi.IsHorizontal)
+                    if (_layoutMode == LayoutMode.Horizontal)
                     {
                         e.Container.Left = coord;
                         e.Container.Top = e.Container.Offset;
@@ -120,8 +122,8 @@ namespace Deskband.UI
                 }
 
                 // calculate bounding box
-                int xMin = visibleEntries.Min(x => x.Container.Left - (tsi.IsHorizontal ? 0 : x.Container.Offset));
-                int yMin = visibleEntries.Min(x => x.Container.Top - (tsi.IsHorizontal ? x.Container.Offset : 0));
+                int xMin = visibleEntries.Min(x => x.Container.Left - (_layoutMode == LayoutMode.Horizontal ? 0 : x.Container.Offset));
+                int yMin = visibleEntries.Min(x => x.Container.Top - (_layoutMode == LayoutMode.Vertical ? 0 : x.Container.Offset));
                 int xMax = visibleEntries.Max(x => x.Container.Right);
                 int yMax = visibleEntries.Max(x => x.Container.Bottom);
                 resultSize = new Size(xMax - xMin, yMax - yMin);

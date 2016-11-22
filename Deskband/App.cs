@@ -1,5 +1,6 @@
 ﻿using Deskband.Configuration;
 using Deskband.Console;
+using Deskband.Core.Common;
 using Deskband.Core.Configuration;
 using Deskband.Core.Interfaces;
 using Deskband.Settings;
@@ -90,7 +91,7 @@ namespace Deskband
             if (!_floatingForm.Visible)
             {
                 var tsi = _band.GetTaskbarSizeInfo();
-                _band.MinSize = new Size(tsi.IsHorizontal ? _moduleContainer.Size.Width : _moduleContainer.Size.Height, 0);
+                _band.MinSize = new Size(tsi.Mode == LayoutMode.Horizontal ? _moduleContainer.Size.Width : _moduleContainer.Size.Height, 0);
             }
             else
             {
@@ -127,7 +128,8 @@ namespace Deskband
                 .Select(m => new ModuleSizeInfo(m.Module.Id, m.Configuration.Disabled,
                     _sp.MakeSize(m.Configuration.Width, m.Configuration.Height), _sp.MakePoint(m.Configuration.Offset, 0)));
 
-            _moduleContainer.PositionModules(modulesSizeInfo, cfg.GeneralSettings.DrawBorders);
+            var layoutMode = cfg.GeneralSettings.DisplayMode == DisplayMode.Deskband ? _band.GetTaskbarSizeInfo().Mode : cfg.FloatingWindowSettings.Mode;
+            _moduleContainer.PositionModules(modulesSizeInfo, cfg.GeneralSettings.DrawBorders, layoutMode);
             
             foreach (var m in _modules)
             {

@@ -13,6 +13,7 @@ using System.Text;
 using System.Windows.Forms;
 using Deskband.Core.EventArguments;
 using Deskband.UI;
+using Deskband.Core.Common;
 
 namespace Deskband
 {
@@ -77,7 +78,7 @@ namespace Deskband
                 if (User32.ScreenToClient(_taskbarWindowHandle, ref point))
                 {
                     var tsi = GetTaskbarSizeInfo();
-                    if (tsi.IsHorizontal && point.Y == 0 || !tsi.IsHorizontal && point.X == 0)
+                    if (tsi.Mode == LayoutMode.Horizontal && point.Y == 0 || tsi.Mode == LayoutMode.Vertical && point.X == 0)
                     {
                         m.Result = (IntPtr)WinApiTypes.HTTRANSPARENT;
                         return;

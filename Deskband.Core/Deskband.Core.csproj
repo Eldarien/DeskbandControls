@@ -60,6 +60,7 @@
   <ItemGroup>
     <Compile Include="Common\DisposableContainer.cs" />
     <Compile Include="Common\ImageHelpers.cs" />
+    <Compile Include="Common\LayoutMode.cs" />
     <Compile Include="Common\NoTypeConverterJsonConverter.cs" />
     <Compile Include="Configuration\EditableObjectConverter.cs" />
     <Compile Include="Configuration\ExpandableCollectionConverter.cs" />

@@ -1,4 +1,5 @@
-﻿using Deskband.Core.Configuration;
+﻿using Deskband.Core.Common;
+using Deskband.Core.Configuration;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -18,7 +19,11 @@ namespace Deskband.Configuration
         [Category("Position")]
         public int Y { get; set; }
 
+        [DisplayName("Mode")]
+        public LayoutMode Mode { get; set; }
+
         public double Opacity { get; set; }
+
         public Color Color { get; set; }
 
         [Category("Background"), DisplayName("Use Background Image"), TypeConverter(typeof(YesNoBooleanConverter))]
