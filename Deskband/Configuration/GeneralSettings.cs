@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -10,6 +11,9 @@ namespace Deskband.Configuration
     {
         [DisplayName("Deskband Mode")]
         public DisplayMode DisplayMode { get; set; }
+
+        [DisplayName("Draw Borders")]
+        public bool DrawBorders { get; set; }
 
         public static GeneralSettings GetDefault()
         {

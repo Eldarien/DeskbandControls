@@ -17,9 +17,10 @@ namespace Deskband.UI
             Id = id;
             Container = new ControlsContainer();
             Container.Dock = DockStyle.None;
-            //Container.BorderStyle = BorderStyle.FixedSingle;
         }
 
         public int Order { get; set; }
+        public bool Hidden { get; set; }
+        public bool Disabled { get; set; }
     }
 }

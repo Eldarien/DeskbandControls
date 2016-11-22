@@ -14,11 +14,14 @@ namespace Deskband.Core.Configuration
         [Browsable(false)]
         public Guid ModuleId { get; set; }
 
-        [Category("Position")]
-        public virtual int Offset { get; set; }
-
         [Browsable(false)]
         public virtual int Order { get; set; }
+
+        [Category("General")]
+        public virtual bool Disabled { get; set; }
+
+        [Category("Position")]
+        public virtual int Offset { get; set; }
 
         [Category("Size")]
         public virtual int Width { get; set; }

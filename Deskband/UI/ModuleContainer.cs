@@ -56,14 +56,18 @@ namespace Deskband.UI
 
         public void Hide(Guid moduleId)
         {
-            Entry(moduleId).Container.Visible = false;
+            Entry(moduleId).Hidden = true;
             LayoutModules();
         }
 
         public void Show(Guid moduleId)
         {
-            Entry(moduleId).Container.Visible = true;
-            LayoutModules();
+            var entry = Entry(moduleId);
+            if (!entry.Disabled)
+            {
+                Entry(moduleId).Hidden = false;
+                LayoutModules();
+            }
         }
 
         public Control AsControl()
@@ -71,12 +75,15 @@ namespace Deskband.UI
             return this;
         }
 
-        public void PositionModules(IEnumerable<ModuleSizeInfo> moduleSizeInfo)
+        public void PositionModules(IEnumerable<ModuleSizeInfo> moduleSizeInfo, bool drawBorders)
         {
+            BorderStyle = drawBorders ? BorderStyle.FixedSingle : BorderStyle.None;
+
             int index = 0;
             foreach (var m in moduleSizeInfo)
             {
                 var entry = Entry(m.Id);
+                entry.Disabled = m.Disabled;
                 entry.Container.Size = m.Size;
                 entry.Container.Offset = m.Offset.X;
                 entry.Order = index;
@@ -87,6 +94,8 @@ namespace Deskband.UI
 
         private void LayoutModules()
         {
+            _entries.ForEach(x => x.Container.Visible = !x.Hidden && !x.Disabled);
+
             var tsi = _band.GetTaskbarSizeInfo();
             var resultSize = new Size(10, this.Size.Height);
             var visibleEntries = _entries.Where(x => x.Container.Visible);
@@ -111,17 +120,14 @@ namespace Deskband.UI
                 }
 
                 // calculate bounding box
-                int xMin = visibleEntries.Min(x => x.Container.Left);
-                int yMin = visibleEntries.Min(x => x.Container.Top);
+                int xMin = visibleEntries.Min(x => x.Container.Left - (tsi.IsHorizontal ? 0 : x.Container.Offset));
+                int yMin = visibleEntries.Min(x => x.Container.Top - (tsi.IsHorizontal ? x.Container.Offset : 0));
                 int xMax = visibleEntries.Max(x => x.Container.Right);
                 int yMax = visibleEntries.Max(x => x.Container.Bottom);
                 resultSize = new Size(xMax - xMin, yMax - yMin);
             }
-
-            this.Size = resultSize;
-            this.BorderStyle = BorderStyle.FixedSingle;
-            
-            this.Refresh();
+            Size = resultSize;
+            Refresh();
         }
 
         public Guid? LocateModuleAtPoint(Point location)
