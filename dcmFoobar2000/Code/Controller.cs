@@ -31,7 +31,7 @@ namespace dcmFoobar2000.Code
 
         private DisposableContainer _disposable;
         private Container _container;
-        private Timer _scrollTimer;
+        //private Timer _scrollTimer;
 
         private bool _eventsInitialized;
 
@@ -76,8 +76,8 @@ namespace dcmFoobar2000.Code
 
             _disposable = new DisposableContainer();
             _container = _disposable.Add(new Container());
-            _scrollTimer = _disposable.Add(new Timer(_container));
-            _scrollTimer.Tick += (s, e) => HandleScrollTick();
+            //_scrollTimer = _disposable.Add(new Timer(_container));
+            //_scrollTimer.Tick += (s, e) => HandleScrollTick();
         }
 
         public void ApplyConfiguration()
@@ -85,8 +85,8 @@ namespace dcmFoobar2000.Code
             _cfg = _config.GetConfiguration(Foobar2000Module.ModuleId, ConfigurationModel.Default);
             _config.UpdateConfiguration(_cfg);
 
-            _scrollTimer.Interval = _cfg.TextScrollSpeed;
-            _scrollTimer.Enabled = _cfg.TextScrollSpeed > 0;
+            //_scrollTimer.Interval = _cfg.TextScrollSpeed;
+            //_scrollTimer.Enabled = _cfg.TextScrollSpeed > 0;
 
             RegisterMenu();
             RegisterControls();
@@ -261,14 +261,20 @@ namespace dcmFoobar2000.Code
 
         private dcLabel CreateLabel(TextSettings settings)
         {
-            var lbl = new dcLabel(_sp.DPI, settings.FontName, settings.FontSize, settings.FontStyleItalic, settings.FontStyleBold);
+            var fs = FontStyles.Regular;
+            if (settings.FontStyleBold) fs = fs | FontStyles.Bold;
+            if (settings.FontStyleItalic) fs = fs | FontStyles.Italic;
+            var lbl = new dcLabel(_sp.DPI, new FontConfiguration(settings.FontName, settings.FontSize, fs));
             AddControl(lbl);
             lbl.Visible = settings.Visible;
             lbl.Location = _sp.MakePoint(settings.X, settings.Y);
             lbl.Size = _sp.MakeSize(settings.Width, settings.Height);
             lbl.ForeColor = settings.FontColor;
             lbl.AlignTextToRight = settings.AlightToRight;
-            lbl.EnableScroll = settings.EnableScroll;
+            lbl.EnableScrolling = settings.EnableScroll;
+            lbl.ScrollSpeed = settings.ScrollSpeed;
+            lbl.ScrollStep = settings.ScrollStep;
+            lbl.ScrollSeparator = settings.ScrollSeparator;
             return lbl;
         }
 
@@ -308,10 +314,10 @@ namespace dcmFoobar2000.Code
             _cfg.Texts.Zip(_labels, (settings, lbl) => new { settings, lbl }).ToList().ForEach(x => { x.lbl.Text = x.settings.StoppedText; });
         }
 
-        private void HandleScrollTick()
-        {
-            _labels.ForEach(x => x.ScrollTick());
-        }
+        //private void HandleScrollTick()
+        //{
+        //    _labels.ForEach(x => x.ScrollTick());
+        //}
 
         private void InitMessageFormEvents()
         {

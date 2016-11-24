@@ -176,10 +176,6 @@
       <Project>{c6b667f2-fd55-4bf6-8266-aef34fdf1f62}</Project>
       <Name>Deskband.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\DeskbandBridge\DeskbandBridge.vcxproj">
-      <Project>{e8118efe-0f51-4bda-a728-a69636c48631}</Project>
-      <Name>DeskbandBridge</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Console\ConsoleForm.resx">

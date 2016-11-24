@@ -59,6 +59,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Common\DisposableContainer.cs" />
+    <Compile Include="Common\FontConfiguration.cs" />
     <Compile Include="Common\ImageHelpers.cs" />
     <Compile Include="Common\LayoutMode.cs" />
     <Compile Include="Common\NoTypeConverterJsonConverter.cs" />
@@ -66,7 +67,10 @@
     <Compile Include="Configuration\ExpandableCollectionConverter.cs" />
     <Compile Include="Configuration\ExpandableCollectionPropertyDescriptor.cs" />
     <Compile Include="Configuration\FontNameStringConverter.cs" />
+    <Compile Include="Configuration\MinMaxAttribute.cs" />
     <Compile Include="Configuration\NoCollectionEditor.cs" />
+    <Compile Include="Configuration\NumericUpDownTypeConverter.cs" />
+    <Compile Include="Configuration\NumericUpDownTypeEditor.cs" />
     <Compile Include="Configuration\SettingsCommandAttribute.cs" />
     <Compile Include="Configuration\SettingsList.cs" />
     <Compile Include="Configuration\SettingsNodeListAttribute.cs" />

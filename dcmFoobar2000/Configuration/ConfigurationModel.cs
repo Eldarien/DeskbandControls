@@ -28,8 +28,8 @@ namespace dcmFoobar2000.Configuration
         [Category("Search"), DisplayName("Internet Search URL")]
         public string InternetSearchUrl { get; set; }
 
-        [DisplayName("Text Scroll Speed")]
-        public int TextScrollSpeed { get; set; }
+        //[DisplayName("Text Scroll Speed")]
+        //public int TextScrollSpeed { get; set; }
 
         [Browsable(false), SettingsNode("Album Art")]
         public AlbumArtSettings AlbumArt { get; set; }
@@ -58,7 +58,7 @@ namespace dcmFoobar2000.Configuration
                 i++;
             } while (model.Texts.Any(x => x.Name == newName));
 
-            var ts = GetDefaultTextSettings(newName, "%title%", "");
+            var ts = new TextSettings { Name = newName, Format = "%title%" };
             model.Texts.Add(ts);
             return ts;
         }
@@ -77,7 +77,7 @@ namespace dcmFoobar2000.Configuration
 
             InternetSearchFormat = "$if(%artist%,%artist%' - ')%title%",
             InternetSearchUrl = "https://www.google.com/search?q=%q%",
-            TextScrollSpeed = 300,
+            //TextScrollSpeed = 300,
 
             AlbumArt = new AlbumArtSettings { Visible = true, X = 1, Y = 2, Width = 27, Height = 27 },
 
@@ -94,26 +94,10 @@ namespace dcmFoobar2000.Configuration
             PositionBar = new TrackbarSettings { Visible = true, X = 32, Y = 20, Width = 154, Heigth = 6, Color = Color.White },
             VolumeBar = new TrackbarSettings { Visible = true, X = 190, Y = 20, Width = 60, Heigth = 6, Color = Color.White },
 
-            Texts = new List<TextSettings> { GetDefaultTextSettings("Default Text", "%artist% - %title% '('%playback_time%')')", "**Stopped**") }
+            Texts = new List<TextSettings> {
+                new TextSettings { X = 92, Y = 2, Width = 158, Height = 16, Name = "Default Text", StoppedText = "**Stopped**",
+                    Format = "%artist% - %title% '('%playback_time%')')" }
+            }
         };
-
-        static TextSettings GetDefaultTextSettings(string name, string format, string stoppedText)
-        {
-            return new TextSettings
-            {
-                Name = name,
-                Visible = true,
-                X = 92,
-                Y = 2,
-                Width = 158,
-                Height = 16,
-                EnableScroll = true,
-                StoppedText = stoppedText,
-                Format = format,
-                FontName = "Segoe UI",
-                FontSize = 8,
-                FontColor = Color.White
-            };
-        }
     }
 }
