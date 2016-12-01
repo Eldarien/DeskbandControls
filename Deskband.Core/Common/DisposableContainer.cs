@@ -17,11 +17,14 @@ namespace Deskband.Core.Common
 
         public void Dispose()
         {
-            for (int i = _objects.Count - 1; i >= 0; i--)
+            if (_objects != null)
             {
-                _objects[i].Dispose();
+                for (int i = _objects.Count - 1; i >= 0; i--)
+                {
+                    _objects[i].Dispose();
+                }
+                _objects = null;
             }
-            _objects = null;
         }
     }
 }

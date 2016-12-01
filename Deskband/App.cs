@@ -56,13 +56,9 @@ namespace Deskband
 
             ApplyConfiguration();
 
-            //
+            _config.ConfigurationFileChanged += OnConfigurationFileChanged;
             _band.TaskbarResized += (s, e) => ApplyConfiguration();
-
-            // DPI
             _band.DPIChanged += (s, e) => ApplyConfiguration();
-
-            // DoubleClick
             _band.MouseDoubleClick += (s, e) => HandleDoubleClick(e.Location);
             _floatingForm.MouseDoubleClick += (s, e) => HandleDoubleClick(e.Location);
 
@@ -81,6 +77,7 @@ namespace Deskband
 
         private void OnClose(object sender, EventArgs e)
         {
+            _config.DisableWatcher();
             _config.Save();
         }
 
@@ -137,6 +134,29 @@ namespace Deskband
             }
 
             OnResize(this, EventArgs.Empty);
+        }
+
+        private string _lastConfigError = null;
+        private void OnConfigurationFileChanged(object sender, EventArgs e)
+        {
+            _band.Invoke((MethodInvoker)delegate
+            {
+                try
+                {
+                    _config.Load();
+                    ApplyConfiguration();
+                    _lastConfigError = null;
+                }
+                catch (Exception ex)
+                {
+                    if (ex.Message != _lastConfigError)
+                    {
+                        _lastConfigError = ex.Message;
+                        _consoleHandler.AddLine(ex.Message);
+                        MessageBox.Show(ex.Message, "Deskband Controls Configuration Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+            });
         }
 
         private void HandleDoubleClick(Point location)

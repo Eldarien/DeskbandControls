@@ -9,6 +9,11 @@ namespace Deskband.Extensions
 {
     public static class StringExtensions
     {
+        public static string ValueOrDefault(this string s, string defaultValue)
+        {
+            return String.IsNullOrEmpty(s) ? defaultValue : s;
+        }
+
         /// <summary>
         /// Strip illegal chars and reserved words from a candidate filename (should not include the directory path)
         /// </summary>

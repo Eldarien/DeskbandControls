@@ -105,21 +105,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App.cs" />
-    <Compile Include="Common\Enums.cs" />
     <Compile Include="Configuration\ConfigurationModel.cs" />
+    <Compile Include="Configuration\ConfigurationOptions.cs" />
     <Compile Include="Configuration\DisplayMode.cs" />
     <Compile Include="Configuration\FloatingWindowSettings.cs" />
     <Compile Include="Configuration\GeneralSettings.cs" />
     <Compile Include="Configuration\ModuleSettings.cs" />
     <Compile Include="Extensions\EnumExtensions.cs" />
     <Compile Include="Extensions\IntExtensions.cs" />
-    <Compile Include="Common\JsonHelpers.cs" />
-    <Compile Include="Common\AssemblyResolver.cs" />
-    <Compile Include="Common\DelegateCommand.cs" />
-    <Compile Include="Common\MarkupExtensions\MultiStyleExtension.cs" />
-    <Compile Include="Common\MarkupExtensions\BoolRadioButton.cs" />
-    <Compile Include="Common\ValueConverters\SelectedIndexToEnabledConverter.cs" />
-    <Compile Include="Common\ValueConverters\ValueConverterBase.cs" />
     <Compile Include="Configuration\ConfigurationProvider.cs" />
     <Compile Include="Console\ConsoleForm.cs">
       <SubType>Form</SubType>
@@ -152,7 +145,6 @@
     <Compile Include="Extensions\IEnumerableOfTypeExtensions.cs" />
     <Compile Include="BandIntegration\ComTypes.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
-    <Compile Include="Common\ObservableObject.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="AppConfig.cs" />
     <Compile Include="UI\MenuItemEntry.cs" />

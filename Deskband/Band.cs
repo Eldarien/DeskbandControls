@@ -1,5 +1,4 @@
 ﻿using Deskband.BandIntegration;
-using Deskband.Common;
 using Deskband.Core.Interfaces;
 using Deskband.Core.WinApi;
 using Deskband.Extensions;
@@ -46,7 +45,7 @@ namespace Deskband
 
             try
             {
-                AssemblyResolver.Initialize();
+                //AssemblyResolver.Initialize();
 
                 _kernel = AppConfig.InitializeKernel(this);
 
