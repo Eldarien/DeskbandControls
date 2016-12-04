@@ -41,21 +41,25 @@ namespace Deskband.Core.Controls
 
         //public Enums.TrackbarKindType Kind { get; set; }
 
+        public bool ChangeOnMouseUp { get; set; }
+
         public bool DrawOutline { get; set; }
 
         public bool HideBorders { get; set; }
 
-        private int position = 0;
+        private int _position = 0;
 
-        private bool mousePressed;
+        private bool _mousePressed;
 
         public int Position
         {
-            get { return position; }
+            get { return _position; }
             set
             {
-                position = value;
-                User32.InvalidateRect(this.Handle, IntPtr.Zero, false);
+                if (!_mousePressed)
+                {
+                    SetPosition(value);
+                }
             }
         }
 
@@ -68,6 +72,12 @@ namespace Deskband.Core.Controls
             this.Cursor = Cursors.Hand;
 
             this.BackColor = Color.Transparent;
+        }
+
+        private void SetPosition(int position)
+        {
+            _position = position;
+            User32.InvalidateRect(this.Handle, IntPtr.Zero, false);
         }
 
         protected override void OnPaint(PaintEventArgs e)
@@ -186,7 +196,7 @@ namespace Deskband.Core.Controls
 
             if (this.Range > 0) // Range can be 0 for radio streams
             {
-                int wx = (rc.right - offset * 2) * this.Position / this.Range;
+                int wx = (rc.right - offset * 2) * _position / this.Range;
 
                 Gdi32.Rectangle(hdc, rc.left + offset, rc.top + offset, wx + offset, rc.bottom - offset);
             }
@@ -198,7 +208,7 @@ namespace Deskband.Core.Controls
             Gdi32.DeleteObject(pen);
         }
 
-        private void SetPositionByMouseX(int x)
+        private void SetPositionByMouseX(int x, bool raisePositionChanged)
         {
             int clientWidth = this.Width - 4;
             if (clientWidth <= 0)
@@ -207,12 +217,11 @@ namespace Deskband.Core.Controls
             int p = x * this.Range / clientWidth;
             if (p > this.Range) p = this.Range;
 
-            if (p != this.Position)
-            {
-                this.Position = p;
+            SetPosition(p);
 
-                if (this.OnPositionChanged != null)
-                    OnPositionChanged(this, new ValueEventArgs<int>(p));
+            if (raisePositionChanged)
+            {
+                OnPositionChanged?.Invoke(this, new ValueEventArgs<int>(p));
             }
         }
 
@@ -223,26 +232,44 @@ namespace Deskband.Core.Controls
             if (e.Button != MouseButtons.Left || this.Range == 0)
                 return;
 
-            mousePressed = true;
+            _mousePressed = true;
 
-            SetPositionByMouseX(e.X);
+            if (!ChangeOnMouseUp)
+            {
+                SetPositionByMouseX(e.X, true);
+            }
         }
 
         protected override void OnMouseUp(MouseEventArgs e)
         {
             base.OnMouseUp(e);
 
-            mousePressed = false;
+            _mousePressed = false;
+
+            if (e.Button != MouseButtons.Left || this.Range == 0)
+                return;
+
+            if (ChangeOnMouseUp)
+            {
+                SetPositionByMouseX(e.X, true);
+            }
         }
 
         protected override void OnMouseMove(MouseEventArgs e)
         {
             base.OnMouseMove(e);
 
-            if (!mousePressed)
+            if (!_mousePressed)
                 return;
 
-            SetPositionByMouseX(e.X);
+            if (!ChangeOnMouseUp)
+            {
+                SetPositionByMouseX(e.X, true);
+            }
+            else
+            {
+                SetPositionByMouseX(e.X, false);
+            }
         }
 
         public void SetDelta(int delta)

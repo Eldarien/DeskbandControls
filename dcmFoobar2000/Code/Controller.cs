@@ -198,10 +198,10 @@ namespace dcmFoobar2000.Code
             _btnStopAC = CreateButton(_cfg.Buttons.BtnStopAC, Resources.Icon_StopAfterCurrentOn, Resources.Icon_StopAfterCurrentOff, _actions.ToggleStopAfterCurrent);
             AddControlToModuleContainer(_btnStopAC);
 
-            _trbPosition = CreateTrackbar(_cfg.PositionBar, p => _actions.Seek(p));
+            _trbPosition = CreateTrackbar(_cfg.PositionBar, true, p => _actions.Seek(p));
             AddControlToModuleContainer(_trbPosition);
 
-            _trbVolume = CreateTrackbar(_cfg.VolumeBar, p => SetVolume(p));
+            _trbVolume = CreateTrackbar(_cfg.VolumeBar, false, p => SetVolume(p));
             AddControlToModuleContainer(_trbVolume);
 
             _labels.Clear();
@@ -241,7 +241,7 @@ namespace dcmFoobar2000.Code
             return aa;
         }
 
-        private dcTrackbar CreateTrackbar(TrackbarSettings settings, Action<int> action)
+        private dcTrackbar CreateTrackbar(TrackbarSettings settings, bool changeOnMouseUp, Action<int> action)
         {
             var trb = CreateControl<dcTrackbar>();
             trb.Visible = settings.Visible;
@@ -253,6 +253,7 @@ namespace dcmFoobar2000.Code
             trb.HideBorders = settings.HideBorders;
             trb.Range = 100;
             trb.Position = 0;
+            trb.ChangeOnMouseUp = changeOnMouseUp;
             trb.OnPositionChanged += (s, e) => action(e.Value);
             return trb;
         }
