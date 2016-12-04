@@ -32,6 +32,8 @@ namespace dcmFoobar2000.Code
         private DisposableContainer _disposable;
         private Container _container;
         private Timer _hideTimer;
+        private const int _hideTimerInitialInterval = 1000;
+        private const int _hideTimerRegularInterval = 300;
 
         private bool _eventsInitialized;
 
@@ -77,7 +79,7 @@ namespace dcmFoobar2000.Code
             _disposable = new DisposableContainer();
             _container = _disposable.Add(new Container());
             _hideTimer = _disposable.Add(new Timer(_container));
-            _hideTimer.Interval = 500;
+            _hideTimer.Interval = _hideTimerInitialInterval;
             _hideTimer.Tick += (s, e) => HandleHideTimerTick();
         }
 
@@ -183,7 +185,7 @@ namespace dcmFoobar2000.Code
             _btnStop = CreateButton(_cfg.Buttons.BtnStop, Resources.Icon_Stop, null, _actions.Stop);
             AddControlToModuleContainer(_btnStop);
 
-            _btnPlayPause = CreateButton(_cfg.Buttons.BtnPlayPause, Resources.Icon_Play, Resources.Icon_Pause, () => { _console.AddLine("Play/Pause pressed!"); _actions.PlayPause(); });
+            _btnPlayPause = CreateButton(_cfg.Buttons.BtnPlayPause, Resources.Icon_Play, Resources.Icon_Pause, () => { _actions.PlayPause(); });
             AddControlToModuleContainer(_btnPlayPause);
 
             _btnPrev = CreateButton(_cfg.Buttons.BtnPrev, Resources.Icon_Prev, null, _actions.Prev);
@@ -496,6 +498,7 @@ namespace dcmFoobar2000.Code
         private void HandleHideTimerTick()
         {
             _hideTimer.Enabled = false;
+            _hideTimer.Interval = _hideTimerRegularInterval;
             _mcontainer.Hide(Foobar2000Module.ModuleId);
         }
 
@@ -505,9 +508,8 @@ namespace dcmFoobar2000.Code
             {
                 case FormatStringIndex.InternetSearch:
                     {
+                        // www.google.com/search?q=%q%
                         var url = _cfg.InternetSearchUrl.Replace("%q%", Uri.EscapeDataString(text));
-
-                        //var url = String.Format("https://www.google.com/search?q={0}", Uri.EscapeDataString(text));
                         Shell32.ShellExecute(IntPtr.Zero, "open", url, null, null, WinApiTypes.SW_SHOWNORMAL);
                     }
                     break;
