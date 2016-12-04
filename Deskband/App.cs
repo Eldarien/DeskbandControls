@@ -4,6 +4,7 @@ using Deskband.Core.Common;
 using Deskband.Core.Configuration;
 using Deskband.Core.Interfaces;
 using Deskband.Core.WinApi;
+using Deskband.Integration;
 using Deskband.Settings;
 using Deskband.UI;
 using System;
@@ -26,8 +27,6 @@ namespace Deskband
         readonly ModuleContainer _moduleContainer;
         readonly FloatingForm _floatingForm;
 
-        readonly GlobalMouseHook _globalMouseHook;
-
         public App(
             Band band,
             IEnumerable<IModule> modules,
@@ -47,8 +46,6 @@ namespace Deskband
             _menu = menu;
             _sp = sp;
             _moduleContainer = moduleContainer;
-
-            _globalMouseHook = new GlobalMouseHook();
         }
 
         public void Run()
@@ -78,12 +75,15 @@ namespace Deskband
                 sf.Show();
             });
 
-            _globalMouseHook.MouseWheel += (s, e) => HandleMouseWheel(e.Value);
+            GlobalMouseHook.SetGlobalMouseHook();
+            GlobalMouseHook.MouseWheel += (s, e) => HandleMouseWheel(e.Value);
+
+            ActiveWindowWatcher.StartWatch();
         }
 
         private void OnClose(object sender, EventArgs e)
         {
-            _globalMouseHook.Dispose();
+            GlobalMouseHook.RemoveGlobalMouseHook();
 
             _config.DisableWatcher();
             _config.Save();

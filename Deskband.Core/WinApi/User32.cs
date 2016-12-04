@@ -71,5 +71,11 @@ namespace Deskband.Core.WinApi
 
         [DllImport("user32.dll")]
         public static extern int UnhookWindowsHookEx(IntPtr idHook);
+
+        [DllImport("user32.dll")]
+        public static extern IntPtr GetForegroundWindow();
+
+        [DllImport("user32.dll")]
+        public static extern bool SetForegroundWindow(IntPtr hWnd);
     }
 }

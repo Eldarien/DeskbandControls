@@ -121,6 +121,8 @@
       <DependentUpon>ConsoleForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Console\ConsoleHandler.cs" />
+    <Compile Include="Integration\ActiveWindowWatcher.cs" />
+    <Compile Include="Integration\GlobalMouseHook.cs" />
     <Compile Include="Settings\NodeData.cs" />
     <Compile Include="Settings\SettingsForm.cs">
       <SubType>Form</SubType>

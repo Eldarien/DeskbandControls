@@ -24,13 +24,14 @@ namespace dcmFoobar2000.Code
         private IMenuProvider _menu;
         private IModuleContainer _mcontainer;
         private Foobar2000Actions _actions;
+        private ILastActiveWindowActivator _lastActiveWindowActivator;
 
         private ConfigurationModel _cfg;
 
         private MessageForm _messageForm;
 
         private DisposableContainer _disposable;
-        private Container _container;
+        //private Container _container;
         private Timer _hideTimer;
         private const int _hideTimerInitialInterval = 1000;
         private const int _hideTimerRegularInterval = 300;
@@ -64,6 +65,7 @@ namespace dcmFoobar2000.Code
             IMenuProvider menu,
             IModuleContainer mcontainer,
             Foobar2000Actions actions,
+            ILastActiveWindowActivator lastActiveWindowActivator,
             MessageForm messageForm
             )
         {
@@ -74,11 +76,12 @@ namespace dcmFoobar2000.Code
             _menu = menu;
             _mcontainer = mcontainer;
             _actions = actions;
+            _lastActiveWindowActivator = lastActiveWindowActivator;
             _messageForm = messageForm;
 
             _disposable = new DisposableContainer();
-            _container = _disposable.Add(new Container());
-            _hideTimer = _disposable.Add(new Timer(_container));
+            //_container = _disposable.Add(new Container());
+            _hideTimer = _disposable.Add(new Timer());
             _hideTimer.Interval = _hideTimerInitialInterval;
             _hideTimer.Tick += (s, e) => HandleHideTimerTick();
         }
@@ -182,28 +185,36 @@ namespace dcmFoobar2000.Code
             _picAlbumArt = CreateAlbumArt(_cfg.AlbumArt);
             AddControlToModuleContainer(_picAlbumArt);
 
-            _btnStop = CreateButton(_cfg.Buttons.BtnStop, Resources.Icon_Stop, null, _actions.Stop);
+            _btnStop = CreateButton(_cfg.Buttons.BtnStop, Resources.Icon_Stop, null,
+                () => { _actions.Stop(); _lastActiveWindowActivator.Activate(); });
             AddControlToModuleContainer(_btnStop);
 
-            _btnPlayPause = CreateButton(_cfg.Buttons.BtnPlayPause, Resources.Icon_Play, Resources.Icon_Pause, () => { _actions.PlayPause(); });
+            _btnPlayPause = CreateButton(_cfg.Buttons.BtnPlayPause, Resources.Icon_Play, Resources.Icon_Pause,
+                () => { _actions.PlayPause(); _lastActiveWindowActivator.Activate(); });
             AddControlToModuleContainer(_btnPlayPause);
 
-            _btnPrev = CreateButton(_cfg.Buttons.BtnPrev, Resources.Icon_Prev, null, _actions.Prev);
+            _btnPrev = CreateButton(_cfg.Buttons.BtnPrev, Resources.Icon_Prev, null,
+                () => { _actions.Prev(); _lastActiveWindowActivator.Activate(); });
             AddControlToModuleContainer(_btnPrev);
 
-            _btnNext = CreateButton(_cfg.Buttons.BtnNext, Resources.Icon_Next, null, _actions.Next);
+            _btnNext = CreateButton(_cfg.Buttons.BtnNext, Resources.Icon_Next, null,
+                () => { _actions.Next(); _lastActiveWindowActivator.Activate(); });
             AddControlToModuleContainer(_btnNext);
 
-            _btnRandom = CreateButton(_cfg.Buttons.BtnRandom, Resources.Icon_Random, null, _actions.Random);
+            _btnRandom = CreateButton(_cfg.Buttons.BtnRandom, Resources.Icon_Random, null,
+                () => { _actions.Random(); _lastActiveWindowActivator.Activate(); });
             AddControlToModuleContainer(_btnRandom);
 
-            _btnStopAC = CreateButton(_cfg.Buttons.BtnStopAC, Resources.Icon_StopAfterCurrentOn, Resources.Icon_StopAfterCurrentOff, _actions.ToggleStopAfterCurrent);
+            _btnStopAC = CreateButton(_cfg.Buttons.BtnStopAC, Resources.Icon_StopAfterCurrentOn, Resources.Icon_StopAfterCurrentOff,
+                () => { _actions.ToggleStopAfterCurrent(); _lastActiveWindowActivator.Activate(); });
             AddControlToModuleContainer(_btnStopAC);
 
-            _trbPosition = CreateTrackbar(_cfg.PositionBar, true, p => _actions.Seek(p));
+            _trbPosition = CreateTrackbar(_cfg.PositionBar, true,
+                p => _actions.Seek(p), () => _lastActiveWindowActivator.Activate());
             AddControlToModuleContainer(_trbPosition);
 
-            _trbVolume = CreateTrackbar(_cfg.VolumeBar, false, p => SetVolume(p));
+            _trbVolume = CreateTrackbar(_cfg.VolumeBar, false,
+                p => SetVolume(p), () => _lastActiveWindowActivator.Activate());
             AddControlToModuleContainer(_trbVolume);
 
             _labels.Clear();
@@ -243,7 +254,7 @@ namespace dcmFoobar2000.Code
             return aa;
         }
 
-        private dcTrackbar CreateTrackbar(TrackbarSettings settings, bool changeOnMouseUp, Action<int> action)
+        private dcTrackbar CreateTrackbar(TrackbarSettings settings, bool changeOnMouseUp, Action<int> action, Action mouseUpAction)
         {
             var trb = CreateControl<dcTrackbar>();
             trb.Visible = settings.Visible;
@@ -257,6 +268,7 @@ namespace dcmFoobar2000.Code
             trb.Position = 0;
             trb.ChangeOnMouseUp = changeOnMouseUp;
             trb.OnPositionChanged += (s, e) => action(e.Value);
+            trb.MouseUp += (s, e) => mouseUpAction();
             return trb;
         }
 
@@ -547,16 +559,19 @@ namespace dcmFoobar2000.Code
         public void CopyArtistAndTitle()
         {
             _actions.FormatString(FormatStringIndex.CopyArtistAndTitle, "%artist% - %title%");
+            _lastActiveWindowActivator.Activate();
         }
 
         public void CopyTitle()
         {
             _actions.FormatString(FormatStringIndex.CopyTitle, "%title%");
+            _lastActiveWindowActivator.Activate();
         }
 
         public void CopyArtist()
         {
             _actions.FormatString(FormatStringIndex.CopyArtist, "%artist%");
+            _lastActiveWindowActivator.Activate();
         }
 
         public void OpenContainingFolder()

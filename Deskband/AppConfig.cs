@@ -2,6 +2,7 @@
 using Deskband.Console;
 using Deskband.Core.Interfaces;
 using Deskband.Extensions;
+using Deskband.Integration;
 using Deskband.UI;
 using Ninject;
 using Ninject.Planning.Bindings.Resolvers;
@@ -25,6 +26,7 @@ namespace Deskband
             kernel.Bind<ModuleContainer, IModuleContainer>().To<ModuleContainer>();
             kernel.Bind<FloatingForm>().ToSelf();
             kernel.Bind<ISizeProvider>().To<SizeProvider>();
+            kernel.Bind<ILastActiveWindowActivator>().To<ActiveWindowWatcherWrapper>();
 
             kernel.Bind<App>().ToSelf();
 

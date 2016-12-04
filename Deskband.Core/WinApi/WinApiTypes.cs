@@ -350,6 +350,7 @@ namespace Deskband.Core.WinApi
 
         // Messages
 
+        public const int WM_ACTIVATE = 0x0006;
         public const int WM_SETCURSOR = 0x0020;
         public const int WM_MOUSEMOVE = 0x0200;
         public const int WM_MOUSEWHEEL = 0x020A;

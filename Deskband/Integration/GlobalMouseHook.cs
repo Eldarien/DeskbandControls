@@ -1,30 +1,32 @@
 ﻿using Deskband.Core.EventArguments;
+using Deskband.Core.WinApi;
 using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using static Deskband.Core.WinApi.WinApiTypes;
 
-namespace Deskband.Core.WinApi
+namespace Deskband.Integration
 {
-    public class GlobalMouseHook : IDisposable
+    public static class GlobalMouseHook
     {
-        public event EventHandler<ValueEventArgs<HookMouseStruct>> MouseWheel;
+        public static event EventHandler<ValueEventArgs<HookMouseStruct>> MouseWheel;
 
-        private IntPtr _hookID = IntPtr.Zero;
-        private HookProcedure _globalHookProc;
+        private static IntPtr _hookID = IntPtr.Zero;
+        private static HookProcedure _globalHookProc;
 
-        public GlobalMouseHook()
+        public static void SetGlobalMouseHook()
         {
             _globalHookProc = (code, param, lParam) => MouseChanged(code, param, lParam);
             _hookID = User32.SetWindowsHookEx(WH_MOUSE_LL, _globalHookProc, Process.GetCurrentProcess().MainModule.BaseAddress, 0);
         }
 
-        public void Dispose()
+        public static void RemoveGlobalMouseHook()
         {
             User32.UnhookWindowsHookEx(_hookID);
+            GC.KeepAlive(_globalHookProc);
         }
 
-        private IntPtr MouseChanged(int nCode, IntPtr wParam, IntPtr lParam)
+        private static IntPtr MouseChanged(int nCode, IntPtr wParam, IntPtr lParam)
         {
             var passThrough = nCode != 0;
             if (passThrough)

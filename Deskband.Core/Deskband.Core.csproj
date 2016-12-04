@@ -99,6 +99,7 @@
     <Compile Include="Configuration\ConfigurationObjectBase.cs" />
     <Compile Include="Interfaces\IConfigurationProvider.cs" />
     <Compile Include="Interfaces\IConsole.cs" />
+    <Compile Include="Interfaces\ILastActiveWindowActivator.cs" />
     <Compile Include="Interfaces\IModuleContainer.cs" />
     <Compile Include="Interfaces\IModule.cs" />
     <Compile Include="Interfaces\IMenuProvider.cs" />
@@ -111,7 +112,6 @@
     </Compile>
     <Compile Include="WinApi\DwmApi.cs" />
     <Compile Include="WinApi\Gdi32.cs" />
-    <Compile Include="WinApi\GlobalMouseHook.cs" />
     <Compile Include="WinApi\Kernel32.cs" />
     <Compile Include="WinApi\Shell32.cs" />
     <Compile Include="WinApi\User32.cs" />
