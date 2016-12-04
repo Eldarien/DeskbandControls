@@ -59,12 +59,15 @@ namespace dcmFoobar2000.Configuration
         [Category("Text")]
         public string Format { get; set; }
 
-        [Category("Text"), DisplayName("Align To Right")]
-        [TypeConverter(typeof(YesNoBooleanConverter))]
-        public bool AlightToRight { get; set; }
+        [Category("Text"), DisplayName("Paused Format")]
+        public string PausedFormat { get; set; } = "";
 
         [Category("Text"), DisplayName("Stopped Text")]
         public string StoppedText { get; set; } = "";
+
+        [Category("Text"), DisplayName("Align To Right")]
+        [TypeConverter(typeof(YesNoBooleanConverter))]
+        public bool AlightToRight { get; set; }
 
         [Category("Scroll"), DisplayName("Enable Scroll")]
         [TypeConverter(typeof(YesNoBooleanConverter))]

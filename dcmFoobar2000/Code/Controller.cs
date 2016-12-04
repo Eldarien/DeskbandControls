@@ -304,7 +304,12 @@ namespace dcmFoobar2000.Code
         {
             for (int i = 0; i < _labels.Count(); i++)
             {
-                _actions.FormatString(i, _cfg.Texts[i].Format);
+                var cfg = _cfg.Texts[i];
+                var format = _paused
+                    ? (String.IsNullOrWhiteSpace(cfg.PausedFormat) ? cfg.Format : cfg.PausedFormat)
+                    : cfg.Format;
+
+                _actions.FormatString(i, format);
             }
         }
 
@@ -312,11 +317,6 @@ namespace dcmFoobar2000.Code
         {
             _cfg.Texts.Zip(_labels, (settings, lbl) => new { settings, lbl }).ToList().ForEach(x => { x.lbl.Text = x.settings.StoppedText; });
         }
-
-        //private void HandleScrollTick()
-        //{
-        //    _labels.ForEach(x => x.ScrollTick());
-        //}
 
         private void InitMessageFormEvents()
         {
