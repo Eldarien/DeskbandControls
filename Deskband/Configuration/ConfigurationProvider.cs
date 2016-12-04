@@ -9,11 +9,13 @@ using System.Linq;
 using System.Text;
 using Deskband.Core.Configuration;
 using Deskband.Extensions;
+using Deskband.Console;
 
 namespace Deskband.Configuration
 {
     public class ConfigurationProvider : IConfigurationProvider
     {
+        readonly IConsole _console;
         private string _configDir;
         private string _configFilePath;
         private JArray _data;
@@ -23,18 +25,26 @@ namespace Deskband.Configuration
 
         public event EventHandler ConfigurationFileChanged;
 
-        public ConfigurationProvider()
+        public ConfigurationProvider(IConsole console)
         {
-            _configDir = Path.Combine(Environment.GetEnvironmentVariable("AppData"), "DeskbandControls");
-            if (!Directory.Exists(_configDir))
+            _console = console;
+
+            var optionsDir = Path.Combine(Environment.GetEnvironmentVariable("AppData"), "DeskbandControls");
+            _console.AddLine($"Options directory is {optionsDir}");
+            if (!Directory.Exists(optionsDir))
             {
-                Directory.CreateDirectory(_configDir);
+                Directory.CreateDirectory(optionsDir);
             }
-            var options = GetOptions(_configDir);
+            var options = GetOptions(optionsDir);
             if (!String.IsNullOrWhiteSpace(options.ConfigurationDirectory))
             {
                 _configDir = options.ConfigurationDirectory;
             }
+            else
+            {
+                _configDir = optionsDir;
+            }
+            _console.AddLine($"Configuration directory is {_configDir}");
 
             _configFilePath = Path.Combine(_configDir, "DeskbandControls.json");
             _data = new JArray();
@@ -70,6 +80,7 @@ namespace Deskband.Configuration
 
         private void OnFileChanged(object sender, FileSystemEventArgs e)
         {
+            _console.AddLine($"Configuration file chnaged, reason: {e.ChangeType}");
             ConfigurationFileChanged?.Invoke(null, EventArgs.Empty);
         }
 
@@ -103,6 +114,7 @@ namespace Deskband.Configuration
             {
                 var json = File.ReadAllText(filePath);
                 _data = JArray.Parse(json);
+                _console.AddLine($"Profile loaded: {profileName ?? "Default"}");
             }
         }
 
@@ -113,6 +125,7 @@ namespace Deskband.Configuration
 
             var filePath = GetConfigFilePath(profileName);
             File.WriteAllText(filePath, JsonConvert.SerializeObject(_data, Formatting.Indented));
+            _console.AddLine($"Profile saved: {profileName ?? "Default"}");
 
             if (watcherEnabled) _watcher.EnableRaisingEvents = true;
         }

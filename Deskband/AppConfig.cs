@@ -37,6 +37,7 @@ namespace Deskband
 
         private static void LoadModules(IKernel kernel)
         {
+            var console = kernel.Get<IConsole>();
             var location = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             var directory = new DirectoryInfo(location);
             var files = directory.GetFiles("dcm*.dll", SearchOption.TopDirectoryOnly);
@@ -48,6 +49,7 @@ namespace Deskband
                 foreach (var t in types)
                 {
                     kernel.Bind<IModule>().To(t);
+                    console.AddLine($"Module found: {t}");
                 }
             }
         }

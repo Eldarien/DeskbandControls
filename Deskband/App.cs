@@ -20,7 +20,7 @@ namespace Deskband
         readonly IEnumerable<IModule> _modules;
 
         readonly ConfigurationProvider _config;
-        readonly ConsoleHandler _consoleHandler;
+        readonly ConsoleHandler _console;
         readonly IMenuProvider _menu;
         readonly ISizeProvider _sp;
         readonly ModuleContainer _moduleContainer;
@@ -41,7 +41,7 @@ namespace Deskband
             _modules = modules;
             _config = config;
             _floatingForm = floatingForm;
-            _consoleHandler = consoleHandler;
+            _console = consoleHandler;
             _menu = menu;
             _sp = sp;
             _moduleContainer = moduleContainer;
@@ -63,13 +63,13 @@ namespace Deskband
             _floatingForm.MouseDoubleClick += (s, e) => HandleDoubleClick(e.Location);
 
             // Console
-            var miConsole = _menu.AddItem(Guid.Empty, null, "Console", _consoleHandler.ToggleConsole);
-            _consoleHandler.OnConsoleToggle += (s, e) => _menu.SetItemCheckedState(miConsole, e.Value);
+            var miConsole = _menu.AddItem(Guid.Empty, null, "Console", _console.ToggleConsole);
+            _console.OnConsoleToggle += (s, e) => _menu.SetItemCheckedState(miConsole, e.Value);
 
             // Settings
             _menu.AddItem(Guid.Empty, null, "Settings", () =>
             {
-                var sf = new SettingsForm(_config, _sp, _consoleHandler, _modules);
+                var sf = new SettingsForm(_config, _sp, _console, _modules);
                 sf.OnApply += (s, e) => { ApplyConfiguration(); _config.Save(); };
                 sf.Show();
             });
@@ -83,7 +83,7 @@ namespace Deskband
 
         private void OnResize(object sender, EventArgs e)
         {
-            _consoleHandler.AddDebugLine(String.Format("Module container resized: {0}x{1}", _moduleContainer.Size.Width, _moduleContainer.Size.Height));
+            _console.AddDebugLine(String.Format("Module container resized: {0}x{1}", _moduleContainer.Size.Width, _moduleContainer.Size.Height));
 
             if (!_floatingForm.Visible)
             {
@@ -152,7 +152,7 @@ namespace Deskband
                     if (ex.Message != _lastConfigError)
                     {
                         _lastConfigError = ex.Message;
-                        _consoleHandler.AddLine(ex.Message);
+                        _console.AddLine(ex.Message);
                         MessageBox.Show(ex.Message, "Deskband Controls Configuration Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                 }
