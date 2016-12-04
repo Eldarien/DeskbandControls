@@ -427,6 +427,7 @@ namespace dcmFoobar2000.Code
         private void HandleStopAfterCurrent(bool state)
         {
             _stop_after_current = state;
+            _menu.SetItemCheckedState(_miToggleStopAC, state);
             UpdateButtonIcons();
         }
 
