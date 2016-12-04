@@ -15,6 +15,7 @@ namespace Deskband.Core.Interfaces
         void Initialize(IKernel kernel);
         void ApplyConfiguration();
         void DoubleClick();
+        void MouseWheel(int delta);
         ConfigurationObjectBase GetConfiguration();
     }
 }

@@ -31,13 +31,12 @@ namespace dcmWeather
 
         public void Initialize(IKernel kernel)
         {
-            _console.AddLine("Hello console, I am a weather plugin!");
-
             var gid = _menuProvider.AddItem(ModuleId, null, "Weather Menu Entry", null);
             _menuProvider.AddItem(ModuleId, gid, "Submenu test 1", null);
             _menuProvider.AddItem(ModuleId, gid, "Submenu test 2", null);
-
             _menuProvider.AddItem(ModuleId, null, "-", null);
+
+            _console.AddLine("Weather plugin initilized");
         }
 
         public void Dispose()
@@ -50,7 +49,12 @@ namespace dcmWeather
 
         public void DoubleClick()
         {
-            _console.AddDebugLine("Weather plugin was double-clicked!");
+            _console.AddLine("Weather plugin was double-clicked!");
+        }
+
+        public void MouseWheel(int delta)
+        {
+            _console.AddLine($"Weather plugin was scrolled with delta {delta}");
         }
 
         public ConfigurationObjectBase GetConfiguration()

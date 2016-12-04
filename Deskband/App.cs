@@ -3,13 +3,13 @@ using Deskband.Console;
 using Deskband.Core.Common;
 using Deskband.Core.Configuration;
 using Deskband.Core.Interfaces;
+using Deskband.Core.WinApi;
 using Deskband.Settings;
 using Deskband.UI;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 
 namespace Deskband
@@ -25,6 +25,8 @@ namespace Deskband
         readonly ISizeProvider _sp;
         readonly ModuleContainer _moduleContainer;
         readonly FloatingForm _floatingForm;
+
+        readonly GlobalMouseHook _globalMouseHook;
 
         public App(
             Band band,
@@ -45,6 +47,8 @@ namespace Deskband
             _menu = menu;
             _sp = sp;
             _moduleContainer = moduleContainer;
+
+            _globalMouseHook = new GlobalMouseHook();
         }
 
         public void Run()
@@ -73,10 +77,14 @@ namespace Deskband
                 sf.OnApply += (s, e) => { ApplyConfiguration(); _config.Save(); };
                 sf.Show();
             });
+
+            _globalMouseHook.MouseWheel += (s, e) => HandleMouseWheel(e.Value);
         }
 
         private void OnClose(object sender, EventArgs e)
         {
+            _globalMouseHook.Dispose();
+
             _config.DisableWatcher();
             _config.Save();
         }
@@ -166,6 +174,19 @@ namespace Deskband
             {
                 var module = _modules.First(m => m.Id == moduleId.Value);
                 module.DoubleClick();
+            }
+        }
+
+        private void HandleMouseWheel(WinApiTypes.HookMouseStruct hms)
+        {
+            var location = _moduleContainer.PointToClient(hms.Point.AsPoint());
+            var delta = hms.MouseData;
+
+            var moduleId = _moduleContainer.LocateModuleAtPoint(location);
+            if (moduleId != null)
+            {
+                var module = _modules.First(m => m.Id == moduleId.Value);
+                module.MouseWheel(delta);
             }
         }
     }

@@ -111,6 +111,7 @@
     </Compile>
     <Compile Include="WinApi\DwmApi.cs" />
     <Compile Include="WinApi\Gdi32.cs" />
+    <Compile Include="WinApi\GlobalMouseHook.cs" />
     <Compile Include="WinApi\Kernel32.cs" />
     <Compile Include="WinApi\Shell32.cs" />
     <Compile Include="WinApi\User32.cs" />

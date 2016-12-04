@@ -33,13 +33,13 @@ namespace dcmFoobar2000
 
         public void Initialize(IKernel kernel)
         {
-            _console.AddLine("Hello console, I am a foobar2000 plugin!");
-
             kernel.Bind<MessageForm>().ToSelf();
             kernel.Bind<Foobar2000Actions>().ToSelf();
             kernel.Bind<Controller>().ToSelf();
 
             _controller = kernel.Get<Controller>();
+
+            _console.AddLine("foobar2000 plugin initialized");
         }
 
         public void Dispose()
@@ -55,6 +55,11 @@ namespace dcmFoobar2000
         public void DoubleClick()
         {
             _controller.DoubleClick();
+        }
+
+        public void MouseWheel(int delta)
+        {
+            _controller.MouseWheel(delta);
         }
 
         public ConfigurationObjectBase GetConfiguration()

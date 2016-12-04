@@ -565,5 +565,14 @@ namespace dcmFoobar2000.Code
         {
             _actions.ActivateFoobar();
         }
+
+        public void MouseWheel(int delta)
+        {
+            var volume = _trbVolume.Position;
+            volume += delta * 3 / 120;
+            if (volume < 0) volume = 0;
+            if (volume > 100) volume = 100;
+            SetVolume(volume);
+        }
     }
 }

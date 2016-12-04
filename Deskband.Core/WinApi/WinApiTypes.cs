@@ -200,6 +200,11 @@ namespace Deskband.Core.WinApi
         {
             public int X;
             public int Y;
+
+            public System.Drawing.Point AsPoint()
+            {
+                return new System.Drawing.Point(X, Y);
+            }
         }
 
         [StructLayout(LayoutKind.Sequential)]
@@ -347,6 +352,7 @@ namespace Deskband.Core.WinApi
 
         public const int WM_SETCURSOR = 0x0020;
         public const int WM_MOUSEMOVE = 0x0200;
+        public const int WM_MOUSEWHEEL = 0x020A;
         public const int WM_LBUTTONDOWN = 0x0201;
         public const int WM_LBUTTONUP = 0x0202;
         public const int WM_COMMAND = 0x111;
@@ -363,10 +369,52 @@ namespace Deskband.Core.WinApi
         {
             public IntPtr dwData;
             public int cbData;
-
-            //[MarshalAs(UnmanagedType.LPStr)]
-            //public string lpData;
             public IntPtr lpData;
+        }
+
+        // Hooks
+
+        public const int WH_MOUSE_LL = 14;
+
+        public delegate IntPtr HookProcedure(int nCode, IntPtr wParam, IntPtr lParam);
+
+        [StructLayout(LayoutKind.Explicit)]
+        public struct HookMouseStruct
+        {
+            [FieldOffset(0x00)]
+            public POINT Point;
+
+            /// <summary>
+            ///     Specifies information associated with the message.
+            /// </summary>
+            /// <remarks>
+            ///     The possible values are:
+            ///     <list type="bullet">
+            ///         <item>
+            ///             <description>0 - No Information</description>
+            ///         </item>
+            ///         <item>
+            ///             <description>1 - X-Button1 Click</description>
+            ///         </item>
+            ///         <item>
+            ///             <description>2 - X-Button2 Click</description>
+            ///         </item>
+            ///         <item>
+            ///             <description>120 - Mouse Scroll Away from User</description>
+            ///         </item>
+            ///         <item>
+            ///             <description>-120 - Mouse Scroll Toward User</description>
+            ///         </item>
+            ///     </list>
+            /// </remarks>
+            [FieldOffset(0x0A)]
+            public Int16 MouseData;
+
+            /// <summary>
+            ///     Returns a Timestamp associated with the input, in System Ticks.
+            /// </summary>
+            [FieldOffset(0x10)]
+            public Int32 Timestamp;
         }
     }
 }
