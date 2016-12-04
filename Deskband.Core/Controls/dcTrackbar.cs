@@ -13,71 +13,41 @@ using Deskband.Core.EventArguments;
 
 namespace Deskband.Core.Controls
 {
-    //public class MediaTrackbarPositionEventArgs
-    //{
-    //    public int Position { get; private set; }
-
-    //    public MediaTrackbarPositionEventArgs(int position)
-    //    {
-    //        this.Position = position;
-    //    }
-    //}
-
-    //public delegate void MediaTrackbarPositionEventHandler(object sender, MediaTrackbarPositionEventArgs e);
-
     public partial class dcTrackbar : UserControl
     {
         public event EventHandler<ValueEventArgs<int>> OnPositionChanged;
-
         public override Color ForeColor
         {
             get { return base.ForeColor; }
             set { base.ForeColor = value; }
         }
-
         public Color BackgroundColor { get; set; }
-
         public bool UseBackgroundColor { get; set; }
-
-        //public Enums.TrackbarKindType Kind { get; set; }
-
-        public bool ChangeOnMouseUp { get; set; }
-
         public bool DrawOutline { get; set; }
-
         public bool HideBorders { get; set; }
-
-        private int _position = 0;
-
-        private bool _mousePressed;
-
         public int Position
         {
             get { return _position; }
-            set
-            {
-                if (!_mousePressed)
-                {
-                    SetPosition(value);
-                }
-            }
+            set { if (!_mousePressed) { SetPosition(value); } }
         }
-
+        public bool ChangeOnMouseUp { get; set; }
         public int Range { get; set; }
+
+        private int _position = 0;
+        private bool _mousePressed;
 
         public dcTrackbar()
         {
             InitializeComponent();
 
-            this.Cursor = Cursors.Hand;
-
-            this.BackColor = Color.Transparent;
+            Cursor = Cursors.Hand;
+            BackColor = Color.Transparent;
         }
 
         private void SetPosition(int position)
         {
             _position = position;
-            User32.InvalidateRect(this.Handle, IntPtr.Zero, false);
+            User32.InvalidateRect(Handle, IntPtr.Zero, false);
         }
 
         protected override void OnPaint(PaintEventArgs e)
@@ -194,9 +164,9 @@ namespace Deskband.Core.Controls
             var brush = Gdi32.CreateSolidBrush(color);
             var oldBrush = Gdi32.SelectObject(hdc, brush);
 
-            if (this.Range > 0) // Range can be 0 for radio streams
+            if (Range > 0) // Range can be 0 for radio streams
             {
-                int wx = (rc.right - offset * 2) * _position / this.Range;
+                int wx = (rc.right - offset * 2) * _position / Range;
 
                 Gdi32.Rectangle(hdc, rc.left + offset, rc.top + offset, wx + offset, rc.bottom - offset);
             }
@@ -210,12 +180,12 @@ namespace Deskband.Core.Controls
 
         private void SetPositionByMouseX(int x, bool raisePositionChanged)
         {
-            int clientWidth = this.Width - 4;
+            int clientWidth = Width - 4;
             if (clientWidth <= 0)
                 return;
 
-            int p = x * this.Range / clientWidth;
-            if (p > this.Range) p = this.Range;
+            int p = x * Range / clientWidth;
+            if (p > Range) p = Range;
 
             SetPosition(p);
 
@@ -229,7 +199,7 @@ namespace Deskband.Core.Controls
         {
             base.OnMouseDown(e);
 
-            if (e.Button != MouseButtons.Left || this.Range == 0)
+            if (e.Button != MouseButtons.Left || Range == 0)
                 return;
 
             _mousePressed = true;
@@ -246,7 +216,7 @@ namespace Deskband.Core.Controls
 
             _mousePressed = false;
 
-            if (e.Button != MouseButtons.Left || this.Range == 0)
+            if (e.Button != MouseButtons.Left || Range == 0)
                 return;
 
             if (ChangeOnMouseUp)
@@ -262,14 +232,7 @@ namespace Deskband.Core.Controls
             if (!_mousePressed)
                 return;
 
-            if (!ChangeOnMouseUp)
-            {
-                SetPositionByMouseX(e.X, true);
-            }
-            else
-            {
-                SetPositionByMouseX(e.X, false);
-            }
+            SetPositionByMouseX(e.X, !ChangeOnMouseUp);
         }
 
         public void SetDelta(int delta)
@@ -285,25 +248,5 @@ namespace Deskband.Core.Controls
                     OnPositionChanged(this, new ValueEventArgs<int>(p));
             }
         }
-
-        //public static dcTrackbar Create(Settings.Models.TrackbarModel x, bool outline)
-        //{
-        //    var tb = new dcTrackbar();
-        //    tb.DrawOutline = outline;
-        //    tb.Kind = x.Kind;
-
-        //    tb.Visible = x.Visible;
-        //    tb.Location = new Point(x.X, x.Y); //x.BoundRect.Location;
-        //    tb.Size = new Size(x.Width, x.Height); //x.BoundRect.Size;
-        //    tb.ForeColor = x.Color.AsDrawingColor(); //ColorHelpers.GetThemedColor(x.FgColor);
-        //    tb.BackgroundColor = x.BackgroundColor.AsDrawingColor();
-        //    tb.UseBackgroundColor = x.UseBackgroundColor;
-        //    tb.HideBorders = x.HideBorders;
-
-        //    tb.Range = 100;
-        //    tb.Position = 0;
-
-        //    return tb;
-        //}
     }
 }
