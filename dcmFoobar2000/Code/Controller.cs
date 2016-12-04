@@ -31,7 +31,7 @@ namespace dcmFoobar2000.Code
 
         private DisposableContainer _disposable;
         private Container _container;
-        //private Timer _scrollTimer;
+        private Timer _hideTimer;
 
         private bool _eventsInitialized;
 
@@ -76,17 +76,15 @@ namespace dcmFoobar2000.Code
 
             _disposable = new DisposableContainer();
             _container = _disposable.Add(new Container());
-            //_scrollTimer = _disposable.Add(new Timer(_container));
-            //_scrollTimer.Tick += (s, e) => HandleScrollTick();
+            _hideTimer = _disposable.Add(new Timer(_container));
+            _hideTimer.Interval = 500;
+            _hideTimer.Tick += (s, e) => HandleHideTimerTick();
         }
 
         public void ApplyConfiguration()
         {
             _cfg = _config.GetConfiguration(Foobar2000Module.ModuleId, ConfigurationModel.Default);
             _config.UpdateConfiguration(_cfg);
-
-            //_scrollTimer.Interval = _cfg.TextScrollSpeed;
-            //_scrollTimer.Enabled = _cfg.TextScrollSpeed > 0;
 
             RegisterMenu();
             RegisterControls();
@@ -342,8 +340,7 @@ namespace dcmFoobar2000.Code
             {
                 if (state)
                 {
-                    _mcontainer.Show(Foobar2000Module.ModuleId);
-                    HandlePlaybackState_Ex(state);
+                    HandlePlaybackState_Ex(!_stopped);
                 }
                 else
                 {
@@ -476,9 +473,14 @@ namespace dcmFoobar2000.Code
         private void HandlePlaybackState_Ex(bool state)
         {
             if (_cfg.HideIfNotPlaying && !state)
-                _mcontainer.Hide(Foobar2000Module.ModuleId);
+            {
+                _hideTimer.Enabled = true;
+            }
             else
+            {
+                _hideTimer.Enabled = false;
                 _mcontainer.Show(Foobar2000Module.ModuleId);
+            }
 
             _menu.SetItemEnabledState(_miStop, !_stopped);
             _menu.SetItemEnabledState(_miToggleStopAC, !_stopped);
@@ -487,6 +489,12 @@ namespace dcmFoobar2000.Code
             _menu.SetItemEnabledState(_miCopyTitle, !_stopped);
             _menu.SetItemEnabledState(_miOpenContainingFolder, !_stopped);
             _menu.SetItemEnabledState(_miSearchInInternet, !_stopped);
+        }
+
+        private void HandleHideTimerTick()
+        {
+            _hideTimer.Enabled = false;
+            _mcontainer.Hide(Foobar2000Module.ModuleId);
         }
 
         private void HandleFormatString(string text, int index)
