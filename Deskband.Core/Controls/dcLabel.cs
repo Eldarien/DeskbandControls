@@ -63,7 +63,7 @@ namespace Deskband.Core.Controls
         public bool EnableScrolling
         {
             get { return _timer.Enabled; }
-            set { _timer.Enabled = value; if (!value) { _scrollPos = 0; Refresh(); } }
+            set { _timer.Enabled = value; if (!value) { ResetScrollPosition(); } }
         }
 
         public int ScrollSpeed
@@ -75,6 +75,15 @@ namespace Deskband.Core.Controls
         public int ScrollStep { get; set; }
 
         public string ScrollSeparator { get; set; }
+
+        public void ResetScrollPosition()
+        {
+            if (_scrollPos != 0)
+            {
+                _scrollPos = 0;
+                Refresh();
+            }
+        }
 
         // private methods
 

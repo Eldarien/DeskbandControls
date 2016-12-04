@@ -320,6 +320,11 @@ namespace dcmFoobar2000.Code
             _cfg.Texts.Zip(_labels, (settings, lbl) => new { settings, lbl }).ToList().ForEach(x => { x.lbl.Text = x.settings.StoppedText; });
         }
 
+        private void ResetTextsScrollPosition()
+        {
+            _labels.ForEach(x => x.ResetScrollPosition());
+        }
+
         private void InitMessageFormEvents()
         {
             _messageForm.OnThemeChanged += (s, e) => ApplyConfiguration();
@@ -360,6 +365,7 @@ namespace dcmFoobar2000.Code
             UpdatePosition(0, (int)length);
             UpdateAlbumArt(null, true);
             UpdateTexts();
+            ResetTextsScrollPosition();
 
             HandlePlaybackState(true);
         }
