@@ -39,7 +39,7 @@ namespace dcmFoobar2000
 
             _controller = kernel.Get<Controller>();
 
-            _console.AddLine("foobar2000 plugin initialized");
+            _console.AddLine("foobar2000 module initialized");
         }
 
         public void Dispose()

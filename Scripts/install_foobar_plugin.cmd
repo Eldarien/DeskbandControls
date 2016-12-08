@@ -15,8 +15,7 @@ goto :MAIN
       if NOT %%A==%notFound_result% (set procFound=1)
     )
     if %procFound%==0 (
-      echo The process was not running.
-      goto :EOF
+      goto :NOSTOP
     )
     set wasStopped=1
     set ignore_result=INFO:
@@ -25,12 +24,14 @@ goto :MAIN
     for /f "usebackq" %%A in (`%tasklist% /nh /fi "imagename eq %procName%"`) do (
       if not %%A==%ignore_result% (goto :CHECKDEAD)
     )
-    goto :EOF
+    goto :NOSTOP
+    
 -------------------------------------------------------
-
-:MAIN 
+:MAIN
+echo Stopping foobar2000 process...
 call :STOPPROC foobar2000.exe
-
-if exist "%AppData%\foobar2000\user-components\foo_deskband_controls\nul" ( echo "" ) else ( mkdir "%AppData%\foobar2000\user-components\foo_deskband_controls" )
+:NOSTOP
+if exist "%AppData%\foobar2000\user-components\foo_deskband_controls\" ( echo Plugin directory exists. ) else ( mkdir "%AppData%\foobar2000\user-components\foo_deskband_controls" )
 copy /Y "%release%\DeskbandPlugin.dll" "%AppData%\foobar2000\user-components\foo_deskband_controls\foo_deskband_controls.dll"
+pause
 exit

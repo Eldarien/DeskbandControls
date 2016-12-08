@@ -37,43 +37,7 @@
     <SignAssembly>true</SignAssembly>
   </PropertyGroup>
   <PropertyGroup>
-    <AssemblyOriginatorKeyFile>DeskbandControls.snk</AssemblyOriginatorKeyFile>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\x64\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <DebugType>full</DebugType>
-    <PlatformTarget>x64</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
-    <OutputPath>bin\x64\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>x64</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\x86\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <DebugType>full</DebugType>
-    <PlatformTarget>x86</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
-    <OutputPath>bin\x86\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>x86</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <AssemblyOriginatorKeyFile>..\DeskbandControls.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <PropertyGroup>
     <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
@@ -163,9 +127,14 @@
     <Compile Include="UI\TaskbarSizeInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="DeskbandControls.snk" />
-  </ItemGroup>
-  <ItemGroup>
+    <ProjectReference Include="..\dcmFoobar2000\dcmFoobar2000.csproj">
+      <Project>{eccdadd3-1732-4f31-8548-1a7f81a037bf}</Project>
+      <Name>dcmFoobar2000</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\dcmWeather\dcmWeather.csproj">
+      <Project>{03b4455b-57aa-4389-ae1f-90d899e3d8e0}</Project>
+      <Name>dcmWeather</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Deskband.Core\Deskband.Core.csproj">
       <Project>{c6b667f2-fd55-4bf6-8266-aef34fdf1f62}</Project>
       <Name>Deskband.Core</Name>
@@ -180,6 +149,9 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\DeskbandControls.snk">
+      <Link>DeskbandControls.snk</Link>
+    </None>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup />
@@ -189,6 +161,7 @@
   </PropertyGroup>
   <PropertyGroup>
     <PostBuildEvent>mkdir "$(SolutionDir)Output\$(ConfigurationName)"
+del /Q "$(SolutionDir)Output\$(ConfigurationName)\*.*"
 copy "$(ProjectDir)bin\$(ConfigurationName)\*.dll" "$(SolutionDir)Output\$(ConfigurationName)" /Y</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

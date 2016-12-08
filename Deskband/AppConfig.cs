@@ -39,21 +39,24 @@ namespace Deskband
 
         private static void LoadModules(IKernel kernel)
         {
-            var console = kernel.Get<IConsole>();
-            var location = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            var directory = new DirectoryInfo(location);
-            var files = directory.GetFiles("dcm*.dll", SearchOption.TopDirectoryOnly);
-            foreach (var file in files)
-            {
-                var assemblyName = AssemblyName.GetAssemblyName(file.FullName);
-                var assembly = AppDomain.CurrentDomain.Load(assemblyName);
-                var types = assembly.GetTypes().TypesImplementingInterface<IModule>();
-                foreach (var t in types)
-                {
-                    kernel.Bind<IModule>().To(t);
-                    console.AddLine($"Module found: {t}");
-                }
-            }
+            //var console = kernel.Get<IConsole>();
+            //var location = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            //var directory = new DirectoryInfo(location);
+            //var files = directory.GetFiles("dcm*.dll", SearchOption.TopDirectoryOnly);
+            //foreach (var file in files)
+            //{
+            //    var assemblyName = AssemblyName.GetAssemblyName(file.FullName);
+            //    var assembly = AppDomain.CurrentDomain.Load(assemblyName);
+            //    var types = assembly.GetTypes().TypesImplementingInterface<IModule>();
+            //    foreach (var t in types)
+            //    {
+            //        kernel.Bind<IModule>().To(t);
+            //        console.AddLine($"Module found: {t}");
+            //    }
+            //}
+
+            kernel.Bind<IModule>().To<dcmFoobar2000.Foobar2000Module>();
+            kernel.Bind<IModule>().To<dcmWeather.WeatherModule>();
         }
     }
 }

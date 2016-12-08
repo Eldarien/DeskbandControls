@@ -108,9 +108,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\DeskbandBridge\DeskbandBridge.vcxproj">
-      <Project>{e8118efe-0f51-4bda-a728-a69636c48631}</Project>
-    </ProjectReference>
     <ProjectReference Include="..\foobar2000_sdk\foobar2000\foobar2000_component_client\foobar2000_component_client.vcxproj">
       <Project>{71ad2674-065b-48f5-b8b0-e1f9d3892081}</Project>
     </ProjectReference>
