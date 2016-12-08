@@ -78,11 +78,12 @@ namespace Deskband
             GlobalMouseHook.SetGlobalMouseHook();
             GlobalMouseHook.MouseWheel += (s, e) => HandleMouseWheel(e.Value);
 
-            ActiveWindowWatcher.StartWatch();
+            ActiveWindowWatcher.StartWatching();
         }
 
         private void OnClose(object sender, EventArgs e)
         {
+            ActiveWindowWatcher.StopWatching();
             GlobalMouseHook.RemoveGlobalMouseHook();
 
             _config.DisableWatcher();
@@ -179,6 +180,8 @@ namespace Deskband
 
         private void HandleMouseWheel(WinApiTypes.HookMouseStruct hms)
         {
+            if (!_moduleContainer.Created) return;
+
             var location = _moduleContainer.PointToClient(hms.Point.AsPoint());
             var delta = hms.MouseData;
 
