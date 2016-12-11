@@ -27,6 +27,7 @@ namespace Deskband
             kernel.Bind<FloatingForm>().ToSelf();
             kernel.Bind<ISizeProvider>().To<SizeProvider>();
             kernel.Bind<ILastActiveWindowActivator>().To<ActiveWindowWatcherWrapper>();
+            kernel.Bind<ITooltipProvider>().To<TooltipProvider>();
 
             kernel.Bind<App>().ToSelf();
 

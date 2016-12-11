@@ -62,6 +62,16 @@ namespace dcmFoobar2000
             _controller.MouseWheel(delta);
         }
 
+        public void MousePoint(Point localPoint, Point globalPoint, Rectangle moduleScreenRectangle)
+        {
+            _controller.ShowTooltip(localPoint, globalPoint, moduleScreenRectangle);
+        }
+
+        public void MousePointOut()
+        {
+            _controller.HideTooltip();
+        }
+
         public ConfigurationObjectBase GetConfiguration()
         {
             return _config.GetConfiguration(Foobar2000Module.ModuleId, ConfigurationModel.Default);

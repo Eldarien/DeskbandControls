@@ -2,6 +2,7 @@
 using Deskband.Core.WinApi;
 using System;
 using System.Diagnostics;
+using System.Drawing;
 using System.Runtime.InteropServices;
 using static Deskband.Core.WinApi.WinApiTypes;
 
@@ -9,10 +10,13 @@ namespace Deskband.Integration
 {
     public static class GlobalMouseHook
     {
+        public static event EventHandler<ValueEventArgs<Point>> MousePoint;
         public static event EventHandler<ValueEventArgs<HookMouseStruct>> MouseWheel;
 
         private static IntPtr _hookID = IntPtr.Zero;
         private static HookProcedure _globalHookProc;
+
+        private static Point _prevPoint = new Point { X = -1, Y = -1 };
 
         public static void SetGlobalMouseHook()
         {
@@ -34,11 +38,23 @@ namespace Deskband.Integration
                 return User32.CallNextHookEx(IntPtr.Zero, nCode, wParam, lParam);
             }
 
+            var mouseStruct = (HookMouseStruct)Marshal.PtrToStructure(lParam, typeof(HookMouseStruct));
+
             if ((int)wParam == WM_MOUSEWHEEL)
             {
-                var mouseStruct = (HookMouseStruct)Marshal.PtrToStructure(lParam, typeof(HookMouseStruct));
                 MouseWheel?.Invoke(null, new ValueEventArgs<HookMouseStruct>(mouseStruct));
             }
+
+            if (mouseStruct.MouseData == 0)
+            {
+                var newPoint = mouseStruct.Point.AsPoint();
+                if (newPoint != _prevPoint)
+                {
+                    _prevPoint = newPoint;
+                    MousePoint?.Invoke(null, new ValueEventArgs<Point>(newPoint));
+                }
+            }
+
             return User32.CallNextHookEx(IntPtr.Zero, nCode, wParam, lParam);
         }
     }

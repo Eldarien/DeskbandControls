@@ -77,6 +77,7 @@ namespace Deskband
 
             GlobalMouseHook.SetGlobalMouseHook();
             GlobalMouseHook.MouseWheel += (s, e) => HandleMouseWheel(e.Value);
+            GlobalMouseHook.MousePoint += (s, e) => HandleMousePoint(e.Value);
 
             ActiveWindowWatcher.StartWatching();
         }
@@ -168,14 +169,19 @@ namespace Deskband
             });
         }
 
-        private void HandleDoubleClick(Point location)
+        private IModule GetModuleAtPoint(Point location)
         {
             var moduleId = _moduleContainer.LocateModuleAtPoint(location);
-            if (moduleId != null)
-            {
-                var module = _modules.First(m => m.Id == moduleId.Value);
-                module.DoubleClick();
-            }
+            if (moduleId == null)
+                return null;
+            else
+                return _modules.FirstOrDefault(m => m.Id == moduleId.Value);
+        }
+
+        private void HandleDoubleClick(Point location)
+        {
+            var module = GetModuleAtPoint(location);
+            module?.DoubleClick();
         }
 
         private void HandleMouseWheel(WinApiTypes.HookMouseStruct hms)
@@ -184,12 +190,27 @@ namespace Deskband
 
             var location = _moduleContainer.PointToClient(hms.Point.AsPoint());
             var delta = hms.MouseData;
+            var module = GetModuleAtPoint(location);
+            module?.MouseWheel(delta);
+        }
 
-            var moduleId = _moduleContainer.LocateModuleAtPoint(location);
-            if (moduleId != null)
+        private IModule _prevMousePointModule = null;
+        private void HandleMousePoint(Point globalPoint)
+        {
+            if (!_moduleContainer.Created) return;
+
+            var location = _moduleContainer.PointToClient(globalPoint);
+            var module = GetModuleAtPoint(location);
+
+            if (module != _prevMousePointModule)
             {
-                var module = _modules.First(m => m.Id == moduleId.Value);
-                module.MouseWheel(delta);
+                _prevMousePointModule?.MousePointOut();
+                _prevMousePointModule = module;
+            }
+            if (module != null)
+            {
+                var moduleScreenRectangle = _moduleContainer.GetModuleScreenRectangle(module.Id);
+                module.MousePoint(location, globalPoint, moduleScreenRectangle);
             }
         }
     }

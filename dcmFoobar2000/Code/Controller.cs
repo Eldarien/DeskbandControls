@@ -25,6 +25,7 @@ namespace dcmFoobar2000.Code
         private IModuleContainer _mcontainer;
         private Foobar2000Actions _actions;
         private ILastActiveWindowActivator _lastActiveWindowActivator;
+        private ITooltipProvider _tooltipProvider;
 
         private ConfigurationModel _cfg;
 
@@ -66,6 +67,7 @@ namespace dcmFoobar2000.Code
             IModuleContainer mcontainer,
             Foobar2000Actions actions,
             ILastActiveWindowActivator lastActiveWindowActivator,
+            ITooltipProvider tooltipProvider,
             MessageForm messageForm
             )
         {
@@ -77,6 +79,7 @@ namespace dcmFoobar2000.Code
             _mcontainer = mcontainer;
             _actions = actions;
             _lastActiveWindowActivator = lastActiveWindowActivator;
+            _tooltipProvider = tooltipProvider;
             _messageForm = messageForm;
 
             _disposable = new DisposableContainer();
@@ -596,6 +599,24 @@ namespace dcmFoobar2000.Code
             if (volume < 0) volume = 0;
             if (volume > 100) volume = 100;
             SetVolume(volume);
+        }
+
+        private bool _tooltipShowed = false;
+        public void ShowTooltip(Point localPoint, Point globalPoint, Rectangle r)
+        {
+            if (!_tooltipShowed)
+            {
+                int x = r.Left + r.Width / 2;
+                int y = r.Top + r.Height / 2;
+                _tooltipProvider.ShowTooltip(Foobar2000Module.ModuleId, x, y, "");
+                _tooltipShowed = true;
+            }
+        }
+
+        public void HideTooltip()
+        {
+            _tooltipProvider.HideTooltip();
+            _tooltipShowed = false;
         }
     }
 }

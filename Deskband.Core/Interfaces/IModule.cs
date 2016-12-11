@@ -1,10 +1,7 @@
 ﻿using Deskband.Core.Configuration;
 using Ninject;
 using System;
-using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
-using System.Text;
 
 namespace Deskband.Core.Interfaces
 {
@@ -16,6 +13,8 @@ namespace Deskband.Core.Interfaces
         void ApplyConfiguration();
         void DoubleClick();
         void MouseWheel(int delta);
+        void MousePoint(Point localPoint, Point globalPoint, Rectangle moduleScreenRectangle);
+        void MousePointOut();
         ConfigurationObjectBase GetConfiguration();
     }
 }

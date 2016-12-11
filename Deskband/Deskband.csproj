@@ -125,6 +125,13 @@
     <Compile Include="UI\ModuleSizeInfo.cs" />
     <Compile Include="UI\SizeProvider.cs" />
     <Compile Include="UI\TaskbarSizeInfo.cs" />
+    <Compile Include="UI\TooltipForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\TooltipForm.Designer.cs">
+      <DependentUpon>TooltipForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UI\TooltipProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\dcmFoobar2000\dcmFoobar2000.csproj">

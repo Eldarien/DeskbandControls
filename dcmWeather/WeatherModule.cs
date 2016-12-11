@@ -57,6 +57,14 @@ namespace dcmWeather
             _console.AddLine($"Weather plugin was scrolled with delta {delta}");
         }
 
+        public void MousePoint(Point localPoint, Point globalPoint, Rectangle moduleScreenRectangle)
+        {
+        }
+
+        public void MousePointOut()
+        {
+        }
+
         public ConfigurationObjectBase GetConfiguration()
         {
             return _config.GetConfiguration(ModuleId, ConfigurationModel.Default);

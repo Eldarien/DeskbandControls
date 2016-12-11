@@ -138,5 +138,12 @@ namespace Deskband.UI
             var entry = _entries.FirstOrDefault(e => e.Container == container);
             return entry != null ? entry.Id : (Guid?)null;
         }
+
+        public Rectangle GetModuleScreenRectangle(Guid id)
+        {
+            var entry = _entries.FirstOrDefault(x => x.Id == id);
+            var rect = entry.Container.ClientRectangle;
+            return RectangleToScreen(rect);
+        }
     }
 }
