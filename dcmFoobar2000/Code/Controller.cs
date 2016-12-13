@@ -229,14 +229,30 @@ namespace dcmFoobar2000.Code
             }
         }
 
+        private Image MakeColorizedImageFromIcon(Icon icon, Color color)
+        {
+            Image image = icon.ToBitmap();
+            if (color == Color.White) return image;
+
+            Image colorizedImage = ImageHelpers.Colorize(image, color);
+            image.Dispose();
+            return colorizedImage;
+        }
+
         private dcButton CreateButton(ButtonSettings settings, Icon icon1, Icon icon2, Action action)
         {
             var btn = CreateControl<dcButton>();
             btn.Visible = settings.Visible;
             btn.Location = _sp.MakePoint(settings.X, settings.Y);
             btn.Size = _sp.MakeSize(settings.Width, settings.Height);
-            if (icon1 != null) btn.Image = icon1.ToBitmap();
-            if (icon2 != null) btn.AdditionalImage = icon2.ToBitmap();
+            if (icon1 != null)
+            {
+                btn.Image = MakeColorizedImageFromIcon(icon1, settings.ColorizeColor);
+            }
+            if (icon2 != null)
+            {
+                btn.AdditionalImage = MakeColorizedImageFromIcon(icon2, settings.ColorizeColor);
+            }
             btn.Click += (s, e) => action();
             return btn;
         }

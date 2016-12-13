@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.Text;
 
 namespace Deskband.Common
 {
@@ -11,6 +8,9 @@ namespace Deskband.Common
     {
         public static void Initialize()
         {
+            // We need this not only for custom assemblies (which we may not use at all),
+            // but also for ProprtyGrid's TypeConverter attributes to work in case they are
+            // defined not in the same assemply as PropertyGrid itself. Weird, but it works.
             AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
         }
 

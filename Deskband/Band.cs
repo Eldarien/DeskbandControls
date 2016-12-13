@@ -13,6 +13,7 @@ using System.Windows.Forms;
 using Deskband.Core.EventArguments;
 using Deskband.UI;
 using Deskband.Core.Common;
+using Deskband.Common;
 
 namespace Deskband
 {
@@ -45,7 +46,7 @@ namespace Deskband
 
             try
             {
-                //AssemblyResolver.Initialize();
+                AssemblyResolver.Initialize();
 
                 _kernel = AppConfig.InitializeKernel(this);
 

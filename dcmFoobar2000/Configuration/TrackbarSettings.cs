@@ -1,10 +1,6 @@
 ﻿using Deskband.Core.Configuration;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
-using System.Linq;
-using System.Text;
 
 namespace dcmFoobar2000.Configuration
 {
@@ -25,10 +21,10 @@ namespace dcmFoobar2000.Configuration
         [Category("Size")]
         public int Heigth { get; set; }
 
-        [Category("Colors")]
+        [Category("Colors"), TypeConverter(typeof(ColorHexConverter))]
         public Color Color { get; set; }
 
-        [Category("Colors"), DisplayName("Background Color")]
+        [Category("Colors"), DisplayName("Background Color"), TypeConverter(typeof(ColorHexConverter))]
         public Color BackgroundColor { get; set; }
 
         [Category("Colors"), DisplayName("Use Background Color"), TypeConverter(typeof(YesNoBooleanConverter))]

@@ -1,11 +1,7 @@
 ﻿using Deskband.Core.Configuration;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Design;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms.Design;
 
 namespace dcmFoobar2000.Configuration
@@ -33,7 +29,7 @@ namespace dcmFoobar2000.Configuration
         [Category("Icon"), DisplayName("Secondary Icon Path"), Editor(typeof(FileNameEditor), typeof(UITypeEditor))]
         public string Icon2Path { get; set; }
 
-        [Category("Icon"), DisplayName("Colorize Color")]
+        [Category("Icon"), DisplayName("Colorize Color"), TypeConverter(typeof(ColorHexConverter))]
         public Color ColorizeColor { get; set; }
     }
 }

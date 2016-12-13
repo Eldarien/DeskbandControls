@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Windows.Forms;
 using Deskband.Core.Properties;
 
 namespace Deskband.Core.Common
@@ -30,8 +26,8 @@ namespace Deskband.Core.Common
                                    bm.VerticalResolution != (int)bm.VerticalResolution))
                 {
                     // Correct a strange glitch that has been observed in the test program when converting
-                    //  from a PNG file image created by CopyImageToByteArray() - the dpi value "drifts"
-                    //  slightly away from the nominal integer value
+                    // from a PNG file image created by CopyImageToByteArray() - the dpi value "drifts"
+                    // slightly away from the nominal integer value
                     bm.SetResolution((int)(bm.HorizontalResolution + 0.5f),
                                      (int)(bm.VerticalResolution + 0.5f));
                 }

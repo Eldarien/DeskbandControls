@@ -69,11 +69,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App.cs" />
+    <Compile Include="Common\AssemblyResolver.cs" />
     <Compile Include="Configuration\ConfigurationModel.cs" />
     <Compile Include="Configuration\ConfigurationOptions.cs" />
     <Compile Include="Configuration\DisplayMode.cs" />
     <Compile Include="Configuration\FloatingWindowSettings.cs" />
     <Compile Include="Configuration\GeneralSettings.cs" />
+    <Compile Include="Configuration\JsonColorHexConverter.cs" />
     <Compile Include="Configuration\ModuleSettings.cs" />
     <Compile Include="Extensions\EnumExtensions.cs" />
     <Compile Include="Extensions\IntExtensions.cs" />

@@ -51,6 +51,7 @@ namespace Deskband.Configuration
             _serializerSettings = new JsonSerializerSettings();
             _serializerSettings.Formatting = Formatting.Indented;
             _serializerSettings.Converters.Add(new StringEnumConverter());
+            _serializerSettings.Converters.Add(new JsonColorHexConverter());
             _serializer = JsonSerializer.Create(_serializerSettings);
 
             _watcher = new FileSystemWatcher();
@@ -149,9 +150,9 @@ namespace Deskband.Configuration
                 _data.ElementAt(index).Replace(jtoken);
         }
 
-        public object GetAllConfiguration()
-        {
-            return _data.ToObject<List<ConfigurationObjectBase>>().ToArray();
-        }
+        //public List<ConfigurationObjectBase> GetAllConfiguration()
+        //{
+        //    return _data.ToObject<List<ConfigurationObjectBase>>();
+        //}
     }
 }
