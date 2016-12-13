@@ -308,6 +308,8 @@ namespace dcmFoobar2000.Code
         private void UpdateAlbumArt(Image image, bool stub)
         {
             _picAlbumArt.SetImage(stub && _cfg.AlbumArt.DoNotShowStubImage ? null : image);
+
+            //SetTooltipImage(image);
         }
 
         private void UpdatePosition(int pos, int? range = null)
@@ -328,6 +330,9 @@ namespace dcmFoobar2000.Code
 
                 _actions.FormatString(i, format);
             }
+
+            //_actions.FormatString(FormatStringIndex.TooltipText1, "%artist%");
+            //_actions.FormatString(FormatStringIndex.TooltipText2, "%title%");
         }
 
         private void ClearTexts()
@@ -542,6 +547,12 @@ namespace dcmFoobar2000.Code
                         Clipboard.SetText(text);
                     }
                     break;
+                //case FormatStringIndex.TooltipText1:
+                //case FormatStringIndex.TooltipText2:
+                //    {
+                //        SetTooltipText(index, text);
+                //    }
+                //    break;
             }
         }
 
@@ -601,14 +612,79 @@ namespace dcmFoobar2000.Code
             SetVolume(volume);
         }
 
+        /*
         private bool _tooltipShowed = false;
+
+        private dcPicture _tooltipAlbumArt = null;
+        private Image _tooltipAlbumArtImage;
+        private void SetTooltipImage(Image image)
+        {
+            _tooltipAlbumArtImage = image;
+            if (_tooltipAlbumArt != null)
+            {
+                _tooltipAlbumArt.SetImage(image);
+            }
+        }
+
+        private dcLabel _tooltipLabel1 = null;
+        private string _tooltipLabel1Text;
+        private void SetTooltipText(int index, string text)
+        {
+            if (index == FormatStringIndex.TooltipText1)
+            {
+                _tooltipLabel1Text = text;
+                if (_tooltipLabel1 != null) _tooltipLabel1.Text = text;
+            }
+            else if (index == FormatStringIndex.TooltipText2)
+            {
+                _tooltipLabel2Text = text;
+                if (_tooltipLabel2 != null) _tooltipLabel2.Text = text;
+            }
+        }
+
+        private dcLabel _tooltipLabel2 = null;
+        private string _tooltipLabel2Text;
+
         public void ShowTooltip(Point localPoint, Point globalPoint, Rectangle r)
         {
-            if (!_tooltipShowed)
+            if (!_tooltipShowed && !_stopped)
             {
                 int x = r.Left + r.Width / 2;
                 int y = r.Top + r.Height / 2;
-                _tooltipProvider.ShowTooltip(Foobar2000Module.ModuleId, x, y, "");
+                _tooltipProvider.ShowTooltip(Foobar2000Module.ModuleId, x, y, f =>
+                {
+                    int offset = 5;
+                    int s = f.ClientSize.Height - offset * 2;
+                    var aa = new dcPicture();
+                    aa.Location = new Point(offset, offset); //_sp.MakePoint(settings.X, settings.Y);
+                    aa.Size = new Size(s, s); //_sp.MakeSize(settings.Width, settings.Height);
+                    aa.PreserveAspectRatio = _picAlbumArt.PreserveAspectRatio;
+                    aa.SetImage(_tooltipAlbumArtImage);
+                    f.Controls.Add(aa);
+                    _tooltipAlbumArt = aa;
+
+                    var t1 = new dcLabel(_sp.DPI, new FontConfiguration("Segoe UI", 16, FontStyles.Regular));
+                    t1.ForeColor = Color.FromKnownColor(KnownColor.InfoText);
+                    t1.Left = offset * 3 + s;
+                    t1.Width = f.ClientSize.Width - t1.Left - offset;
+                    t1.Top = 14;
+                    t1.Height = 30;
+                    t1.EnableScrolling = true;
+                    if (_tooltipLabel1Text != null) t1.Text = _tooltipLabel1Text;
+                    f.Controls.Add(t1);
+                    _tooltipLabel1 = t1;
+
+                    var t2 = new dcLabel(_sp.DPI, new FontConfiguration("Segoe UI", 16, FontStyles.Regular));
+                    t2.ForeColor = Color.FromKnownColor(KnownColor.InfoText);
+                    t2.Left = offset * 3 + s;
+                    t2.Width = f.ClientSize.Width - t2.Left - offset;
+                    t2.Top = 14 + 30 + offset;
+                    t2.Height = 30;
+                    t2.EnableScrolling = true;
+                    if (_tooltipLabel2Text != null) t2.Text = _tooltipLabel2Text;
+                    f.Controls.Add(t2);
+                    _tooltipLabel2 = t2;
+                });
                 _tooltipShowed = true;
             }
         }
@@ -617,6 +693,11 @@ namespace dcmFoobar2000.Code
         {
             _tooltipProvider.HideTooltip();
             _tooltipShowed = false;
+
+            _tooltipAlbumArt = null;
+            _tooltipLabel1 = null;
+            _tooltipLabel2 = null;
         }
+        */
     }
 }

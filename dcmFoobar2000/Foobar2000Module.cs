@@ -64,12 +64,12 @@ namespace dcmFoobar2000
 
         public void MousePoint(Point localPoint, Point globalPoint, Rectangle moduleScreenRectangle)
         {
-            _controller.ShowTooltip(localPoint, globalPoint, moduleScreenRectangle);
+            //_controller.ShowTooltip(localPoint, globalPoint, moduleScreenRectangle);
         }
 
         public void MousePointOut()
         {
-            _controller.HideTooltip();
+            //_controller.HideTooltip();
         }
 
         public ConfigurationObjectBase GetConfiguration()
