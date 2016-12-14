@@ -245,11 +245,23 @@ namespace dcmFoobar2000.Code
             btn.Visible = settings.Visible;
             btn.Location = _sp.MakePoint(settings.X, settings.Y);
             btn.Size = _sp.MakeSize(settings.Width, settings.Height);
-            if (icon1 != null)
+
+            if (settings.Icon1Path != null)
+            {
+                var image = ImageHelpers.GetImageFromFile(Environment.ExpandEnvironmentVariables(settings.Icon1Path));
+                if (image != null) btn.Image = image;
+            }
+            if (icon1 != null && btn.Image == null)
             {
                 btn.Image = MakeColorizedImageFromIcon(icon1, settings.ColorizeColor);
             }
-            if (icon2 != null)
+
+            if (settings.Icon2Path != null)
+            {
+                var image = ImageHelpers.GetImageFromFile(Environment.ExpandEnvironmentVariables(settings.Icon2Path));
+                if (image != null) btn.AdditionalImage = image;
+            }
+            if (icon2 != null && btn.AdditionalImage == null)
             {
                 btn.AdditionalImage = MakeColorizedImageFromIcon(icon2, settings.ColorizeColor);
             }
@@ -265,7 +277,11 @@ namespace dcmFoobar2000.Code
             aa.Size = _sp.MakeSize(settings.Width, settings.Height);
             aa.PreserveAspectRatio = settings.PreserveAspectRatio;
             aa.EnableStubImage = !settings.DoNotShowStubImage;
-            var stubImage = ImageHelpers.GetImageFromFile(settings.StubImagePath);
+            Image stubImage = ImageHelpers.Empty;
+            if (settings.StubImagePath != null)
+            {
+                stubImage = ImageHelpers.GetImageFromFile(Environment.ExpandEnvironmentVariables(settings.StubImagePath));
+            }
             if (stubImage == ImageHelpers.Empty)
                 stubImage = Resources.Image_NoCoverArt;
             aa.SetStubImage(stubImage);

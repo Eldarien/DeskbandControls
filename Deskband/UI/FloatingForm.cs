@@ -123,7 +123,7 @@ namespace Deskband.UI
 
             if (cfg.FloatingWindowSettings.UseBackgroundImage)
             {
-                BackgroundImage = ImageHelpers.GetImageFromFile(cfg.FloatingWindowSettings.BackgroundImagePath);
+                BackgroundImage = ImageHelpers.GetImageFromFile(Environment.ExpandEnvironmentVariables(cfg.FloatingWindowSettings.BackgroundImagePath));
                 BackgroundImageLayout = cfg.FloatingWindowSettings.StretchBackgroundImage ? ImageLayout.Stretch : ImageLayout.None;
             }
             else

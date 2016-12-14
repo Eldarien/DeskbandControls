@@ -30,7 +30,8 @@ namespace Deskband.Configuration
         public bool UseBackgroundImage { get; set; }
 
         [Category("Background"), DisplayName("Background Image Path"), Editor(typeof(FileNameEditor), typeof(UITypeEditor))]
-        public string BackgroundImagePath { get; set; }
+        public string BackgroundImagePath { get { return _backgroundImagePath; } set { _backgroundImagePath = PathHelpers.TryPlaceEnvVars(value); } }
+        private string _backgroundImagePath;
 
         [Category("Background"), DisplayName("Stretch Background Image"), TypeConverter(typeof(YesNoBooleanConverter))]
         public bool StretchBackgroundImage { get; set; }

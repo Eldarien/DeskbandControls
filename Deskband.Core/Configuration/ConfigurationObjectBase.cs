@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
 
 namespace Deskband.Core.Configuration
 {
@@ -17,7 +14,7 @@ namespace Deskband.Core.Configuration
         [Browsable(false)]
         public virtual int Order { get; set; }
 
-        [Category("General")]
+        [Category("General"), TypeConverter(typeof(YesNoBooleanConverter))]
         public virtual bool Disabled { get; set; }
 
         [Category("Position")]
