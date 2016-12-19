@@ -132,11 +132,17 @@ namespace Deskband
             var modulesSizeInfo = _modules
                 .Select(x => new { Module = x, Configuration = x.GetConfiguration() as ConfigurationObjectBase })
                 .OrderBy(x => x.Configuration.Order)
-                .Select(m => new ModuleSizeInfo(m.Module.Id, m.Configuration.Disabled,
-                    _sp.MakeSize(m.Configuration.Width, m.Configuration.Height), _sp.MakePoint(m.Configuration.Offset, 0)));
+                .Select(m => new ModuleSizeInfo(
+                    m.Module.Id,
+                    m.Configuration.Disabled,
+                    _sp.MakeSize(m.Configuration.Width, m.Configuration.Height),
+                    _sp.MakePoint(m.Configuration.Offset, 0),
+                    m.Configuration.BackgroundImagePath,
+                    m.Configuration.StretchBackgroundImage
+                 ));
 
             var layoutMode = cfg.GeneralSettings.DisplayMode == DisplayMode.Deskband ? _band.GetTaskbarSizeInfo().Mode : cfg.FloatingWindowSettings.Mode;
-            _moduleContainer.PositionModules(modulesSizeInfo, cfg.GeneralSettings.DrawBorders, layoutMode);
+            _moduleContainer.UpdateModules(modulesSizeInfo, cfg.GeneralSettings.DrawBorders, layoutMode);
             
             foreach (var m in _modules)
             {

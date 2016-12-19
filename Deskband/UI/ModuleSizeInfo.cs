@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
-using System.Text;
 
 namespace Deskband.UI
 {
@@ -12,13 +9,17 @@ namespace Deskband.UI
         public bool Disabled { get; private set; }
         public Size Size { get; private set; }
         public Point Offset { get; private set; }
+        public string BackgroundImagePath { get; private set; }
+        public bool StretchBackgroundImage { get; private set; }
 
-        public ModuleSizeInfo(Guid id, bool disabled, Size size, Point offset)
+        public ModuleSizeInfo(Guid id, bool disabled, Size size, Point offset, string backgroundImagePath, bool stretchBackgroundImage)
         {
             Id = id;
             Disabled = disabled;
             Size = size;
             Offset = offset;
+            BackgroundImagePath = backgroundImagePath;
+            StretchBackgroundImage = stretchBackgroundImage;
         }
     }
 }

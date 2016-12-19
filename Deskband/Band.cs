@@ -14,6 +14,8 @@ using Deskband.Core.EventArguments;
 using Deskband.UI;
 using Deskband.Core.Common;
 using Deskband.Common;
+using Deskband.Configuration;
+using static Deskband.Core.WinApi.WinApiTypes;
 
 namespace Deskband
 {

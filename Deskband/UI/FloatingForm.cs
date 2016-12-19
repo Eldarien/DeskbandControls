@@ -121,7 +121,7 @@ namespace Deskband.UI
             var backColor = cfg.FloatingWindowSettings.Color; //fwSettings.Color.AsDrawingColor();
             BackColor = Color.FromArgb(0xFF, backColor.R, backColor.G, backColor.B);
 
-            if (cfg.FloatingWindowSettings.UseBackgroundImage)
+            if (!String.IsNullOrEmpty(cfg.FloatingWindowSettings.BackgroundImagePath))
             {
                 BackgroundImage = ImageHelpers.GetImageFromFile(Environment.ExpandEnvironmentVariables(cfg.FloatingWindowSettings.BackgroundImagePath));
                 BackgroundImageLayout = cfg.FloatingWindowSettings.StretchBackgroundImage ? ImageLayout.Stretch : ImageLayout.None;

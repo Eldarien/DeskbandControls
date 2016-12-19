@@ -76,7 +76,7 @@ namespace Deskband.UI
             return this;
         }
 
-        public void PositionModules(IEnumerable<ModuleSizeInfo> moduleSizeInfo, bool drawBorders, LayoutMode layoutMode)
+        public void UpdateModules(IEnumerable<ModuleSizeInfo> moduleSizeInfo, bool drawBorders, LayoutMode layoutMode)
         {
             _layoutMode = layoutMode;
             BorderStyle = drawBorders ? BorderStyle.FixedSingle : BorderStyle.None;
@@ -89,6 +89,20 @@ namespace Deskband.UI
                 entry.Container.Size = m.Size;
                 entry.Container.Offset = m.Offset.X;
                 entry.Order = index;
+                if (!ImageHelpers.IsNullOrEmpty(entry.Container.BackgroundImage))
+                {
+                    entry.Container.BackgroundImage.Dispose();
+                    entry.Container.BackgroundImage = null;
+                }
+                if (m.BackgroundImagePath != null)
+                {
+                    var image = ImageHelpers.GetImageFromFile(Environment.ExpandEnvironmentVariables(m.BackgroundImagePath));
+                    if (image != null)
+                    {
+                        entry.Container.BackgroundImage = image;
+                        entry.Container.BackgroundImageLayout = m.StretchBackgroundImage ? ImageLayout.Stretch : ImageLayout.None;
+                    }
+                }
                 index++;
             }
             LayoutModules();

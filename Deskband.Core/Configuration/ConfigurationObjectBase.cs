@@ -1,5 +1,8 @@
-﻿using System;
+﻿using Deskband.Core.Common;
+using System;
 using System.ComponentModel;
+using System.Drawing.Design;
+using System.Windows.Forms.Design;
 
 namespace Deskband.Core.Configuration
 {
@@ -25,5 +28,12 @@ namespace Deskband.Core.Configuration
 
         [Category("Size")]
         public virtual int Height { get; set; }
+
+        [Category("Background"), DisplayName("Image Path"), Editor(typeof(FileNameEditor), typeof(UITypeEditor))]
+        public virtual string BackgroundImagePath { get { return _backgroundImagePath; } set { _backgroundImagePath = PathHelpers.TryPlaceEnvVars(value); } }
+        private string _backgroundImagePath;
+
+        [Category("Background"), DisplayName("Stretch Image"), TypeConverter(typeof(YesNoBooleanConverter))]
+        public virtual bool StretchBackgroundImage { get; set; }
     }
 }

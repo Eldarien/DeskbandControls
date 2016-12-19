@@ -1,11 +1,7 @@
 ﻿using Deskband.Core.Configuration;
-using Deskband.Core.Interfaces;
 using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
 
 namespace Deskband.Configuration
 {
@@ -27,6 +23,12 @@ namespace Deskband.Configuration
 
         [Browsable(false), JsonIgnore]
         public override int Height { get; set; }
+
+        [Browsable(false), JsonIgnore]
+        public override string BackgroundImagePath { get; set; }
+
+        [Browsable(false), JsonIgnore]
+        public override bool StretchBackgroundImage { get; set; }
 
         [Browsable(false)]
         [SettingsNode("General Settings")]

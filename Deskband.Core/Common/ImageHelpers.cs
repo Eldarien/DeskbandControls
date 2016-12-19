@@ -13,6 +13,11 @@ namespace Deskband.Core.Common
 
         public static Bitmap Empty = Resources.Transparent_1x1;
 
+        public static bool IsNullOrEmpty(Image image)
+        {
+            return image == null || image == Empty;
+        }
+
         public static Bitmap GetImageFromByteArray(byte[] byteArray)
         {
             if (byteArray == null || byteArray.Length == 0)
