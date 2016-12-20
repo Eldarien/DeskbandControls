@@ -10,13 +10,15 @@ namespace Deskband.Console
 {
     public class ConsoleHandler : IDisposable, IConsole
     {
+        private readonly ISizeProvider _sp;
         private List<Tuple<string, bool>> _lines;
         private ConsoleForm _form;
 
         public event EventHandler<ValueEventArgs<bool>> OnConsoleToggle;
 
-        public ConsoleHandler()
+        public ConsoleHandler(ISizeProvider sizeProvider)
         {
+            _sp = sizeProvider;
             _lines = new List<Tuple<string, bool>>();
         }
 
@@ -46,8 +48,8 @@ namespace Deskband.Console
 
         private void SetFormSizeAndPosition()
         {
-            _form.Width = 600;
-            _form.Height = 350;
+            _form.Width = _sp.MakeValue(600);
+            _form.Height = _sp.MakeValue(350);
 
             var screen = Screen.FromControl(_form);
             _form.Left = screen.WorkingArea.Width - _form.Width;

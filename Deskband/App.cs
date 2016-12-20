@@ -27,6 +27,8 @@ namespace Deskband
         readonly ModuleContainer _moduleContainer;
         readonly FloatingForm _floatingForm;
 
+        private SettingsForm _settingsForm;
+
         public App(
             Band band,
             IEnumerable<IModule> modules,
@@ -70,9 +72,14 @@ namespace Deskband
             // Settings
             _menu.AddItem(Guid.Empty, null, "Settings", () =>
             {
-                var sf = new SettingsForm(_config, _sp, _console, _modules);
-                sf.OnApply += (s, e) => { ApplyConfiguration(); _config.Save(); };
-                sf.Show();
+                if (_settingsForm == null)
+                {
+                    _settingsForm = new SettingsForm(_config, _sp, _console, _modules);
+                    _settingsForm.OnApply += (s, e) => { ApplyConfiguration(); _config.Save(); };
+                    _settingsForm.FormClosed += (s, e) => { _settingsForm = null; };
+                }
+                _settingsForm.Show();
+                _settingsForm.BringToFront();
             });
 
             GlobalMouseHook.SetGlobalMouseHook();

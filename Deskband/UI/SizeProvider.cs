@@ -10,14 +10,11 @@ namespace Deskband.UI
 {
     public class SizeProvider : ISizeProvider
     {
-        private readonly IConsole _console;
         private int _dpi;
         private float _scale;
 
-        public SizeProvider(Band band, IConsole console)
+        public SizeProvider(Band band)
         {
-            _console = console;
-
             band.DPIChanged += Band_DPIChanged;
         }
 
@@ -25,7 +22,6 @@ namespace Deskband.UI
         {
             _dpi = e.Value;
             _scale = (float)_dpi / WinApiTypes.USER_DEFAULT_SCREEN_DPI;
-            _console.AddDebugLine(String.Format("DPI changed: {0}", _dpi));
         }
 
         public int DPI { get { return _dpi; } }
