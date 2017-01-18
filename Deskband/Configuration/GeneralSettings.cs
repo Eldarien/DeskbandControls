@@ -17,12 +17,11 @@ namespace Deskband.Configuration
         [DisplayName("Draw Borders")]
         public bool DrawBorders { get; set; }
 
-        public static GeneralSettings GetDefault()
-        {
-            return new GeneralSettings
+        public static GeneralSettings Default =>
+            new GeneralSettings
             {
                 DisplayMode = DisplayMode.Deskband
             };
-        }
+        
     }
 }

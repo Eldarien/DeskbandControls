@@ -33,13 +33,11 @@ namespace Deskband.Configuration
         [Category("Background"), DisplayName("Use Transparency Key Color (Fuchsia)"), TypeConverter(typeof(YesNoBooleanConverter))]
         public bool UseTransparencyKey { get; set; }
 
-        public static FloatingWindowSettings GetDefault()
-        {
-            return new FloatingWindowSettings
+        public static FloatingWindowSettings Default =>
+            new FloatingWindowSettings
             {
                 Opacity = 1.0,
-                Color = Color.Tan
+                Color = Color.CornflowerBlue
             };
-        }
     }
 }

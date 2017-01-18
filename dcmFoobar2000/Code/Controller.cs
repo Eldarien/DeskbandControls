@@ -139,6 +139,12 @@ namespace dcmFoobar2000.Code
             return control;
         }
 
+        private void RemoveAndDestroyControl<T>(T control) where T : Control
+        {
+            _controls.Remove(control);
+            control.Dispose();
+        }
+
         private void AddControlToModuleContainer(Control control)
         {
             _mcontainer.AddControl(Foobar2000Module.ModuleId, control);
@@ -341,7 +347,7 @@ namespace dcmFoobar2000.Code
         {
             _picAlbumArt.SetImage(stub && _cfg.AlbumArt.DoNotShowStubImage ? null : image);
 
-            //SetTooltipImage(image);
+            SetTooltipImage(image);
         }
 
         private void UpdatePosition(int pos, int? range = null)
@@ -644,8 +650,48 @@ namespace dcmFoobar2000.Code
             SetVolume(volume);
         }
 
-        /*
         private bool _tooltipShowed = false;
+        private dcPicture _tooltipAlbumArt = null;
+        private Image _tooltipAlbumArtImage;
+        private void SetTooltipImage(Image image)
+        {
+            _tooltipAlbumArtImage = image;
+            if (_tooltipAlbumArt != null)
+            {
+                _tooltipAlbumArt.SetImage(image);
+            }
+        }
+
+        public void ShowTooltip(Point localPoint, Point globalPoint, Rectangle r)
+        {
+            var tcfg = _cfg.Tooltip;
+            if (tcfg.Enabled && !_tooltipShowed && !_stopped)
+            {
+                int x = r.Left + r.Width / 2;
+                int y = r.Top + r.Height / 2;
+                _tooltipProvider.ShowTooltip(Foobar2000Module.ModuleId, x, y, tcfg.Width, tcfg.Height, tcfg.BackgroundColor, f =>
+                {
+                    if (tcfg.AlbumArt.Visible)
+                    {
+                        _tooltipAlbumArt = CreateAlbumArt(tcfg.AlbumArt);
+                        _tooltipAlbumArt.SetImage(_tooltipAlbumArtImage);
+                        f.Controls.Add(_tooltipAlbumArt);
+                    }
+                });
+                _tooltipShowed = true;
+            }
+        }
+
+        public void HideTooltip()
+        {
+            _tooltipProvider.HideTooltip();
+            _tooltipShowed = false;
+
+            RemoveAndDestroyControl(_tooltipAlbumArt);
+        }
+
+        /*
+        
 
         private dcPicture _tooltipAlbumArt = null;
         private Image _tooltipAlbumArtImage;

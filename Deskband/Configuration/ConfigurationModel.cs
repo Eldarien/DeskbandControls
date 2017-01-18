@@ -32,11 +32,11 @@ namespace Deskband.Configuration
 
         [Browsable(false)]
         [SettingsNode("General Settings")]
-        public GeneralSettings GeneralSettings { get; set; } = GeneralSettings.GetDefault();
+        public GeneralSettings GeneralSettings { get; set; } = GeneralSettings.Default;
 
         [Browsable(false)]
         [SettingsNode("Floating Window")]
-        public FloatingWindowSettings FloatingWindowSettings { get; set; } = FloatingWindowSettings.GetDefault();
+        public FloatingWindowSettings FloatingWindowSettings { get; set; } = FloatingWindowSettings.Default;
 
         public static ConfigurationModel Default => new ConfigurationModel { ModuleId = Guid.Empty, Width = 10, Height = 40 };
     }

@@ -60,7 +60,7 @@ namespace dcmFoobar2000.Configuration
         public List<TextSettings> Texts { get; set; } = new List<TextSettings>();
 
         [Browsable(false), SettingsNode("Tooltip")]
-        public TooltipSettings Tooltip { get; set; } = new TooltipSettings { Enabled = true, Width = 400, Height = 400, BackgroundColor = Color.FromKnownColor(KnownColor.Info) };
+        public TooltipSettings Tooltip { get; set; } = new TooltipSettings { Enabled = true, Width = 300, Height = 110, BackgroundColor = Color.FromKnownColor(KnownColor.Info) };
 
         public static object AddText(ConfigurationModel model)
         {

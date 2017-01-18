@@ -159,5 +159,10 @@ namespace Deskband.UI
             var rect = entry.Container.ClientRectangle;
             return RectangleToScreen(rect);
         }
+
+        public Rectangle GetScreenRectangle()
+        {
+            return RectangleToScreen(ClientRectangle);
+        }
     }
 }
