@@ -10,6 +10,7 @@ using System.Text;
 using Deskband.Core.Configuration;
 using Deskband.Extensions;
 using Deskband.Console;
+using Deskband.Common;
 
 namespace Deskband.Configuration
 {
@@ -49,6 +50,7 @@ namespace Deskband.Configuration
             _configFilePath = Path.Combine(_configDir, "DeskbandControls.json");
             _data = new JArray();
             _serializerSettings = new JsonSerializerSettings();
+            _serializerSettings.NullValueHandling = NullValueHandling.Ignore;
             _serializerSettings.Formatting = Formatting.Indented;
             _serializerSettings.Converters.Add(new StringEnumConverter());
             _serializerSettings.Converters.Add(new JsonColorHexConverter());
@@ -149,10 +151,5 @@ namespace Deskband.Configuration
             else
                 _data.ElementAt(index).Replace(jtoken);
         }
-
-        //public List<ConfigurationObjectBase> GetAllConfiguration()
-        //{
-        //    return _data.ToObject<List<ConfigurationObjectBase>>();
-        //}
     }
 }

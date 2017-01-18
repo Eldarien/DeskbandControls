@@ -52,7 +52,7 @@ namespace Deskband.Settings
 
         private void LoadConfiguration()
         {
-            var cfg = _config.GetConfiguration(Guid.Empty, ConfigurationModel.GetDefault());
+            var cfg = _config.GetConfiguration(Guid.Empty, ConfigurationModel.Default);
             var sm = new SettingsModel { SettingsModels = new List<ConfigurationObjectBase> { cfg } };
             sm.SettingsModels.AddRange(_modules.Select(x => x.GetConfiguration()).OrderBy(x => x.Order));
             _settingsModel = sm;

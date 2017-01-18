@@ -38,14 +38,6 @@ namespace Deskband.Configuration
         [SettingsNode("Floating Window")]
         public FloatingWindowSettings FloatingWindowSettings { get; set; } = FloatingWindowSettings.GetDefault();
 
-        public static ConfigurationModel GetDefault()
-        {
-            return new ConfigurationModel
-            {
-                ModuleId = Guid.Empty,
-                Width = 10,
-                Height = 40
-            };
-        }
+        public static ConfigurationModel Default => new ConfigurationModel { ModuleId = Guid.Empty, Width = 10, Height = 40 };
     }
 }

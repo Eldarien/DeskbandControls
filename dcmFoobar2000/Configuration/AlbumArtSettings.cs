@@ -10,7 +10,7 @@ namespace dcmFoobar2000.Configuration
     {
         [Category("Visibility"), TypeConverter(typeof(YesNoBooleanConverter))]
         public bool Visible { get; set; }
-
+        
         [Category("Position")]
         public int X { get; set; }
 

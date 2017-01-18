@@ -13,11 +13,6 @@ namespace dcmWeather.Configuration
             return WeatherModule.ModuleName;
         }
 
-        public static readonly ConfigurationModel Default = new ConfigurationModel
-        {
-            ModuleId = WeatherModule.ModuleId,
-            Width = 100,
-            Height = 30
-        };
+        public static ConfigurationModel Default => new ConfigurationModel { ModuleId = WeatherModule.ModuleId, Width = 100, Height = 30 };
     }
 }

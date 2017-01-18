@@ -62,6 +62,7 @@
     <Compile Include="Code\Foobar2000Actions.cs" />
     <Compile Include="Configuration\ButtonSettingsContainer.cs" />
     <Compile Include="Configuration\TextSettings.cs" />
+    <Compile Include="Configuration\TooltipSettings.cs" />
     <Compile Include="Configuration\TrackbarSettings.cs" />
     <Compile Include="Configuration\AlbumArtSettings.cs" />
     <Compile Include="Configuration\ButtonSettings.cs" />

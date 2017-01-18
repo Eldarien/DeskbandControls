@@ -6,6 +6,11 @@ namespace dcmFoobar2000.Configuration
 {
     public class TrackbarSettings
     {
+        public TrackbarSettings()
+        {
+            Color = Color.White;
+        }
+
         [Category("Visibility"), TypeConverter(typeof(YesNoBooleanConverter))]
         public bool Visible { get; set; }
 

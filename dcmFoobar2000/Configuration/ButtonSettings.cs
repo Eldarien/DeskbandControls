@@ -9,6 +9,13 @@ namespace dcmFoobar2000.Configuration
 {
     public class ButtonSettings
     {
+        public ButtonSettings()
+        {
+            Width = 16;
+            Height = 16;
+            ColorizeColor = Color.White;
+        }
+
         [Category("Visibility"), TypeConverter(typeof(YesNoBooleanConverter))]
         public bool Visible { get; set; }
 

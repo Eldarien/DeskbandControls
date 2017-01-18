@@ -118,7 +118,7 @@ namespace Deskband
 
         private void ApplyConfiguration()
         {
-            var cfg = _config.GetConfiguration(Guid.Empty, ConfigurationModel.GetDefault());
+            var cfg = _config.GetConfiguration(Guid.Empty, ConfigurationModel.Default);
             _config.UpdateConfiguration(cfg);
 
             _band.Controls.Clear();

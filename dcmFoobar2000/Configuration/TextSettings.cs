@@ -6,7 +6,12 @@ using System.Drawing.Design;
 namespace dcmFoobar2000.Configuration
 {
     [SettingsCommand("Remove Text", nameof(ConfigurationModel.RemoveText))]
-    public class TextSettings : SettingsObject
+    public class TextSettings : TextSettingsBase { }
+
+    [SettingsCommand("Remove Text", nameof(TooltipSettings.RemoveText))]
+    public class TooltipTextSettings : TextSettingsBase { }
+
+    public class TextSettingsBase : SettingsObject
     {
         public override string ToString()
         {

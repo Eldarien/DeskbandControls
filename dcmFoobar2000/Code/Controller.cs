@@ -526,7 +526,7 @@ namespace dcmFoobar2000.Code
         {
             HandlePlaybackState_Ex(state);
 
-            if (_cfg.HideIfFoobar2000IsNotRunning && !_actions.IsFoobarStarted)
+            if (_cfg.HideIfFoobar2000IsNotRunning == true && !_actions.IsFoobarStarted)
             {
                 ShowOrHide(state);
             }
