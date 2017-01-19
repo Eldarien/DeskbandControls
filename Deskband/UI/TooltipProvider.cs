@@ -22,7 +22,7 @@ namespace Deskband.UI
 
         private TooltipForm _form;
 
-        public void ShowTooltip(Guid moduleId, int x, int y, int width, int height, Color backgroundColor, Action<Form> drawAction)
+        public void ShowTooltip(Guid moduleId, TooltipInfo ti)
         {
             _form = new TooltipForm();
             _form.TopMost = true;
@@ -30,11 +30,11 @@ namespace Deskband.UI
             _form.MaximizeBox = false;
             _form.ControlBox = false;
             _form.ShowInTaskbar = false;
-            _form.FormBorderStyle = FormBorderStyle.SizableToolWindow;
+            _form.FormBorderStyle = ti.UseBorderlessWindow ? FormBorderStyle.None : FormBorderStyle.SizableToolWindow;
             _form.Text = null;
-            _form.BackColor = backgroundColor;
-            _form.Width = width;
-            _form.Height = height;
+            _form.BackColor = ti.BackgroundColor;
+            _form.Width = ti.Width;
+            _form.Height = ti.Height;
 
             var screen = Screen.FromControl(_form);
             
@@ -49,7 +49,7 @@ namespace Deskband.UI
                 if (cfg.GeneralSettings.DisplayMode == DisplayMode.Deskband)
                 {
                     // horizontal center is module center
-                    _form.Left = x - _form.Width / 2;
+                    _form.Left = ti.X - _form.Width / 2;
                     _form.Top = screen.WorkingArea.Top == 0
                         ? screen.WorkingArea.Height - _form.Height
                         : screen.WorkingArea.Top;
@@ -57,8 +57,8 @@ namespace Deskband.UI
                 else
                 {
                     // horizontal center is floating window center
-                    _form.Left = _moduleContainer.GetScreenRectangle().Left + _moduleContainer.Width / 2 - width / 2;
-                    var top = cfg.FloatingWindowSettings.Y - height;
+                    _form.Left = _moduleContainer.GetScreenRectangle().Left + _moduleContainer.Width / 2 - ti.Width / 2;
+                    var top = cfg.FloatingWindowSettings.Y - ti.Height;
                     _form.Top = top < screen.WorkingArea.Top
                         ? cfg.FloatingWindowSettings.Y + _moduleContainer.Height
                         : top;
@@ -70,10 +70,10 @@ namespace Deskband.UI
                 _form.Left = screen.WorkingArea.Left == 0
                     ? screen.WorkingArea.Right - _form.Width
                     : screen.WorkingArea.Left;
-                _form.Top = y - _form.Height / 2;
+                _form.Top = ti.Y - _form.Height / 2;
             }
 
-            drawAction(_form);
+            ti.DrawAction(_form);
             _form.Show();
         }
 

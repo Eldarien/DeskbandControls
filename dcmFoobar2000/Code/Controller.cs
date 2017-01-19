@@ -313,7 +313,7 @@ namespace dcmFoobar2000.Code
             return trb;
         }
 
-        private dcLabel CreateLabel(TextSettings settings)
+        private dcLabel CreateLabel(TextSettingsBase settings)
         {
             var fs = FontStyles.Regular;
             if (settings.FontStyleBold) fs = fs | FontStyles.Bold;
@@ -347,7 +347,7 @@ namespace dcmFoobar2000.Code
         {
             _picAlbumArt.SetImage(stub && _cfg.AlbumArt.DoNotShowStubImage ? null : image);
 
-            SetTooltipImage(image);
+            SetTooltipImage(image, stub);
         }
 
         private void UpdatePosition(int pos, int? range = null)
@@ -362,15 +362,23 @@ namespace dcmFoobar2000.Code
             for (int i = 0; i < _labels.Count(); i++)
             {
                 var cfg = _cfg.Texts[i];
-                var format = _paused
-                    ? (String.IsNullOrWhiteSpace(cfg.PausedFormat) ? cfg.Format : cfg.PausedFormat)
-                    : cfg.Format;
-
-                _actions.FormatString(i, format);
+                FormatString(i, cfg);
             }
 
-            //_actions.FormatString(FormatStringIndex.TooltipText1, "%artist%");
-            //_actions.FormatString(FormatStringIndex.TooltipText2, "%title%");
+            for (int i = _tooltipIndex; i < _tooltipLabels.Count() + _tooltipIndex; i++)
+            {
+                var cfg = _cfg.Tooltip.Texts[i - _tooltipIndex];
+                FormatString(i, cfg);
+            }
+        }
+
+        private void FormatString(int index, TextSettingsBase ts)
+        {
+            var format = _paused
+                ? (String.IsNullOrWhiteSpace(ts.PausedFormat) ? ts.Format : ts.PausedFormat)
+                : ts.Format;
+
+            _actions.FormatString(index, format);
         }
 
         private void ClearTexts()
@@ -441,7 +449,15 @@ namespace dcmFoobar2000.Code
 
         private void HandleTrackText(string text, int index)
         {
-            if (index >= 0)
+            if (index >= _tooltipIndex)
+            {
+                if (index < _tooltipLabels.Count() + _tooltipIndex)
+                {
+                    var lbl = _tooltipLabels[index - _tooltipIndex];
+                    lbl.Text = text;
+                }
+            }
+            else if (index >= 0)
             {
                 if (index < _labels.Count())
                 {
@@ -585,12 +601,6 @@ namespace dcmFoobar2000.Code
                         Clipboard.SetText(text);
                     }
                     break;
-                //case FormatStringIndex.TooltipText1:
-                //case FormatStringIndex.TooltipText2:
-                //    {
-                //        SetTooltipText(index, text);
-                //    }
-                //    break;
             }
         }
 
@@ -653,32 +663,55 @@ namespace dcmFoobar2000.Code
         private bool _tooltipShowed = false;
         private dcPicture _tooltipAlbumArt = null;
         private Image _tooltipAlbumArtImage;
-        private void SetTooltipImage(Image image)
+        private void SetTooltipImage(Image image, bool stub)
         {
-            _tooltipAlbumArtImage = image;
+            _tooltipAlbumArtImage = stub && _cfg.Tooltip.AlbumArt.DoNotShowStubImage ? null : image;
             if (_tooltipAlbumArt != null)
             {
-                _tooltipAlbumArt.SetImage(image);
+                _tooltipAlbumArt.SetImage(_tooltipAlbumArtImage);
             }
         }
+
+        private List<dcLabel> _tooltipLabels = new List<dcLabel>();
+        private const int _tooltipIndex = 1000;
 
         public void ShowTooltip(Point localPoint, Point globalPoint, Rectangle r)
         {
             var tcfg = _cfg.Tooltip;
             if (tcfg.Enabled && !_tooltipShowed && !_stopped)
             {
-                int x = r.Left + r.Width / 2;
-                int y = r.Top + r.Height / 2;
-                _tooltipProvider.ShowTooltip(Foobar2000Module.ModuleId, x, y, tcfg.Width, tcfg.Height, tcfg.BackgroundColor, f =>
+                var ti = new TooltipInfo
                 {
-                    if (tcfg.AlbumArt.Visible)
+                    X = r.Left + r.Width / 2,
+                    Y = r.Top + r.Height / 2,
+                    Width = tcfg.Width,
+                    Height = tcfg.Height,
+                    BackgroundColor = tcfg.BackgroundColor,
+                    UseBorderlessWindow = tcfg.UseBorderlessWindow,
+                    DrawAction = form =>
                     {
-                        _tooltipAlbumArt = CreateAlbumArt(tcfg.AlbumArt);
-                        _tooltipAlbumArt.SetImage(_tooltipAlbumArtImage);
-                        f.Controls.Add(_tooltipAlbumArt);
+                        foreach (var ts in tcfg.Texts)
+                        {
+                            var lbl = CreateLabel(ts);
+                            _tooltipLabels.Add(lbl);
+                            if (ts.Visible)
+                            {
+                                form.Controls.Add(lbl);
+                            }
+                        }
+                        if (tcfg.AlbumArt.Visible)
+                        {
+                            _tooltipAlbumArt = CreateAlbumArt(tcfg.AlbumArt);
+                            _tooltipAlbumArt.SetImage(_tooltipAlbumArtImage);
+                            form.Controls.Add(_tooltipAlbumArt);
+                        }
                     }
-                });
+                };
+
+                _tooltipProvider.ShowTooltip(Foobar2000Module.ModuleId, ti);
                 _tooltipShowed = true;
+
+                UpdateTexts();
             }
         }
 
@@ -688,6 +721,11 @@ namespace dcmFoobar2000.Code
             _tooltipShowed = false;
 
             RemoveAndDestroyControl(_tooltipAlbumArt);
+            foreach (var lbl in _tooltipLabels)
+            {
+                RemoveAndDestroyControl(lbl);
+            }
+            _tooltipLabels.Clear();
         }
 
         /*

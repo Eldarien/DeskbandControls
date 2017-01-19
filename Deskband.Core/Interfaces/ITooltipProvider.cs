@@ -6,7 +6,18 @@ namespace Deskband.Core.Interfaces
 {
     public interface ITooltipProvider
     {
-        void ShowTooltip(Guid moduleId, int x, int y, int width, int height, Color backgroundColor, Action<Form> drawAction);
+        void ShowTooltip(Guid moduleId, TooltipInfo ti);
         void HideTooltip();
+    }
+
+    public class TooltipInfo
+    {
+        public int X { get; set; }
+        public int Y { get; set; }
+        public int Width { get; set; }
+        public int Height { get; set; }
+        public Color BackgroundColor { get; set; }
+        public bool UseBorderlessWindow { get; set; }
+        public Action<Form> DrawAction { get; set; }
     }
 }

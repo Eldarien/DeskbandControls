@@ -1,10 +1,7 @@
 ﻿using Deskband.Core.Configuration;
-using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
-using System.Linq;
-using System.Text;
 
 namespace dcmFoobar2000.Configuration
 {
@@ -19,8 +16,11 @@ namespace dcmFoobar2000.Configuration
         [Category("Size")]
         public int Height { get; set; }
 
-        [Category("Display"), DisplayName("Background Color"), TypeConverter(typeof(ColorHexConverter))]
+        [Category("Window"), DisplayName("Background Color"), TypeConverter(typeof(ColorHexConverter))]
         public Color BackgroundColor { get; set; }
+
+        [Category("Window"), DisplayName("Borderless Window"), TypeConverter(typeof(YesNoBooleanConverter))]
+        public bool UseBorderlessWindow { get; set; }
 
         [Browsable(false), SettingsNode("Album Art")]
         public AlbumArtSettings AlbumArt { get; set; } = new AlbumArtSettings { Visible = true, X = 5, Y = 5, Width = 100, Height = 100 };
