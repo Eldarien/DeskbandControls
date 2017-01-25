@@ -33,8 +33,13 @@ namespace Deskband.UI
             _form.FormBorderStyle = ti.UseBorderlessWindow ? FormBorderStyle.None : FormBorderStyle.SizableToolWindow;
             _form.Text = null;
             _form.BackColor = ti.BackgroundColor;
+
             _form.Width = ti.Width;
             _form.Height = ti.Height;
+            var delta = _form.Width - _form.ClientRectangle.Width;
+            _form.Width = _form.Width + delta;
+            _form.Height = _form.Height + delta;
+            
 
             var screen = Screen.FromControl(_form);
             
@@ -57,8 +62,8 @@ namespace Deskband.UI
                 else
                 {
                     // horizontal center is floating window center
-                    _form.Left = _moduleContainer.GetScreenRectangle().Left + _moduleContainer.Width / 2 - ti.Width / 2;
-                    var top = cfg.FloatingWindowSettings.Y - ti.Height;
+                    _form.Left = _moduleContainer.GetScreenRectangle().Left + _moduleContainer.Width / 2 - _form.Width / 2;
+                    var top = cfg.FloatingWindowSettings.Y - _form.Height;
                     _form.Top = top < screen.WorkingArea.Top
                         ? cfg.FloatingWindowSettings.Y + _moduleContainer.Height
                         : top;
