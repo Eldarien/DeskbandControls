@@ -324,7 +324,7 @@ namespace dcmFoobar2000.Code
             lbl.Location = _sp.MakePoint(settings.X, settings.Y);
             lbl.Size = _sp.MakeSize(settings.Width, settings.Height);
             lbl.ForeColor = settings.FontColor;
-            lbl.AlignTextToRight = settings.AlightToRight;
+            lbl.TextAlign = settings.HorizontalAlign;
             lbl.EnableScrolling = settings.EnableScroll;
             lbl.ScrollSpeed = settings.ScrollSpeed;
             lbl.ScrollStep = settings.ScrollStep;
@@ -682,8 +682,7 @@ namespace dcmFoobar2000.Code
             {
                 var ti = new TooltipInfo
                 {
-                    X = r.Left + r.Width / 2,
-                    Y = r.Top + r.Height / 2,
+                    Rect = r,
                     Width = tcfg.Width,
                     Height = tcfg.Height,
                     BackgroundColor = tcfg.BackgroundColor,
@@ -717,15 +716,17 @@ namespace dcmFoobar2000.Code
 
         public void HideTooltip()
         {
-            _tooltipProvider.HideTooltip();
-            _tooltipShowed = false;
-
-            RemoveAndDestroyControl(_tooltipAlbumArt);
-            foreach (var lbl in _tooltipLabels)
+            _tooltipProvider.RequestHideTooltip(() =>
             {
-                RemoveAndDestroyControl(lbl);
-            }
-            _tooltipLabels.Clear();
+                _tooltipShowed = false;
+
+                RemoveAndDestroyControl(_tooltipAlbumArt);
+                foreach (var lbl in _tooltipLabels)
+                {
+                    RemoveAndDestroyControl(lbl);
+                }
+                _tooltipLabels.Clear();
+            });
         }
 
         /*

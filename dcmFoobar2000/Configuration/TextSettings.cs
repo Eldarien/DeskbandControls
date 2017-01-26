@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Design;
+using System.Windows.Forms.VisualStyles;
 
 namespace dcmFoobar2000.Configuration
 {
@@ -64,14 +65,14 @@ namespace dcmFoobar2000.Configuration
         [Category("Text"), DisplayName("Stopped Text")]
         public string StoppedText { get; set; } = "";
 
-        [Category("Text"), DisplayName("Align To Right"), TypeConverter(typeof(YesNoBooleanConverter))]
-        public bool AlightToRight { get; set; }
+        [Category("Text"), DisplayName("Horizontal Align")]
+        public HorizontalAlign HorizontalAlign { get; set; }
 
         [Category("Scroll"), DisplayName("Enable Scroll"), TypeConverter(typeof(YesNoBooleanConverter))]
         public bool EnableScroll { get; set; } = true;
 
         [Category("Scroll"), DisplayName("Scroll Speed"), TypeConverter(typeof(NumericUpDownTypeConverter))]
-        [Editor(typeof(NumericUpDownTypeEditor), typeof(UITypeEditor)), MinMax(50, 1000)]
+        [Editor(typeof(NumericUpDownTypeEditor), typeof(UITypeEditor)), MinMax(10, 1000)]
         public int ScrollSpeed { get; set; } = 100;
 
         [Category("Scroll"), DisplayName("Scroll Step"), TypeConverter(typeof(NumericUpDownTypeConverter))]

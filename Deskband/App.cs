@@ -26,6 +26,7 @@ namespace Deskband
         readonly ISizeProvider _sp;
         readonly ModuleContainer _moduleContainer;
         readonly FloatingForm _floatingForm;
+        readonly TooltipProvider _tooltipProvider;
 
         private SettingsForm _settingsForm;
 
@@ -37,7 +38,8 @@ namespace Deskband
             ConsoleHandler consoleHandler,
             IMenuProvider menu,
             ISizeProvider sp,
-            ModuleContainer moduleContainer
+            ModuleContainer moduleContainer,
+            TooltipProvider tooltipProvider
             )
         {
             _band = band;
@@ -48,6 +50,7 @@ namespace Deskband
             _menu = menu;
             _sp = sp;
             _moduleContainer = moduleContainer;
+            _tooltipProvider = tooltipProvider;
         }
 
         public void Run()
@@ -64,6 +67,7 @@ namespace Deskband
             _band.DPIChanged += (s, e) => ApplyConfiguration();
             _band.MouseDoubleClick += (s, e) => HandleDoubleClick(e.Location);
             _floatingForm.MouseDoubleClick += (s, e) => HandleDoubleClick(e.Location);
+            _floatingForm.Move += (s, e) => _tooltipProvider.HandleMove(_floatingForm.Bounds);
 
             // Console
             var miConsole = _menu.AddItem(Guid.Empty, null, "Console", _console.ToggleConsole);
@@ -85,6 +89,7 @@ namespace Deskband
             GlobalMouseHook.SetGlobalMouseHook();
             GlobalMouseHook.MouseWheel += (s, e) => HandleMouseWheel(e.Value);
             GlobalMouseHook.MousePoint += (s, e) => HandleMousePoint(e.Value);
+            GlobalMouseHook.MousePoint += (s, e) => _tooltipProvider.HandleMousePoint(e.Value);
 
             ActiveWindowWatcher.StartWatching();
         }

@@ -7,13 +7,13 @@ namespace Deskband.Core.Interfaces
     public interface ITooltipProvider
     {
         void ShowTooltip(Guid moduleId, TooltipInfo ti);
-        void HideTooltip();
+        void RequestHideTooltip(Action callback);
+        void DiscardHideRequest();
     }
 
     public class TooltipInfo
     {
-        public int X { get; set; }
-        public int Y { get; set; }
+        public Rectangle Rect { get; set; }
         public int Width { get; set; }
         public int Height { get; set; }
         public Color BackgroundColor { get; set; }

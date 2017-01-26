@@ -56,7 +56,7 @@ namespace Deskband.Core.Controls
             set { if (base.Text != value) { _isTextRtl = WinApiHelpers.IsTextRtl(value); base.Text = value; Refresh(); } }
         }
 
-        public bool AlignTextToRight { get; set; }
+        public HorizontalAlign TextAlign { get; set; }
 
         public bool DrawOutline { get; set; }
 
@@ -137,8 +137,10 @@ namespace Deskband.Core.Controls
             var textColor = new COLORREF(ForeColor);
 
             var textFlags = DT_NOPREFIX;
-            if (AlignTextToRight)
+            if (TextAlign == HorizontalAlign.Right)
                 textFlags |= DT_RIGHT;
+            else if (TextAlign == HorizontalAlign.Center)
+                textFlags |= DT_CENTER;
             if (_isTextRtl)
                 textFlags |= DT_RTLREADING;
 
@@ -173,8 +175,8 @@ namespace Deskband.Core.Controls
 
                 PaintOutline(memdc, rc);
 
-                var t = PrepareScrollText(alphadc, rc);
-                UxTheme.DrawThemeTextEx(hTheme, alphadc, 0, 0, t.Text, t.Text.Length, textFlags, ref t.Rect, ref opts);
+                var t = PrepareScrollText(alphadc, rc, textFlags);
+                UxTheme.DrawThemeTextEx(hTheme, alphadc, 0, 0, t.Text, t.Text.Length, t.TextFlags, ref t.Rect, ref opts);
 
                 var blendFunc = new BLENDFUNCTION(AC_SRC_OVER, 0, ForeColor.A, AC_SRC_ALPHA);
                 Gdi32.AlphaBlend(memdc, rc.left, rc.top, rc.right - rc.left, rc.bottom - rc.top, alphadc,
@@ -201,8 +203,8 @@ namespace Deskband.Core.Controls
                 Gdi32.SetTextColor(memdc, textColor);
                 Gdi32.SetBkMode(memdc, TRANSPARENT);
 
-                var t = PrepareScrollText(memdc, rc);
-                User32.DrawTextEx(memdc, t.Text, t.Text.Length, ref t.Rect, textFlags, ref dtp);
+                var t = PrepareScrollText(memdc, rc, textFlags);
+                User32.DrawTextEx(memdc, t.Text, t.Text.Length, ref t.Rect, t.TextFlags, ref dtp);
 
                 Gdi32.BitBlt(hdc, rc.left, rc.top, rc.right - rc.left, rc.bottom - rc.top, memdc, 0, 0, SRCCOPY);
 
@@ -241,9 +243,10 @@ namespace Deskband.Core.Controls
         {
             public string Text;
             public RECT Rect;
+            public uint TextFlags;
         }
 
-        private TextWithRect PrepareScrollText(IntPtr dc, RECT rc)
+        private TextWithRect PrepareScrollText(IntPtr dc, RECT rc, uint textFlags)
         {
             var text = Text;
             if (_timer.Enabled)
@@ -267,9 +270,10 @@ namespace Deskband.Core.Controls
                     } while (textSize.Width < Width * 2);
                     if (_scrollPos >= textSize.Width / 2) _scrollPos = 0;
                     rc = new RECT(rc.left - _scrollPos, rc.top, rc.right, rc.bottom);
+                    textFlags &= ~(DT_CENTER | DT_RIGHT); // Always align to left when scrolling
                 }
             }
-            return new TextWithRect { Text = text, Rect = rc };
+            return new TextWithRect { Text = text, Rect = rc, TextFlags = textFlags };
         }
 
         /*
