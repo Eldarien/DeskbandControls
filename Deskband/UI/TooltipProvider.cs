@@ -13,13 +13,15 @@ namespace Deskband.UI
         readonly IConfigurationProvider _config;
         readonly ModuleContainer _moduleContainer;
         readonly IConsole _console;
+        readonly ISizeProvider _sizeProvider;
 
-        public TooltipProvider(Band band, IConfigurationProvider config, ModuleContainer moduleContainer, IConsole console)
+        public TooltipProvider(Band band, IConfigurationProvider config, ModuleContainer moduleContainer, IConsole console, ISizeProvider sizeProvider)
         {
             _band = band;
             _config = config;
             _moduleContainer = moduleContainer;
             _console = console;
+            _sizeProvider = sizeProvider;
         }
 
         private TooltipForm _form;
@@ -39,8 +41,8 @@ namespace Deskband.UI
             _form.Text = null;
             _form.BackColor = ti.BackgroundColor;
 
-            _form.Width = ti.Width;
-            _form.Height = ti.Height;
+            _form.Width = _sizeProvider.MakeValue(ti.Width);
+            _form.Height = _sizeProvider.MakeValue(ti.Height);
             _borderDelta = _form.Width - _form.ClientRectangle.Width;
             _form.Width = _form.Width + _borderDelta;
             _form.Height = _form.Height + _borderDelta;
