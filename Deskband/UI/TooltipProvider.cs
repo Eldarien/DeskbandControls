@@ -12,24 +12,25 @@ namespace Deskband.UI
         readonly Band _band;
         readonly IConfigurationProvider _config;
         readonly ModuleContainer _moduleContainer;
-        readonly IConsole _console;
         readonly ISizeProvider _sizeProvider;
 
-        public TooltipProvider(Band band, IConfigurationProvider config, ModuleContainer moduleContainer, IConsole console, ISizeProvider sizeProvider)
+        public TooltipProvider(Band band, IConfigurationProvider config, ModuleContainer moduleContainer, ISizeProvider sizeProvider)
         {
             _band = band;
             _config = config;
             _moduleContainer = moduleContainer;
-            _console = console;
             _sizeProvider = sizeProvider;
         }
 
+        private Guid _moduleId;
+        private TooltipInfo _ti;
         private TooltipForm _form;
         private int _borderDelta;
 
         public void ShowTooltip(Guid moduleId, TooltipInfo ti)
         {
-            _console.AddLine("ShowTooltip");
+            _moduleId = moduleId;
+            _ti = ti;
 
             _form = new TooltipForm();
             _form.TopMost = true;
@@ -37,19 +38,23 @@ namespace Deskband.UI
             _form.MaximizeBox = false;
             _form.ControlBox = false;
             _form.ShowInTaskbar = false;
-            _form.FormBorderStyle = ti.UseBorderlessWindow ? FormBorderStyle.None : FormBorderStyle.SizableToolWindow;
+            _form.FormBorderStyle = ti.UseBorderlessWindow ? FormBorderStyle.None : FormBorderStyle.Sizable;
             _form.Text = null;
             _form.BackColor = ti.BackgroundColor;
 
-            _form.Width = _sizeProvider.MakeValue(ti.Width);
-            _form.Height = _sizeProvider.MakeValue(ti.Height);
+            _form.Width = _sizeProvider.MakeValue(_ti.Width);
+            _form.Height = _sizeProvider.MakeValue(_ti.Height);
             _borderDelta = _form.Width - _form.ClientRectangle.Width;
             _form.Width = _form.Width + _borderDelta;
             _form.Height = _form.Height + _borderDelta;
 
-            SetPosition(ti.Rect);
+            // Disable resizing
+            _form.MinimumSize = _form.Size;
+            _form.MaximumSize = _form.Size;
 
-            ti.DrawAction(_form);
+            SetPosition(_ti.Rect);
+
+            _ti.CreateAction(_form);
             _form.Show();
         }
 
@@ -100,43 +105,29 @@ namespace Deskband.UI
             }
         }
 
-        private Action _hideCallback;
-        private bool _hideRequested;
         private bool _cursorOverForm;
 
-        public void RequestHideTooltip(Action callback)
+        public void RequestHideTooltip()
         {
-            _console.AddLine("RequestHideTooltip");
+            if (_cursorOverForm) return;
+
             if (_form != null)
             {
-                _hideCallback = callback;
-                _hideRequested = true;
-
-                if (!_cursorOverForm)
-                {
-                    DoHide();
-                }
+                DoHide();
             }
-        }
-
-        public void DiscardHideRequest()
-        {
-            _hideCallback = null;
-            _hideRequested = false;
         }
 
         private void DoHide()
         {
             if (_form != null)
             {
-                _console.AddLine("DoHide Execute");
                 _form.Hide();
                 _form.Dispose();
                 _form = null;
 
-                _hideCallback?.Invoke();
+                _ti.DestroyAction?.Invoke();
+                _ti = null;
             }
-            DiscardHideRequest();
         }
 
         public void HandleMousePoint(Point globalPoint)
@@ -145,8 +136,8 @@ namespace Deskband.UI
             {
                 var bounds = new Rectangle(_form.Bounds.Location, _form.Bounds.Size);
                 bounds.Inflate(2, 2);
-                _cursorOverForm = bounds.Contains(globalPoint);
-                if (!_cursorOverForm && _hideRequested)
+                _cursorOverForm = bounds.Contains(globalPoint) || _moduleContainer.LocateModuleAtPoint(_moduleContainer.PointToClient(globalPoint)) == _moduleId;
+                if (!_cursorOverForm)
                 {
                     DoHide();
                 }

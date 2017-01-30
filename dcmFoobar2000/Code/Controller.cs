@@ -675,6 +675,40 @@ namespace dcmFoobar2000.Code
         private List<dcLabel> _tooltipLabels = new List<dcLabel>();
         private const int _tooltipIndex = 1000;
 
+        private void CreateTooltipControls(Form form)
+        {
+            _tooltipShowed = true;
+
+            var tcfg = _cfg.Tooltip;
+            foreach (var ts in tcfg.Texts)
+            {
+                var lbl = CreateLabel(ts);
+                _tooltipLabels.Add(lbl);
+                if (ts.Visible)
+                {
+                    form.Controls.Add(lbl);
+                }
+            }
+            if (tcfg.AlbumArt.Visible)
+            {
+                _tooltipAlbumArt = CreateAlbumArt(tcfg.AlbumArt);
+                _tooltipAlbumArt.SetImage(_tooltipAlbumArtImage);
+                form.Controls.Add(_tooltipAlbumArt);
+            }
+        }
+
+        private void DestroyTooltipControls()
+        {
+            _tooltipShowed = false;
+
+            RemoveAndDestroyControl(_tooltipAlbumArt);
+            foreach (var lbl in _tooltipLabels)
+            {
+                RemoveAndDestroyControl(lbl);
+            }
+            _tooltipLabels.Clear();
+        }
+
         public void ShowTooltip(Point localPoint, Point globalPoint, Rectangle r)
         {
             var tcfg = _cfg.Tooltip;
@@ -687,28 +721,11 @@ namespace dcmFoobar2000.Code
                     Height = tcfg.Height,
                     BackgroundColor = tcfg.BackgroundColor,
                     UseBorderlessWindow = tcfg.UseBorderlessWindow,
-                    DrawAction = form =>
-                    {
-                        foreach (var ts in tcfg.Texts)
-                        {
-                            var lbl = CreateLabel(ts);
-                            _tooltipLabels.Add(lbl);
-                            if (ts.Visible)
-                            {
-                                form.Controls.Add(lbl);
-                            }
-                        }
-                        if (tcfg.AlbumArt.Visible)
-                        {
-                            _tooltipAlbumArt = CreateAlbumArt(tcfg.AlbumArt);
-                            _tooltipAlbumArt.SetImage(_tooltipAlbumArtImage);
-                            form.Controls.Add(_tooltipAlbumArt);
-                        }
-                    }
+                    CreateAction = CreateTooltipControls,
+                    DestroyAction = DestroyTooltipControls
                 };
 
                 _tooltipProvider.ShowTooltip(Foobar2000Module.ModuleId, ti);
-                _tooltipShowed = true;
 
                 UpdateTexts();
             }
@@ -716,105 +733,7 @@ namespace dcmFoobar2000.Code
 
         public void HideTooltip()
         {
-            _tooltipProvider.RequestHideTooltip(() =>
-            {
-                _tooltipShowed = false;
-
-                RemoveAndDestroyControl(_tooltipAlbumArt);
-                foreach (var lbl in _tooltipLabels)
-                {
-                    RemoveAndDestroyControl(lbl);
-                }
-                _tooltipLabels.Clear();
-            });
+            _tooltipProvider.RequestHideTooltip();
         }
-
-        /*
-        
-
-        private dcPicture _tooltipAlbumArt = null;
-        private Image _tooltipAlbumArtImage;
-        private void SetTooltipImage(Image image)
-        {
-            _tooltipAlbumArtImage = image;
-            if (_tooltipAlbumArt != null)
-            {
-                _tooltipAlbumArt.SetImage(image);
-            }
-        }
-
-        private dcLabel _tooltipLabel1 = null;
-        private string _tooltipLabel1Text;
-        private void SetTooltipText(int index, string text)
-        {
-            if (index == FormatStringIndex.TooltipText1)
-            {
-                _tooltipLabel1Text = text;
-                if (_tooltipLabel1 != null) _tooltipLabel1.Text = text;
-            }
-            else if (index == FormatStringIndex.TooltipText2)
-            {
-                _tooltipLabel2Text = text;
-                if (_tooltipLabel2 != null) _tooltipLabel2.Text = text;
-            }
-        }
-
-        private dcLabel _tooltipLabel2 = null;
-        private string _tooltipLabel2Text;
-
-        public void ShowTooltip(Point localPoint, Point globalPoint, Rectangle r)
-        {
-            if (!_tooltipShowed && !_stopped)
-            {
-                int x = r.Left + r.Width / 2;
-                int y = r.Top + r.Height / 2;
-                _tooltipProvider.ShowTooltip(Foobar2000Module.ModuleId, x, y, f =>
-                {
-                    int offset = 5;
-                    int s = f.ClientSize.Height - offset * 2;
-                    var aa = new dcPicture();
-                    aa.Location = new Point(offset, offset); //_sp.MakePoint(settings.X, settings.Y);
-                    aa.Size = new Size(s, s); //_sp.MakeSize(settings.Width, settings.Height);
-                    aa.PreserveAspectRatio = _picAlbumArt.PreserveAspectRatio;
-                    aa.SetImage(_tooltipAlbumArtImage);
-                    f.Controls.Add(aa);
-                    _tooltipAlbumArt = aa;
-
-                    var t1 = new dcLabel(_sp.DPI, new FontConfiguration("Segoe UI", 16, FontStyles.Regular));
-                    t1.ForeColor = Color.FromKnownColor(KnownColor.InfoText);
-                    t1.Left = offset * 3 + s;
-                    t1.Width = f.ClientSize.Width - t1.Left - offset;
-                    t1.Top = 14;
-                    t1.Height = 30;
-                    t1.EnableScrolling = true;
-                    if (_tooltipLabel1Text != null) t1.Text = _tooltipLabel1Text;
-                    f.Controls.Add(t1);
-                    _tooltipLabel1 = t1;
-
-                    var t2 = new dcLabel(_sp.DPI, new FontConfiguration("Segoe UI", 16, FontStyles.Regular));
-                    t2.ForeColor = Color.FromKnownColor(KnownColor.InfoText);
-                    t2.Left = offset * 3 + s;
-                    t2.Width = f.ClientSize.Width - t2.Left - offset;
-                    t2.Top = 14 + 30 + offset;
-                    t2.Height = 30;
-                    t2.EnableScrolling = true;
-                    if (_tooltipLabel2Text != null) t2.Text = _tooltipLabel2Text;
-                    f.Controls.Add(t2);
-                    _tooltipLabel2 = t2;
-                });
-                _tooltipShowed = true;
-            }
-        }
-
-        public void HideTooltip()
-        {
-            _tooltipProvider.HideTooltip();
-            _tooltipShowed = false;
-
-            _tooltipAlbumArt = null;
-            _tooltipLabel1 = null;
-            _tooltipLabel2 = null;
-        }
-        */
     }
 }
