@@ -4,8 +4,9 @@
 //	const int MAGIC_NUMBER = 42;
 //}
 
-#define DESKBAND_CONTROLS_VERSION "1.1.2"
+#define DESKBAND_CONTROLS_VERSION "3.0.0"
 #define DESKBAND_CONTROLS_TITLE "Deskband Controls"
+#define DESKBAND_CONTROLS_ABOUT_TEXT "(c) Eldarien (eldarien@live.com)\nhttps://hydrogenaud.io/index.php/topic,78234.0.html"
 
 #define FOOBAR_PLUGIN_MSGWINDOW_CLASS "FoobarDeskbandControlsWndClass"
 #define FOOBAR_PLUGIN_MSGWINDOW_TITLE "FooDeskbandMsgWindow"

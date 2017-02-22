@@ -6,6 +6,7 @@ using System.Drawing;
 using System.Drawing.Design;
 using System.Linq;
 using System.Text;
+using System.Windows.Forms.VisualStyles;
 
 namespace dcmFoobar2000.Configuration
 {
@@ -60,7 +61,14 @@ namespace dcmFoobar2000.Configuration
         public List<TextSettings> Texts { get; set; } = new List<TextSettings>();
 
         [Browsable(false), SettingsNode("Tooltip")]
-        public TooltipSettings Tooltip { get; set; } = new TooltipSettings { Enabled = true, Width = 300, Height = 110, BackgroundColor = Color.FromKnownColor(KnownColor.Info) };
+        public TooltipSettings Tooltip { get; set; } = new TooltipSettings {
+            Enabled = true, Width = 300, Height = 350, BackgroundColor = Color.Black,
+            AlbumArt = new AlbumArtSettings
+            {
+                Visible = true, X = 0, Y = 0, Width = 300, Height = 300,
+                DoNotShowStubImage = false, PreserveAspectRatio = true
+            }
+        };
 
         public static object AddText(ConfigurationModel model)
         {
@@ -85,7 +93,17 @@ namespace dcmFoobar2000.Configuration
 
                 cfg.Tooltip.Texts.Add(new TooltipTextSettings
                 {
-                    X = 5, Y = 5, Width = 390, Height = 16, Name = "Artist", Format = "%artist%"
+                    Name = "Artist", X = 0, Y = 300, Width = 300, Height = 20, Visible = true,
+                    Format = "%artist%", ScrollSeparator = " **** ", ScrollSpeed = 30, ScrollStep = 1,
+                    FontName = "Segoe UI", FontSize = 12, FontStyleBold = true, FontColor = Color.LightGray,
+                    HorizontalAlign = HorizontalAlign.Center
+                });
+                cfg.Tooltip.Texts.Add(new TooltipTextSettings
+                {
+                    Name = "Title", X = 0, Y = 325, Width = 300, Height = 24, Visible = true,
+                    Format = "%title%", ScrollSeparator = " **** ", ScrollSpeed = 30, ScrollStep = 1,
+                    FontName = "Segoe UI", FontSize = 12, FontStyleBold = false, FontColor = Color.LightGray,
+                    HorizontalAlign = HorizontalAlign.Center
                 });
 
                 return cfg;

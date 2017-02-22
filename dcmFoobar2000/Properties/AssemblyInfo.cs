@@ -1,16 +1,17 @@
-﻿using System.Reflection;
+﻿using DeskbandBridge;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("dcmFoobar2000")]
+[assembly: AssemblyTitle(FB2KConstants.DeskbandControlsTitle)]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("dcmFoobar2000")]
-[assembly: AssemblyCopyright("Copyright ©  2016")]
+[assembly: AssemblyProduct(FB2KConstants.DeskbandControlsTitle)]
+[assembly: AssemblyCopyright("Copyright © Eldarien 2017")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -32,5 +33,5 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.0.0.0")]
-[assembly: AssemblyFileVersion("1.0.0.0")]
+[assembly: AssemblyVersion(FB2KConstants.DeskbandControlsVersion)]
+[assembly: AssemblyFileVersion(FB2KConstants.DeskbandControlsVersion)]

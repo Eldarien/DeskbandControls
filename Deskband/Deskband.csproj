@@ -140,13 +140,13 @@
       <Project>{eccdadd3-1732-4f31-8548-1a7f81a037bf}</Project>
       <Name>dcmFoobar2000</Name>
     </ProjectReference>
-    <ProjectReference Include="..\dcmWeather\dcmWeather.csproj">
-      <Project>{03b4455b-57aa-4389-ae1f-90d899e3d8e0}</Project>
-      <Name>dcmWeather</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Deskband.Core\Deskband.Core.csproj">
       <Project>{c6b667f2-fd55-4bf6-8266-aef34fdf1f62}</Project>
       <Name>Deskband.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DeskbandBridge\DeskbandBridge.vcxproj">
+      <Project>{e8118efe-0f51-4bda-a728-a69636c48631}</Project>
+      <Name>DeskbandBridge</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

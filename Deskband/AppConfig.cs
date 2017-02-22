@@ -57,7 +57,7 @@ namespace Deskband
             //}
 
             kernel.Bind<IModule>().To<dcmFoobar2000.Foobar2000Module>();
-            kernel.Bind<IModule>().To<dcmWeather.WeatherModule>();
+            //kernel.Bind<IModule>().To<dcmWeather.WeatherModule>();
         }
     }
 }

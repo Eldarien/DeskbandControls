@@ -23,7 +23,7 @@ namespace dcmFoobar2000.Configuration
         public bool UseBorderlessWindow { get; set; }
 
         [Browsable(false), SettingsNode("Album Art")]
-        public AlbumArtSettings AlbumArt { get; set; } = new AlbumArtSettings { Visible = true, X = 5, Y = 5, Width = 100, Height = 100 };
+        public AlbumArtSettings AlbumArt { get; set; }
 
         [Browsable(false), SettingsNodeList("Texts")]
         [SettingsCommand("Add Text", nameof(TooltipSettings.AddText))]

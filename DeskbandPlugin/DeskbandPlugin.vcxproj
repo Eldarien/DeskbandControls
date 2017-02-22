@@ -62,6 +62,9 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>..\foobar2000_sdk\foobar2000\shared\shared.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>start "" "$(SolutionDir)\Scripts\package_plugin_debug.cmd"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -86,7 +89,7 @@
       </Command>
     </PreBuildEvent>
     <PostBuildEvent>
-      <Command>start "" "$(SolutionDir)\Scripts\package_plugin.cmd"</Command>
+      <Command>start "" "$(SolutionDir)\Scripts\package_plugin_release.cmd"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>

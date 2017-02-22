@@ -30,22 +30,27 @@ namespace Deskband.Configuration
         {
             _console = console;
 
-            var optionsDir = Path.Combine(Environment.GetEnvironmentVariable("AppData"), "DeskbandControls");
-            _console.AddLine($"Options directory is {optionsDir}");
-            if (!Directory.Exists(optionsDir))
-            {
-                Directory.CreateDirectory(optionsDir);
-            }
-            var options = GetOptions(optionsDir);
-            if (!String.IsNullOrWhiteSpace(options.ConfigurationDirectory))
-            {
-                _configDir = options.ConfigurationDirectory;
-            }
-            else
-            {
-                _configDir = optionsDir;
-            }
+            //var optionsDir = Path.Combine(Environment.GetEnvironmentVariable("AppData"), "DeskbandControls");
+            //if (!Directory.Exists(optionsDir))
+            //{
+            //    Directory.CreateDirectory(optionsDir);
+            //}
+            //var options = GetOptions(optionsDir);
+            //if (!String.IsNullOrWhiteSpace(options.ConfigurationDirectory))
+            //{
+            //    _configDir = options.ConfigurationDirectory;
+            //}
+            //else
+            //{
+            //    _configDir = optionsDir;
+            //}
+
+            _configDir = Path.Combine(Environment.GetEnvironmentVariable("AppData"), "DeskbandControls");
             _console.AddLine($"Configuration directory is {_configDir}");
+            if (!Directory.Exists(_configDir))
+            {
+                Directory.CreateDirectory(_configDir);
+            }
 
             _configFilePath = Path.Combine(_configDir, "DeskbandControls.json");
             _data = new JArray();
@@ -64,22 +69,22 @@ namespace Deskband.Configuration
             _watcher.EnableRaisingEvents = true;
         }
 
-        private static ConfigurationOptions GetOptions(string configDir)
-        {
-            var configOptionsPath = Path.Combine(configDir, "Options.json");
-            var options = ConfigurationOptions.GetDefault();
-            if (File.Exists(configOptionsPath))
-            {
-                var json = File.ReadAllText(configOptionsPath);
-                options = JObject.Parse(json).ToObject<ConfigurationOptions>();
-            }
-            else
-            {
-                var json = JsonConvert.SerializeObject(options, Formatting.Indented);
-                File.WriteAllText(configOptionsPath, json);
-            }
-            return options;
-        }
+        //private static ConfigurationOptions GetOptions(string configDir)
+        //{
+        //    var configOptionsPath = Path.Combine(configDir, "Options.json");
+        //    var options = ConfigurationOptions.GetDefault();
+        //    if (File.Exists(configOptionsPath))
+        //    {
+        //        var json = File.ReadAllText(configOptionsPath);
+        //        options = JObject.Parse(json).ToObject<ConfigurationOptions>();
+        //    }
+        //    else
+        //    {
+        //        var json = JsonConvert.SerializeObject(options, Formatting.Indented);
+        //        File.WriteAllText(configOptionsPath, json);
+        //    }
+        //    return options;
+        //}
 
         private void OnFileChanged(object sender, FileSystemEventArgs e)
         {

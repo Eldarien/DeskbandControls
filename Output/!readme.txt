@@ -1,16 +1,25 @@
-Foobar 2000 Deskband Controls 1.1.2
+Foobar 2000 Deskband Controls 3.0.0
 -----------------------------------
 
-Hydrogen audio forum topic: http://www.hydrogenaudio.org/forums/index.php?showtopic=78234
+HydrogenAudio forum topic: https://hydrogenaud.io/index.php/topic,78234.0.html
 
-How to install:
-  - Please uninstall previous version before installing this one (see below).
-  - Install Microsoft .NET Framework 4 Client Profile.
-      http://www.microsoft.com/en-us/download/details.aspx?id=24872
-    If you are using Windows 7 with Windows Updates turned on you may already have it.
-    Windows 8 and 8.1 have it installed by default.
+Important notes:
+
+! - Please uninstall previous version before installing this one (see below).
+
 ! - Windows sometimes marks files downloaded from Internet as unsafe and this causes various glitches in downloaded software.
 !   So, don't forget to unblock downloaded zip - right click it, select "Properties" and then select "Unblock" in properties window.
+
+!- If you are using Windows 10 insider builds deskband may not work. This can be fixed by editing registry:
+!- delete HKEY_CLASSES_ROOT\CLSID\{668863E6-D688-4115-8F23-BB7F37621A74} key in the registry.
+!- You will have to take ownership and give yourself full access.
+!- For those wondering what the hell it is - looks like unfinished people band...
+
+How to install:
+  - Install Microsoft .NET Framework 4.
+      https://www.microsoft.com/en-us/download/details.aspx?id=17718
+    If you are using Windows 7 with Windows Updates turned on you may already have it.
+    Windows 8/8.1/10 should have it installed by default.
   - Right-click "Register Deskband.cmd" file and select "Run as administrator".
     A console window should appear with the following message:
       "Types registered successfully".
@@ -34,6 +43,22 @@ Eldarien (eldarien@live.com)
 
 --
 ** Changelog:
+
+February 22 2017
+  * Version 3.0.0
+  - Windows XP is no longer supported.
+  + New configuration system and UI.
+  + Debug console.
+  + Text smooth scroll
+  + Mouse wheel volume control (when hovering on the toolbar, mouse scroll changes volume).
+  + Do not blink when changing tracks and "hide is not playing" is enabled.
+  + Stop after current checkmark in menu.
+  + Live reload when config file changes.
+  + Dragging the scrollbar does not change the playback until you release the mouse button, (as in fb2k main window).
+  + Paused format option.
+  + Reset the scroll position when change to next track.
+  + Deskband now returns the focus to the last active window after receiving some input.
+  + A tooltip window with configurable texts and album art when you mouse over the deskband.
 
 October 8 2014
   * Version 1.1.2
