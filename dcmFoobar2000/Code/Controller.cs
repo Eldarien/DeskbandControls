@@ -164,26 +164,37 @@ namespace dcmFoobar2000.Code
 
         private void RegisterMenu()
         {
+            var m = _cfg.Menu;
+
             //var group = Foobar2000Module.ModuleName;
             //_menu.ClearGroup(group);
             _menu.ClearByModule(_id);
 
-            _miStop = _menu.AddItem(_id, null, "Stop", _actions.Stop);
-            _miPlayPause = _menu.AddItem(_id, null, "Play / Pause", _actions.PlayPause);
-            _miPrev = _menu.AddItem(_id, null, "Previous", _actions.Prev);
-            _miNext = _menu.AddItem(_id, null, "Next", _actions.Next);
-            _miRandom = _menu.AddItem(_id, null, "Random", _actions.Random);
-            _miToggleStopAC = _menu.AddItem(_id, null, "Toggle Stop After Current", _actions.ToggleStopAfterCurrent);
+            if (m.Enabled)
+            {
+                _miStop = m.Stop ? _menu.AddItem(_id, null, "Stop", _actions.Stop) : Guid.Empty;
+                _miPlayPause = m.PlayPause ? _menu.AddItem(_id, null, "Play / Pause", _actions.PlayPause) : Guid.Empty;
+                _miPrev = m.Previous ? _menu.AddItem(_id, null, "Previous", _actions.Prev) : Guid.Empty;
+                _miNext = m.Next ? _menu.AddItem(_id, null, "Next", _actions.Next) : Guid.Empty;
+                _miRandom = m.Random ? _menu.AddItem(_id, null, "Random", _actions.Random) : Guid.Empty;
+                _miToggleStopAC = m.StopAfterCurrent ? _menu.AddItem(_id, null, "Toggle Stop After Current", _actions.ToggleStopAfterCurrent) : Guid.Empty;
 
-            _menu.AddItem(_id, null, "-", null);
+                if (m.Stop || m.PlayPause || m.Previous || m.Next || m.Random || m.StopAfterCurrent)
+                {
+                    _menu.AddItem(_id, null, "-", null);
+                }
 
-            _miCopyArtistAndTitle = _menu.AddItem(_id, null, "Copy Artist and Title", CopyArtistAndTitle);
-            _miCopyTitle = _menu.AddItem(_id, null, "Copy Title", CopyTitle);
-            _miCopyArtist = _menu.AddItem(_id, null, "Copy Artist", CopyArtist);
-            _miOpenContainingFolder = _menu.AddItem(_id, null, "Open Containing Folder", OpenContainingFolder);
-            _miSearchInInternet = _menu.AddItem(_id, null, "Search in Internet", SearchInInternet);
+                _miCopyArtistAndTitle = m.CopyArtistAndTitle ? _menu.AddItem(_id, null, "Copy Artist and Title", CopyArtistAndTitle) : Guid.Empty;
+                _miCopyTitle = m.CopyTitle ? _menu.AddItem(_id, null, "Copy Title", CopyTitle) : Guid.Empty;
+                _miCopyArtist = m.CopyArtist ? _menu.AddItem(_id, null, "Copy Artist", CopyArtist) : Guid.Empty;
+                _miOpenContainingFolder = m.OpenContainingFolder ? _menu.AddItem(_id, null, "Open Containing Folder", OpenContainingFolder) : Guid.Empty;
+                _miSearchInInternet = m.SearchInInternet ? _menu.AddItem(_id, null, "Search in Internet", SearchInInternet) : Guid.Empty;
 
-            _menu.AddItem(_id, null, "-", null);
+                if (m.CopyArtistAndTitle || m.CopyTitle || m.CopyArtist || m.OpenContainingFolder || m.SearchInInternet)
+                {
+                    _menu.AddItem(_id, null, "-", null);
+                }
+            }
         }
 
         private void RegisterControls()

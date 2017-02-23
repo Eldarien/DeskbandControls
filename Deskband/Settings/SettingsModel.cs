@@ -14,7 +14,7 @@ namespace Deskband.Settings
 
         public static bool IsMoveAvailable(SettingsModel model, ConfigurationObjectBase args)
         {
-            return args.ModuleId != Guid.Empty;
+            return args.ModuleId != Guid.Empty && model.SettingsModels.Where(x => x.ModuleId != Guid.Empty).Count() > 1;
         }
 
         public static object MoveUp(SettingsModel model, ConfigurationObjectBase args)

@@ -70,6 +70,23 @@ namespace dcmFoobar2000.Configuration
             }
         };
 
+        [Browsable(false), SettingsNode("Menu")]
+        public MenuSettings Menu { get; set; } = new MenuSettings
+        {
+            Enabled = true,
+            Stop = true,
+            PlayPause = true,
+            Previous = true,
+            Next = true,
+            Random = true,
+            StopAfterCurrent = true,
+            CopyArtistAndTitle = true,
+            CopyTitle = true,
+            CopyArtist = true,
+            OpenContainingFolder = true,
+            SearchInInternet = true
+        };
+
         public static object AddText(ConfigurationModel model)
         {
             return SettingsObject.AddCollectionItemCommandHelper(model.Texts, "Text", name => new TextSettings { Name = name, Format = "%title%" });
