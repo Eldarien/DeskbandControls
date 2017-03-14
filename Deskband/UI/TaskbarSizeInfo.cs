@@ -10,6 +10,6 @@ namespace Deskband.UI
     public struct TaskbarSizeInfo
     {
         public WinApiTypes.RECT Rect;
-        public LayoutMode Mode => (Rect.right - Rect.left) > (Rect.bottom - Rect.top) ? LayoutMode.Horizontal : LayoutMode.Vertical;
+        public LayoutMode Mode => (Rect.Width > Rect.Height) ? LayoutMode.Horizontal : LayoutMode.Vertical;
     }
 }

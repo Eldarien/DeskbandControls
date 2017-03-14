@@ -217,9 +217,15 @@ namespace Deskband
         {
             if (!_moduleContainer.Created) return;
 
+            var cfg = _config.GetConfiguration(Guid.Empty, ConfigurationModel.Default);
+            if (cfg.GeneralSettings.DisplayMode == DisplayMode.Deskband)
+            {
+                var taskbarInfo = _band.GetTaskbarSizeInfo();
+                if (!taskbarInfo.Rect.ToRectangle().Contains(globalPoint)) return; // do not react if point is outside of taskbar
+            }
+
             var location = _moduleContainer.PointToClient(globalPoint);
             var module = GetModuleAtPoint(location);
-
             if (module != _prevMousePointModule)
             {
                 _prevMousePointModule?.MousePointOut();

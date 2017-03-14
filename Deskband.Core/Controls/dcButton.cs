@@ -46,7 +46,7 @@ namespace Deskband.Core.Controls
             {
                 Gdi32.SelectObject(hdc, Gdi32.GetStockObject(StockObjects.HOLLOW_BRUSH));
                 Gdi32.SelectObject(hdc, Gdi32.GetStockObject(StockObjects.WHITE_PEN));
-                Gdi32.Rectangle(hdc, 0, 0, rc.right - rc.left, rc.bottom - rc.top);
+                Gdi32.Rectangle(hdc, 0, 0, rc.Right - rc.Left, rc.Bottom - rc.Top);
             }
             e.Graphics.ReleaseHdc(hdc);
 

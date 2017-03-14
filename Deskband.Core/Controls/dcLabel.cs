@@ -146,8 +146,8 @@ namespace Deskband.Core.Controls
 
             var dib = new BITMAPINFO();
             dib.bmiHeader.biSize = Marshal.SizeOf(typeof(BITMAPINFOHEADER));
-            dib.bmiHeader.biHeight = -(rc.bottom - rc.top); // negative because DrawThemeTextEx() uses a top-down DIB
-            dib.bmiHeader.biWidth = rc.right - rc.left;
+            dib.bmiHeader.biHeight = -(rc.Bottom - rc.Top); // negative because DrawThemeTextEx() uses a top-down DIB
+            dib.bmiHeader.biWidth = rc.Right - rc.Left;
             dib.bmiHeader.biPlanes = 1;
             dib.bmiHeader.biBitCount = 32;
             dib.bmiHeader.biCompression = BI_RGB;
@@ -159,7 +159,7 @@ namespace Deskband.Core.Controls
             var oldalphaBitmap = Gdi32.SelectObject(alphadc, alphabitmap);
             Gdi32.SelectObject(alphadc, Gdi32.GetStockObject(StockObjects.HOLLOW_BRUSH));
             Gdi32.SelectObject(alphadc, Gdi32.GetStockObject(StockObjects.NULL_PEN));
-            Gdi32.Rectangle(alphadc, 0, 0, rc.right - rc.left, rc.bottom - rc.top);
+            Gdi32.Rectangle(alphadc, 0, 0, rc.Right - rc.Left, rc.Bottom - rc.Top);
 
             if (DwmApi.DwmIsCompositionEnabled())
             {
@@ -179,18 +179,18 @@ namespace Deskband.Core.Controls
                 UxTheme.DrawThemeTextEx(hTheme, alphadc, 0, 0, t.Text, t.Text.Length, t.TextFlags, ref t.Rect, ref opts);
 
                 var blendFunc = new BLENDFUNCTION(AC_SRC_OVER, 0, ForeColor.A, AC_SRC_ALPHA);
-                Gdi32.AlphaBlend(memdc, rc.left, rc.top, rc.right - rc.left, rc.bottom - rc.top, alphadc,
-                    0, 0, rc.right - rc.left, rc.bottom - rc.top,
+                Gdi32.AlphaBlend(memdc, rc.Left, rc.Top, rc.Right - rc.Left, rc.Bottom - rc.Top, alphadc,
+                    0, 0, rc.Right - rc.Left, rc.Bottom - rc.Top,
                     blendFunc);
 
-                Gdi32.BitBlt(hdc, rc.left, rc.top, rc.right - rc.left, rc.bottom - rc.top, memdc, 0, 0, SRCCOPY);
+                Gdi32.BitBlt(hdc, rc.Left, rc.Top, rc.Right - rc.Left, rc.Bottom - rc.Top, memdc, 0, 0, SRCCOPY);
 
                 Gdi32.SelectObject(memdc, oldBitmap);
                 Gdi32.DeleteObject(bitmap);
             }
             else
             {
-                var bitmap = Gdi32.CreateCompatibleBitmap(hdc, rc.right, rc.bottom);
+                var bitmap = Gdi32.CreateCompatibleBitmap(hdc, rc.Right, rc.Bottom);
                 var oldBitmap = Gdi32.SelectObject(memdc, bitmap);
 
                 var dtp = new DRAWTEXTPARAMS();
@@ -206,7 +206,7 @@ namespace Deskband.Core.Controls
                 var t = PrepareScrollText(memdc, rc, textFlags);
                 User32.DrawTextEx(memdc, t.Text, t.Text.Length, ref t.Rect, t.TextFlags, ref dtp);
 
-                Gdi32.BitBlt(hdc, rc.left, rc.top, rc.right - rc.left, rc.bottom - rc.top, memdc, 0, 0, SRCCOPY);
+                Gdi32.BitBlt(hdc, rc.Left, rc.Top, rc.Right - rc.Left, rc.Bottom - rc.Top, memdc, 0, 0, SRCCOPY);
 
                 Gdi32.SelectObject(memdc, oldBitmap);
                 Gdi32.DeleteObject(bitmap);
@@ -235,7 +235,7 @@ namespace Deskband.Core.Controls
             {
                 Gdi32.SelectObject(dc, Gdi32.GetStockObject(StockObjects.HOLLOW_BRUSH));
                 Gdi32.SelectObject(dc, Gdi32.GetStockObject(StockObjects.WHITE_PEN));
-                Gdi32.Rectangle(dc, 0, 0, rc.right - rc.left, rc.bottom - rc.top);
+                Gdi32.Rectangle(dc, 0, 0, rc.Right - rc.Left, rc.Bottom - rc.Top);
             }
         }
 
@@ -254,7 +254,7 @@ namespace Deskband.Core.Controls
                 var len = text.Length;
                 var fullTextSize = Size.Empty;
                 Gdi32.GetTextExtentPoint32(dc, text, len, out fullTextSize);
-                if (fullTextSize.Width > rc.right - rc.left)
+                if (fullTextSize.Width > rc.Right - rc.Left)
                 {
                     var tsb = new StringBuilder();
                     var textSize = Size.Empty;
@@ -269,7 +269,7 @@ namespace Deskband.Core.Controls
                         Gdi32.GetTextExtentPoint32(dc, text, text.Length, out textSize);
                     } while (textSize.Width < Width * 2);
                     if (_scrollPos >= textSize.Width / 2) _scrollPos = 0;
-                    rc = new RECT(rc.left - _scrollPos, rc.top, rc.right, rc.bottom);
+                    rc = new RECT(rc.Left - _scrollPos, rc.Top, rc.Right, rc.Bottom);
                     textFlags &= ~(DT_CENTER | DT_RIGHT); // Always align to left when scrolling
                 }
             }

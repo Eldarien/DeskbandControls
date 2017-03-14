@@ -75,12 +75,21 @@ namespace Deskband
             {
                 int x = ((int)m.LParam).LowWord();
                 int y = ((int)m.LParam).HighWord();
+                var taskbarInfo = GetTaskbarSizeInfo();
+                var taskbarHeight = taskbarInfo.Rect.Height;
+                var taskbarWidth = taskbarInfo.Rect.Width;
+
+                // 2 points at each edge should be NCHITTEST transparent for auto-hide of taskbar to work correctly
+                var horizontalPoints = new[] { 0, 1, taskbarHeight - 1, taskbarHeight - 2 };
+                var verticalPoints = new[] { 0, 1, taskbarWidth - 1, taskbarWidth - 2 };
 
                 var point = new WinApiTypes.POINT { X = x, Y = y };
                 if (User32.ScreenToClient(_taskbarWindowHandle, ref point))
                 {
                     var tsi = GetTaskbarSizeInfo();
-                    if (tsi.Mode == LayoutMode.Horizontal && point.Y == 0 || tsi.Mode == LayoutMode.Vertical && point.X == 0)
+                    if (tsi.Mode == LayoutMode.Horizontal && horizontalPoints.Contains(point.Y)
+                        ||
+                        tsi.Mode == LayoutMode.Vertical && verticalPoints.Contains(point.X))
                     {
                         m.Result = (IntPtr)WinApiTypes.HTTRANSPARENT;
                         return;

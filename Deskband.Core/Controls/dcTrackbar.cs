@@ -68,8 +68,8 @@ namespace Deskband.Core.Controls
 
             var dib = new BITMAPINFO();
             dib.bmiHeader.biSize = Marshal.SizeOf(typeof(BITMAPINFOHEADER));
-            dib.bmiHeader.biHeight = -(rc.bottom - rc.top); // negative because DrawThemeTextEx() uses a top-down DIB
-            dib.bmiHeader.biWidth = rc.right - rc.left;
+            dib.bmiHeader.biHeight = -(rc.Bottom - rc.Top); // negative because DrawThemeTextEx() uses a top-down DIB
+            dib.bmiHeader.biWidth = rc.Right - rc.Left;
             dib.bmiHeader.biPlanes = 1;
             dib.bmiHeader.biBitCount = 32;
             dib.bmiHeader.biCompression = BI_RGB;
@@ -83,7 +83,7 @@ namespace Deskband.Core.Controls
             {
                 Gdi32.SelectObject(memdc, Gdi32.GetStockObject(StockObjects.HOLLOW_BRUSH));
                 Gdi32.SelectObject(memdc, Gdi32.GetStockObject(StockObjects.WHITE_PEN));
-                Gdi32.Rectangle(memdc, 0, 0, rc.right - rc.left, rc.bottom - rc.top);
+                Gdi32.Rectangle(memdc, 0, 0, rc.Right - rc.Left, rc.Bottom - rc.Top);
             }
 
             // Redraw background from memdc to dc
@@ -95,7 +95,7 @@ namespace Deskband.Core.Controls
             var oldalphaBitmap = Gdi32.SelectObject(alphadc, alphabitmap);
             Gdi32.SelectObject(alphadc, Gdi32.GetStockObject(StockObjects.HOLLOW_BRUSH));
             Gdi32.SelectObject(alphadc, Gdi32.GetStockObject(StockObjects.NULL_PEN));
-            Gdi32.Rectangle(alphadc, 0, 0, rc.right - rc.left, rc.bottom - rc.top);
+            Gdi32.Rectangle(alphadc, 0, 0, rc.Right - rc.Left, rc.Bottom - rc.Top);
             InternalOnPaint(alphadc, rc, color, backgroundColor);
 
             // Fix alpha channel
@@ -111,11 +111,11 @@ namespace Deskband.Core.Controls
             Gdi32.SetDIBits(alphadc, alphabitmap, 0, (uint)Height, pixels, ref dib, 0);
 
             var blendFunc = new BLENDFUNCTION(AC_SRC_OVER, 0, ForeColor.A, AC_SRC_ALPHA);
-            Gdi32.AlphaBlend(memdc, rc.left, rc.top, rc.right - rc.left, rc.bottom - rc.top, alphadc,
-                0, 0, rc.right - rc.left, rc.bottom - rc.top,
+            Gdi32.AlphaBlend(memdc, rc.Left, rc.Top, rc.Right - rc.Left, rc.Bottom - rc.Top, alphadc,
+                0, 0, rc.Right - rc.Left, rc.Bottom - rc.Top,
                 blendFunc);
 
-            Gdi32.BitBlt(hdc, rc.left, rc.top, rc.right - rc.left, rc.bottom - rc.top, memdc, 0, 0, SRCCOPY);
+            Gdi32.BitBlt(hdc, rc.Left, rc.Top, rc.Right - rc.Left, rc.Bottom - rc.Top, memdc, 0, 0, SRCCOPY);
 
             Gdi32.SelectObject(memdc, oldBitmap);
             Gdi32.DeleteObject(bitmap);
@@ -139,7 +139,7 @@ namespace Deskband.Core.Controls
             if (!HideBorders)
             {
                 Gdi32.SelectObject(hdc, Gdi32.GetStockObject(StockObjects.HOLLOW_BRUSH));
-                Gdi32.RoundRect(hdc, rc.left, rc.top, rc.right, rc.bottom, 3, 3);
+                Gdi32.RoundRect(hdc, rc.Left, rc.Top, rc.Right, rc.Bottom, 3, 3);
             }
 
             int offset = HideBorders ? 0 : 2;
@@ -152,7 +152,7 @@ namespace Deskband.Core.Controls
                 var backgroundBrush = Gdi32.CreateSolidBrush(backgroundColor);
                 var backgroundOldBrush = Gdi32.SelectObject(hdc, backgroundBrush);
 
-                Gdi32.Rectangle(hdc, rc.left + offset, rc.top + offset, rc.right - offset, rc.bottom - offset);
+                Gdi32.Rectangle(hdc, rc.Left + offset, rc.Top + offset, rc.Right - offset, rc.Bottom - offset);
 
                 Gdi32.SelectObject(hdc, backgroundOldPen);
                 Gdi32.DeleteObject(backgroundPen);
@@ -166,9 +166,9 @@ namespace Deskband.Core.Controls
 
             if (Range > 0) // Range can be 0 for radio streams
             {
-                int wx = (rc.right - offset * 2) * _position / Range;
+                int wx = (rc.Right - offset * 2) * _position / Range;
 
-                Gdi32.Rectangle(hdc, rc.left + offset, rc.top + offset, wx + offset, rc.bottom - offset);
+                Gdi32.Rectangle(hdc, rc.Left + offset, rc.Top + offset, wx + offset, rc.Bottom - offset);
             }
 
             Gdi32.SelectObject(hdc, oldBrush);

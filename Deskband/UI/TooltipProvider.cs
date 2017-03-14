@@ -38,7 +38,9 @@ namespace Deskband.UI
             _form.MaximizeBox = false;
             _form.ControlBox = false;
             _form.ShowInTaskbar = false;
-            _form.FormBorderStyle = ti.UseBorderlessWindow ? FormBorderStyle.None : FormBorderStyle.Sizable;
+            var borderStyle = Environment.OSVersion.Version.Major < 10
+                ? FormBorderStyle.Sizable : FormBorderStyle.FixedSingle; // win 10 has no Aero and sizeble border looks ugly
+            _form.FormBorderStyle = ti.UseBorderlessWindow ? FormBorderStyle.None : borderStyle;
             _form.Text = null;
             _form.BackColor = ti.BackgroundColor;
 
@@ -64,7 +66,8 @@ namespace Deskband.UI
 
             var screen = Screen.FromControl(_form);
             var cfg = _config.GetConfiguration(Guid.Empty, ConfigurationModel.Default);
-            var layoutMode = cfg.GeneralSettings.DisplayMode == DisplayMode.Deskband ? _band.GetTaskbarSizeInfo().Mode : cfg.FloatingWindowSettings.Mode;
+            var taskbarInfo = _band.GetTaskbarSizeInfo();
+            var layoutMode = cfg.GeneralSettings.DisplayMode == DisplayMode.Deskband ? taskbarInfo.Mode : cfg.FloatingWindowSettings.Mode;
             if (layoutMode == LayoutMode.Horizontal || cfg.GeneralSettings.DisplayMode == DisplayMode.FloatingWindow)
             {
                 // Horizontal deskband || floating window
@@ -73,9 +76,12 @@ namespace Deskband.UI
                 {
                     // horizontal center is module center
                     _form.Left = position.X - _form.Width / 2;
-                    _form.Top = screen.WorkingArea.Top == 0
-                        ? screen.WorkingArea.Height - _form.Height
-                        : screen.WorkingArea.Top;
+                    int maxLeft = screen.Bounds.Width - _form.Width;
+                    if (_form.Left > maxLeft) _form.Left = maxLeft;
+                   
+                    _form.Top = taskbarInfo.Rect.Top <= 0
+                        ? taskbarInfo.Rect.Height
+                        : screen.Bounds.Height - taskbarInfo.Rect.Height - _form.Height;
                 }
                 else
                 {
@@ -90,10 +96,15 @@ namespace Deskband.UI
             else
             {
                 // Vertical deskband
-                _form.Left = screen.WorkingArea.Left == 0
-                    ? screen.WorkingArea.Right - _form.Width
-                    : screen.WorkingArea.Left;
+
+                _form.Left = taskbarInfo.Rect.Left <= 0
+                    ? taskbarInfo.Rect.Width
+                    : screen.Bounds.Width - taskbarInfo.Rect.Width - _form.Width;
+                
+
                 _form.Top = position.Y - _form.Height / 2;
+                int maxTop = screen.Bounds.Height - _form.Height;
+                if (_form.Top > maxTop) _form.Top = maxTop;
             }
         }
 
@@ -111,22 +122,24 @@ namespace Deskband.UI
         {
             if (_cursorOverForm) return;
 
-            if (_form != null)
-            {
-                DoHide();
-            }
+            DoHide();
         }
 
+        private readonly object _dohide_locker = new object();
         private void DoHide()
         {
-            if (_form != null)
+            lock (_dohide_locker)
             {
-                _form.Hide();
-                _form.Dispose();
-                _form = null;
-
-                _ti.DestroyAction?.Invoke();
-                _ti = null;
+                if (_form != null)
+                {
+                    _form.Close();
+                    _form = null;
+                }
+                if (_ti != null)
+                {
+                    _ti.DestroyAction?.Invoke();
+                    _ti = null;
+                }
             }
         }
 

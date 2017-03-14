@@ -176,23 +176,31 @@ namespace Deskband.Core.WinApi
         [StructLayout(LayoutKind.Sequential)]
         public struct RECT
         {
-            public int left, top, right, bottom;
+            public int Left, Top, Right, Bottom;
 
             public RECT(System.Drawing.Rectangle rect)
             {
-                this.left = rect.Left;
-                this.top = rect.Top;
-                this.right = rect.Right;
-                this.bottom = rect.Bottom;
+                this.Left = rect.Left;
+                this.Top = rect.Top;
+                this.Right = rect.Right;
+                this.Bottom = rect.Bottom;
             }
 
             public RECT(int left, int top, int right, int bottom)
             {
-                this.left = left;
-                this.top = top;
-                this.right = right;
-                this.bottom = bottom;
+                this.Left = left;
+                this.Top = top;
+                this.Right = right;
+                this.Bottom = bottom;
             }
+
+            public System.Drawing.Rectangle ToRectangle()
+            {
+                return new System.Drawing.Rectangle(Left, Top, Width, Height);
+            }
+
+            public int Width => Right - Left;
+            public int Height => Bottom - Top;
         }
 
         [StructLayout(LayoutKind.Sequential)]
