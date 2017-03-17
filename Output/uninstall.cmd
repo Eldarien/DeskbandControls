@@ -5,7 +5,7 @@ echo[
 echo    DESKBAND CONTROLS
 echo =======================
 echo[
-echo Welcome to the Deskband Controls installer.
+echo Welcome to the Deskband Controls uninstaller.
 echo Administrative permissions required. Detecting permissions...
 
 rem Check permissions
@@ -20,7 +20,7 @@ if %errorLevel% == 0 (
 rem Search for existing installation
 for /f "tokens=2*" %%a in ('reg query "HKEY_CLASSES_ROOT\CLSID\{9690ED28-CD24-4534-B380-77103A4E7774}\InprocServer32" /v CodeBase 2^>^&1^|find "REG_"') do @set fn=%%b
 if not defined fn (
-  goto INSTALL
+  goto CLEANUP
 )
 
 :UNINSTALL
@@ -33,25 +33,15 @@ if defined ProgramFiles(x86) (
 )
 %SystemRoot%\System32\taskkill.exe /F /IM explorer.exe >nul
 timeout 5 /NOBREAK >nul
-echo Uninstall completed.
-echo[
-echo[
 
-:INSTALL
-echo Installing...
+:CLEANUP
 set dc=%ProgramFiles%\DeskbandControls
 if exist "%dc%" (
   rd /S /Q "%dc%"
 )
-mkdir "%dc%"
-xcopy /Q "%~dp0Release" "%dc%"
-if defined ProgramFiles(x86) (
-   %SystemRoot%\Microsoft.NET\Framework64\v4.0.30319\regasm.exe /nologo /codebase "%dc%\Deskband.dll"
-) else (
-   %SystemRoot%\Microsoft.NET\Framework\v4.0.30319\regasm.exe /nologo /codebase "%dc%\Deskband.dll"
-)
-
-echo Installation completed.
+echo Uninstall completed.
+echo Explorer.exe process was terminated.
+echo Press Ctrl+Shift+ESC to launch task manager and run explorer.exe from "File - New Task (Run)..." menu.
 
 :EXIT
 echo[

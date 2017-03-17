@@ -171,7 +171,7 @@
   <PropertyGroup>
     <PostBuildEvent>mkdir "$(SolutionDir)Output\$(ConfigurationName)"
 del /Q "$(SolutionDir)Output\$(ConfigurationName)\*.*"
-copy "$(ProjectDir)bin\$(ConfigurationName)\*.dll" "$(SolutionDir)Output\$(ConfigurationName)" /Y</PostBuildEvent>
+copy "$(ProjectDir)bin\$(ConfigurationName)\*.dll" "$(SolutionDir)Output\$(ConfigurationName)\" /Y</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

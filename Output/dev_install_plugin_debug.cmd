@@ -2,7 +2,7 @@
 set tasklist=%windir%\System32\tasklist.exe
 set taskkill=%windir%\System32\taskkill.exe
 set root=%~dp0
-set release=%root%..\DeskbandPlugin\Release
+set release=%root%..\DeskbandPlugin\Debug
 goto :MAIN
 
 -------------------------------------------------------
