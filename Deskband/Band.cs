@@ -24,7 +24,7 @@ namespace Deskband
     [BandObject(Band.ClassTitle)]
     public class Band : BandObject
     {
-        public const String ClassGuid = "9690ED28-CD24-4534-B380-77103A4E7774";
+        public const String ClassGuid = DeskbandBridge.FB2KConstants.DeskbandGuid;
         public const String ClassTitle = "Deskband Controls";
 
         protected override string GetClassGuidString()

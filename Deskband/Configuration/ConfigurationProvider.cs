@@ -46,7 +46,7 @@ namespace Deskband.Configuration
             //}
 
             _configDir = Path.Combine(Environment.GetEnvironmentVariable("AppData"), "DeskbandControls");
-            _console.AddLine($"Configuration directory is {_configDir}");
+            _console.AddLine($"Configuration directory: {_configDir}");
             if (!Directory.Exists(_configDir))
             {
                 Directory.CreateDirectory(_configDir);
@@ -122,7 +122,7 @@ namespace Deskband.Configuration
             {
                 var json = File.ReadAllText(filePath);
                 _data = JArray.Parse(json);
-                _console.AddLine($"Profile loaded: {profileName ?? "Default"}");
+                _console.AddLine($"Profile \"{profileName ?? "Default"}\" loaded");
             }
         }
 
@@ -133,7 +133,7 @@ namespace Deskband.Configuration
 
             var filePath = GetConfigFilePath(profileName);
             File.WriteAllText(filePath, JsonConvert.SerializeObject(_data, Formatting.Indented));
-            _console.AddLine($"Profile saved: {profileName ?? "Default"}");
+            _console.AddLine($"Profile \"{profileName ?? "Default"}\" saved");
 
             if (watcherEnabled) _watcher.EnableRaisingEvents = true;
         }

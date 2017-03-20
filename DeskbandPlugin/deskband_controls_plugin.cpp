@@ -1,8 +1,9 @@
 #include "stdafx.h"
 #include "msgwindow.h"
 #include "deskband_actions.h"
+#include "setup_helper.h"
 
-DECLARE_COMPONENT_VERSION(DESKBAND_CONTROLS_TITLE, DESKBAND_CONTROLS_VERSION, DESKBAND_CONTROLS_ABOUT_TEXT);
+DECLARE_COMPONENT_VERSION(DESKBAND_CONTROLS_TITLE, DESKBAND_CONTROLS_VERSION, DESKBAND_CONTROLS_ABOUT_TEXT)
 
 namespace deskband_controls_plugin
 {
@@ -10,6 +11,10 @@ namespace deskband_controls_plugin
 		virtual void on_init()
 		{
 			msgwindow::create();
+
+			if (!setup_helper::is_deskband_installed()) {
+				setup_helper::launch_installer();
+			}
 
 			deskband_actions::show();
 		}

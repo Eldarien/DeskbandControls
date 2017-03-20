@@ -1,6 +1,7 @@
 @echo off
 color 0a
 cls
+title Deskband Controls Uninstall
 echo[
 echo    DESKBAND CONTROLS
 echo =======================
@@ -11,9 +12,9 @@ echo Administrative permissions required. Detecting permissions...
 rem Check permissions
 net session >nul 2>&1
 if %errorLevel% == 0 (
-    echo Success: Administrative permissions confirmed.
+    echo Administrative permissions confirmed.
 ) else (
-    echo Failure: Please run this script with administrator permissions.
+    echo Please run this script with administrator permissions.
     goto EXIT
 )
 

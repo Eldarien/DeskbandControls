@@ -1,14 +1,9 @@
-Foobar 2000 Deskband Controls 3.0.0
+Foobar 2000 Deskband Controls 3.1.0
 -----------------------------------
 
 HydrogenAudio forum topic: https://hydrogenaud.io/index.php/topic,78234.0.html
 
 Important notes:
-
-! - Please uninstall previous version before installing this one (see below).
-
-! - Windows sometimes marks files downloaded from Internet as unsafe and this causes various glitches in downloaded software.
-!   So, don't forget to unblock downloaded zip - right click it, select "Properties" and then select "Unblock" in properties window.
 
 !- If you are using Windows 10 insider builds deskband may not work. This can be fixed by editing registry:
 !- delete HKEY_CLASSES_ROOT\CLSID\{668863E6-D688-4115-8F23-BB7F37621A74} key in the registry.
@@ -16,26 +11,20 @@ Important notes:
 !- For those wondering what the hell it is - looks like unfinished people band...
 
 How to install:
-  - Install Microsoft .NET Framework 4.
-      https://www.microsoft.com/en-us/download/details.aspx?id=17718
+  - Install Microsoft .NET Framework 4: https://www.microsoft.com/en-us/download/details.aspx?id=17718
     If you are using Windows 7 with Windows Updates turned on you may already have it.
     Windows 8/8.1/10 should have it installed by default.
-  - Right-click "Register Deskband.cmd" file and select "Run as administrator".
-    A console window should appear with the following message:
-      "Types registered successfully".
+  - Double click on foo_deskband_controls.fb2k-component, foobar2000 will lauch and ask if you want to install. Click 'Yes'.
+  - Installer window will launch. If everything works as intened a success message will appear. Press enter to return to foobar2000.
   - Right-click on taskbar and select "Deskband Controls" from Toolbars submenu.
-  - Open foobar2000, go to Preferences - Components page and click "Intstall..." button.
-    Select "Deskband Controls.fb2k-component" and restart foobar2000.
-  - Right-click deskband and select "Settings" to configure plugin.
 
 How to uninstall:
-  - Deselect "Deskband Controls" from Toolbars submenu in taskbar.
-    Right-click "Unregister Deskband.cmd" file and select "Run as administrator".
-    A console window should appear with the following message:
-      "Types un-registered successfully".
-  - If you want to replace Deskband.dll you need to restart explorer.exe process. 
-    It can be killed in task manager and started from there again. (File - New Task - explorer.exe)
   - Open foobar2000, go to Preferences - Components page, right click "Deskband Controls" entry and select "Remove".
+  - Deselect "Deskband Controls" from Toolbars submenu in taskbar.
+  - Navigate to %ProgramFiles%/DeskbandControls, right-click on "uninstall.cmd" file and select "Run as administrator".
+    Uninstaller window will launch. If everything works as intened a success message will appear.
+    Explorer.exe process will be terminated.
+    Press Ctrl+Shift+ESC to launch task manager and run explorer.exe from "File - New Task (Run)..." menu.
 
 --
 Greetings from Ukraine!
@@ -43,6 +32,11 @@ Eldarien (eldarien@live.com)
 
 --
 ** Changelog:
+
+March 21 2017
+  * Version 3.1.0
+  + New installer/uninstaller system. Installer is integrated into foobar2000 plugin.
+  
 
 February 22 2017
   * Version 3.0.0

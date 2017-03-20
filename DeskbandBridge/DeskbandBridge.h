@@ -4,13 +4,14 @@
 //	const int MAGIC_NUMBER = 42;
 //}
 
-#define DESKBAND_CONTROLS_VERSION "3.0.0"
+#define DESKBAND_CONTROLS_VERSION "3.1.0"
 #define DESKBAND_CONTROLS_TITLE "Deskband Controls"
 #define DESKBAND_CONTROLS_ABOUT_TEXT "(c) Eldarien (eldarien@live.com)\nhttps://hydrogenaud.io/index.php/topic,78234.0.html"
 
 #define FOOBAR_PLUGIN_MSGWINDOW_CLASS "FoobarDeskbandControlsWndClass"
 #define FOOBAR_PLUGIN_MSGWINDOW_TITLE "FooDeskbandMsgWindow"
 
+#define DESKBAND_GUID "9690ED28-CD24-4534-B380-77103A4E7774"
 #define DESKBAND_MSGWINDOW_TITLE "DeskbandControlsMsgWindow"
 
 #define FOOBAR_PLUGIN_CMD_ResendLastState 1

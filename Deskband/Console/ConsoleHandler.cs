@@ -20,6 +20,8 @@ namespace Deskband.Console
         {
             _sp = sizeProvider;
             _lines = new List<Tuple<string, bool>>();
+
+            AddLine($"{DeskbandBridge.FB2KConstants.DeskbandControlsTitle} {DeskbandBridge.FB2KConstants.DeskbandControlsVersion}");
         }
 
         private void InitializeForm()

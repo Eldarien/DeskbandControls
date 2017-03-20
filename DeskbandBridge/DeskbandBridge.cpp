@@ -6,13 +6,14 @@ using namespace System;
 namespace DeskbandBridge {
 	public ref class FB2KConstants {
 	public:
-		literal String ^ DeskbandControlsVersion = DESKBAND_CONTROLS_VERSION;
-		literal String ^ DeskbandControlsTitle = DESKBAND_CONTROLS_TITLE;
+		literal const String ^ DeskbandControlsVersion = DESKBAND_CONTROLS_VERSION;
+		literal const String ^ DeskbandControlsTitle = DESKBAND_CONTROLS_TITLE;
 
-		literal String ^ FoobarPluginMsgWindowClass = FOOBAR_PLUGIN_MSGWINDOW_CLASS;
-		literal String ^ FoobarPluginMsgWindowTitle = FOOBAR_PLUGIN_MSGWINDOW_TITLE;
+		literal const String ^ FoobarPluginMsgWindowClass = FOOBAR_PLUGIN_MSGWINDOW_CLASS;
+		literal const String ^ FoobarPluginMsgWindowTitle = FOOBAR_PLUGIN_MSGWINDOW_TITLE;
 
-		literal String ^ DeskbandMsgWindowTitle = DESKBAND_MSGWINDOW_TITLE;
+		literal const String ^ DeskbandGuid = DESKBAND_GUID;
+		literal const String ^ DeskbandMsgWindowTitle = DESKBAND_MSGWINDOW_TITLE;
 	};
 
 	public ref class FB2KCommands {

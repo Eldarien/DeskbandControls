@@ -1,19 +1,19 @@
 @echo off
 color 0a
 cls
+title Deskband Controls Setup
 echo[
 echo    DESKBAND CONTROLS
 echo =======================
 echo[
 echo Welcome to the Deskband Controls installer.
-echo Administrative permissions required. Detecting permissions...
 
 rem Check permissions
 net session >nul 2>&1
 if %errorLevel% == 0 (
-    echo Success: Administrative permissions confirmed.
+    echo Administrative permissions confirmed.
 ) else (
-    echo Failure: Please run this script with administrator permissions.
+    echo Please run this script with administrator permissions.
     goto EXIT
 )
 
@@ -38,13 +38,15 @@ echo[
 echo[
 
 :INSTALL
-echo Installing...
 set dc=%ProgramFiles%\DeskbandControls
+echo Installing to "%dc%"...
 if exist "%dc%" (
   rd /S /Q "%dc%"
 )
 mkdir "%dc%"
 xcopy /Q "%~dp0Release" "%dc%"
+xcopy /Q "%~dp0uninstall.cmd" "%dc%"
+
 if defined ProgramFiles(x86) (
    %SystemRoot%\Microsoft.NET\Framework64\v4.0.30319\regasm.exe /nologo /codebase "%dc%\Deskband.dll"
 ) else (
@@ -52,6 +54,10 @@ if defined ProgramFiles(x86) (
 )
 
 echo Installation completed.
+echo To enable deskband right-click on taskbar and select "Deskband Controls" from Toolbars submenu.
+echo[
+echo Greetings from Ukraine!
+echo Enjoy!
 
 :EXIT
 echo[
