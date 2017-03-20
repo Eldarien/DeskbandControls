@@ -36,7 +36,9 @@ Eldarien (eldarien@live.com)
 March 21 2017
   * Version 3.1.0
   + New installer/uninstaller system. Installer is integrated into foobar2000 plugin.
-  
+  + Deskband Controls is now distributed from official plugins repository.
+  + Context menu settings - ability to select context menu items that shold be visible.
+  - Fixed issues with tooltip window positioning and tooltip crush on Win10.
 
 February 22 2017
   * Version 3.0.0

@@ -7,24 +7,22 @@ namespace setup_helper
 	{
 		// We need to run native process, not emulated 32bit one, so disable redirection for the next ShellExecuteEx call
 		PVOID oldRedirectionValue = NULL;
-		if (Wow64DisableWow64FsRedirection(&oldRedirectionValue))
-		{
-			SHELLEXECUTEINFO shExInfo = { 0 };
-			shExInfo.cbSize = sizeof(shExInfo);
-			shExInfo.fMask = SEE_MASK_NOCLOSEPROCESS;
-			shExInfo.hwnd = 0;
-			shExInfo.lpVerb = verb;
-			shExInfo.lpFile = cmd;
-			shExInfo.lpParameters = params;
-			shExInfo.lpDirectory = NULL;
-			shExInfo.nShow = SW_SHOW;
-			shExInfo.hInstApp = NULL;
+		Wow64DisableWow64FsRedirection(&oldRedirectionValue);
+		
+		SHELLEXECUTEINFO shExInfo = { 0 };
+		shExInfo.cbSize = sizeof(shExInfo);
+		shExInfo.fMask = SEE_MASK_NOCLOSEPROCESS;
+		shExInfo.hwnd = 0;
+		shExInfo.lpVerb = verb;
+		shExInfo.lpFile = cmd;
+		shExInfo.lpParameters = params;
+		shExInfo.lpDirectory = NULL;
+		shExInfo.nShow = SW_SHOW;
+		shExInfo.hInstApp = NULL;
 
-			BOOL shellExecuteResult = ShellExecuteEx(&shExInfo);
-			Wow64RevertWow64FsRedirection(oldRedirectionValue); // Immediately re-enable redirection.
-			return shellExecuteResult ? shExInfo.hProcess : NULL;
-		}
-		return NULL;
+		BOOL shellExecuteResult = ShellExecuteEx(&shExInfo);
+		Wow64RevertWow64FsRedirection(oldRedirectionValue); // Immediately re-enable redirection.
+		return shellExecuteResult ? shExInfo.hProcess : NULL;
 	}
 
 	bool is_process_running(const wchar_t* processName)

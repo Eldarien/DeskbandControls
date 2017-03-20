@@ -54,7 +54,7 @@ if defined ProgramFiles(x86) (
 )
 
 echo Installation completed.
-echo To enable deskband right-click on taskbar and select "Deskband Controls" from Toolbars submenu.
+echo To enable deskband right-click on taskbar and select "Deskband Controls" from Toolbars submenu and play some music.
 echo[
 echo Greetings from Ukraine!
 echo Enjoy!
