@@ -16,11 +16,13 @@ namespace Deskband.Core.Controls
     public partial class dcTrackbar : UserControl
     {
         public event EventHandler<ValueEventArgs<int>> OnPositionChanged;
+
         public override Color ForeColor
         {
             get { return base.ForeColor; }
             set { base.ForeColor = value; }
         }
+
         public Color BackgroundColor { get; set; }
         public bool UseBackgroundColor { get; set; }
         public bool DrawOutline { get; set; }
@@ -86,34 +88,27 @@ namespace Deskband.Core.Controls
                 Gdi32.Rectangle(memdc, 0, 0, rc.Right - rc.Left, rc.Bottom - rc.Top);
             }
 
-            // Redraw background from memdc to dc
-            //WinApi.BitBlt(hdc, rc.left, rc.top, rc.right - rc.left, rc.bottom - rc.top, memdc, 0, 0, WinApi.SRCCOPY);
-
-            // draw trackbar
             var alphadc = Gdi32.CreateCompatibleDC(hdc);
             var alphabitmap = Gdi32.CreateDIBSection(alphadc, ref dib, DIB_RGB_COLORS, 0, IntPtr.Zero, 0);
             var oldalphaBitmap = Gdi32.SelectObject(alphadc, alphabitmap);
-            Gdi32.SelectObject(alphadc, Gdi32.GetStockObject(StockObjects.HOLLOW_BRUSH));
-            Gdi32.SelectObject(alphadc, Gdi32.GetStockObject(StockObjects.NULL_PEN));
-            Gdi32.Rectangle(alphadc, 0, 0, rc.Right - rc.Left, rc.Bottom - rc.Top);
-            InternalOnPaint(alphadc, rc, color, backgroundColor);
-
-            // Fix alpha channel
-            var rgbColor = (color.ColorDWORD & 0x000000FF) << 16 | (color.ColorDWORD & 0x0000FF00) | (color.ColorDWORD & 0x00FF0000) >> 16;
-            var rgbBackgroundColor = (backgroundColor.ColorDWORD & 0x000000FF) << 16 | (backgroundColor.ColorDWORD & 0x0000FF00) | (backgroundColor.ColorDWORD & 0x00FF0000) >> 16;
             var pixels = new COLORREF[Width * Height];
-            Gdi32.GetDIBits(alphadc, alphabitmap, 0, (uint)Height, pixels, ref dib, 0);
-            for (int i = 0; i < pixels.Length; i++)
-            {
-                if (pixels[i].ColorDWORD == rgbColor || pixels[i].ColorDWORD == rgbBackgroundColor && UseBackgroundColor)
-                    pixels[i].ColorDWORD |= 0xFF000000;
-            }
-            Gdi32.SetDIBits(alphadc, alphabitmap, 0, (uint)Height, pixels, ref dib, 0);
 
-            var blendFunc = new BLENDFUNCTION(AC_SRC_OVER, 0, ForeColor.A, AC_SRC_ALPHA);
-            Gdi32.AlphaBlend(memdc, rc.Left, rc.Top, rc.Right - rc.Left, rc.Bottom - rc.Top, alphadc,
-                0, 0, rc.Right - rc.Left, rc.Bottom - rc.Top,
-                blendFunc);
+            FillAlphadc(alphadc, ref rc, StockObjects.HOLLOW_BRUSH, StockObjects.NULL_PEN);
+          
+            if (UseBackgroundColor)
+            {
+                Internal_PaintBackground(alphadc, rc, backgroundColor);
+                FixAlphaChannel(alphadc, alphabitmap, ref pixels, ref dib, backgroundColor);
+                DoAlphaBlendToMemdc(memdc, ref rc, alphadc, BackgroundColor.A);
+
+                // clear alphadc
+                FillAlphadc(alphadc, ref rc, StockObjects.BLACK_BRUSH, StockObjects.BLACK_PEN);
+            }
+
+            Internal_PaintContent(alphadc, rc, color, backgroundColor);
+            FixAlphaChannel(alphadc, alphabitmap, ref pixels, ref dib, color);
+            DoAlphaBlendToMemdc(memdc, ref rc, alphadc, ForeColor.A);
+            
 
             Gdi32.BitBlt(hdc, rc.Left, rc.Top, rc.Right - rc.Left, rc.Bottom - rc.Top, memdc, 0, 0, SRCCOPY);
 
@@ -131,21 +126,40 @@ namespace Deskband.Core.Controls
             e.Graphics.ReleaseHdc(hdc);
         }
 
-        private void InternalOnPaint(IntPtr hdc, RECT rc, COLORREF color, COLORREF backgroundColor)
+        private void FixAlphaChannel(IntPtr alphadc, IntPtr alphabitmap, ref COLORREF[] pixels, ref BITMAPINFO dib, COLORREF colorToFix)
         {
-            var pen = Gdi32.CreatePen(PenStyle.PS_SOLID, 0, color);
-            var oldPen = Gdi32.SelectObject(hdc, pen);
+            var rgbColorToFix = (colorToFix.ColorDWORD & 0x000000FF) << 16 | (colorToFix.ColorDWORD & 0x0000FF00) | (colorToFix.ColorDWORD & 0x00FF0000) >> 16;
 
-            if (!HideBorders)
+            Gdi32.GetDIBits(alphadc, alphabitmap, 0, (uint)Height, pixels, ref dib, 0);
+            for (int i = 0; i < pixels.Length; i++)
             {
-                Gdi32.SelectObject(hdc, Gdi32.GetStockObject(StockObjects.HOLLOW_BRUSH));
-                Gdi32.RoundRect(hdc, rc.Left, rc.Top, rc.Right, rc.Bottom, 3, 3);
+                if (pixels[i].ColorDWORD == rgbColorToFix)
+                    pixels[i].ColorDWORD |= 0xFF000000;
             }
+            Gdi32.SetDIBits(alphadc, alphabitmap, 0, (uint)Height, pixels, ref dib, 0);
+        }
 
-            int offset = HideBorders ? 0 : 2;
+        private void DoAlphaBlendToMemdc(IntPtr memdc, ref RECT rc, IntPtr alphadc, byte alpha)
+        {
+            var blendFunc = new BLENDFUNCTION(AC_SRC_OVER, 0, alpha, AC_SRC_ALPHA);
+            Gdi32.AlphaBlend(memdc, rc.Left, rc.Top, rc.Right - rc.Left, rc.Bottom - rc.Top, alphadc,
+                0, 0, rc.Right - rc.Left, rc.Bottom - rc.Top,
+                blendFunc);
+        }
 
+        private void FillAlphadc(IntPtr alphadc, ref RECT rc, StockObjects brush, StockObjects pen)
+        {
+            Gdi32.SelectObject(alphadc, Gdi32.GetStockObject(brush));
+            Gdi32.SelectObject(alphadc, Gdi32.GetStockObject(pen));
+            Gdi32.Rectangle(alphadc, 0, 0, rc.Right - rc.Left, rc.Bottom - rc.Top);
+        }
+
+        private void Internal_PaintBackground(IntPtr hdc, RECT rc, COLORREF backgroundColor)
+        {
             if (UseBackgroundColor)
             {
+                int offset = HideBorders ? 0 : 2;
+
                 var backgroundPen = Gdi32.CreatePen(PenStyle.PS_SOLID, 0, backgroundColor);
                 var backgroundOldPen = Gdi32.SelectObject(hdc, backgroundPen);
 
@@ -160,12 +174,25 @@ namespace Deskband.Core.Controls
                 Gdi32.SelectObject(hdc, backgroundOldBrush);
                 Gdi32.DeleteObject(backgroundBrush);
             }
+        }
+
+        private void Internal_PaintContent(IntPtr hdc, RECT rc, COLORREF color, COLORREF backgroundColor)
+        {
+            var pen = Gdi32.CreatePen(PenStyle.PS_SOLID, 0, color);
+            var oldPen = Gdi32.SelectObject(hdc, pen);
+
+            if (!HideBorders)
+            {
+                Gdi32.SelectObject(hdc, Gdi32.GetStockObject(StockObjects.HOLLOW_BRUSH));
+                Gdi32.RoundRect(hdc, rc.Left, rc.Top, rc.Right, rc.Bottom, 3, 3);
+            }
 
             var brush = Gdi32.CreateSolidBrush(color);
             var oldBrush = Gdi32.SelectObject(hdc, brush);
 
             if (Range > 0) // Range can be 0 for radio streams
             {
+                int offset = HideBorders ? 0 : 2;
                 int wx = (rc.Right - offset * 2) * _position / Range;
 
                 Gdi32.Rectangle(hdc, rc.Left + offset, rc.Top + offset, wx + offset, rc.Bottom - offset);
