@@ -33,13 +33,16 @@ namespace setup_helper
 
 		HANDLE snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, NULL);
 
-		if (Process32First(snapshot, &entry))
-			while (Process32Next(snapshot, &entry))
-				if (!_wcsicmp(entry.szExeFile, processName))
-				{
-					exists = true;
-					break;
-				}
+		Process32First(snapshot, &entry);
+		do
+		{
+			if (_wcsicmp(entry.szExeFile, processName) == 0)
+			{
+				exists = true;
+				break;
+			}
+		}
+		while (Process32Next(snapshot, &entry));
 
 		CloseHandle(snapshot);
 		return exists;
@@ -95,9 +98,9 @@ namespace setup_helper
 		}
 		
 		// check if explorer.exe is running and launch if not
-		ExpandEnvironmentStrings(L"%WINDIR%\\explorer.exe", cmdBuf, MAX_PATH);
-		if (!is_process_running(cmdBuf))
+		if (!is_process_running(L"explorer.exe"))
 		{
+			ExpandEnvironmentStrings(L"%WINDIR%\\explorer.exe", cmdBuf, MAX_PATH);
 			shell_execute_without_redirection(cmdBuf, NULL, NULL);
 		}
 	}

@@ -25,7 +25,7 @@ namespace dcmFoobar2000.Configuration
         public bool Random { get; set; }
 
         [Category("Playback"), TypeConverter(typeof(YesNoBooleanConverter))]
-        [DisplayName("Toggle Stop After Current")]
+        [DisplayName("Stop After Current")]
         public bool StopAfterCurrent { get; set; }
 
         [Category("Clipboard"), TypeConverter(typeof(YesNoBooleanConverter))]

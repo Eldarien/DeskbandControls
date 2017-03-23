@@ -177,7 +177,7 @@ namespace dcmFoobar2000.Code
                 _miPrev = m.Previous ? _menu.AddItem(_id, null, "Previous", _actions.Prev) : Guid.Empty;
                 _miNext = m.Next ? _menu.AddItem(_id, null, "Next", _actions.Next) : Guid.Empty;
                 _miRandom = m.Random ? _menu.AddItem(_id, null, "Random", _actions.Random) : Guid.Empty;
-                _miToggleStopAC = m.StopAfterCurrent ? _menu.AddItem(_id, null, "Toggle Stop After Current", _actions.ToggleStopAfterCurrent) : Guid.Empty;
+                _miToggleStopAC = m.StopAfterCurrent ? _menu.AddItem(_id, null, "Stop After Current", _actions.ToggleStopAfterCurrent) : Guid.Empty;
 
                 if (m.Stop || m.PlayPause || m.Previous || m.Next || m.Random || m.StopAfterCurrent)
                 {
@@ -225,7 +225,7 @@ namespace dcmFoobar2000.Code
                 () => { _actions.Random(); _lastActiveWindowActivator.Activate(); });
             AddControlToModuleContainer(_btnRandom);
 
-            _btnStopAC = CreateButton(_cfg.Buttons.BtnStopAC, Resources.Icon_StopAfterCurrentOn, Resources.Icon_StopAfterCurrentOff,
+            _btnStopAC = CreateButton(_cfg.Buttons.BtnStopAC, Resources.Icon_StopAfterCurrentOff, Resources.Icon_StopAfterCurrentOn,
                 () => { _actions.ToggleStopAfterCurrent(); _lastActiveWindowActivator.Activate(); });
             AddControlToModuleContainer(_btnStopAC);
 
