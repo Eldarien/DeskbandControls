@@ -17,6 +17,8 @@ namespace Deskband.Core.Interfaces
         public int Height { get; set; }
         public Color BackgroundColor { get; set; }
         public bool UseBorderlessWindow { get; set; }
+        public int ShowDelay { get; set; }
+        public bool KeepOpenOnMouseOver { get; set; }
         public Action<Form> CreateAction { get; set; }
         public Action DestroyAction { get; set; }
     }

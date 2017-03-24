@@ -18,20 +18,25 @@ namespace Deskband.UI
         private readonly ConsoleHandler _console;
         private readonly ContextMenu _contextMenu;
         private readonly ModuleContainer _mcontainer;
+        private readonly TooltipProvider _tooltipProvider;
 
-        public MenuProvider(Band band, FloatingForm floatingForm, ConsoleHandler console, ModuleContainer mcontainer)
+        public MenuProvider(Band band, FloatingForm floatingForm, ConsoleHandler console, ModuleContainer mcontainer, TooltipProvider tooltipProvider)
         {
             _band = band;
             _floatingForm = floatingForm;
             _console = console;
             _mcontainer = mcontainer;
+            _tooltipProvider = tooltipProvider;
 
             _contextMenu = new ContextMenu();
             _band.ContextMenu = _contextMenu;
             _floatingForm.ContextMenu = _contextMenu;
 
             _contextMenu.Popup += _contextMenu_Popup;
+            _contextMenu.Collapse += _contextMenu_Collapse;
         }
+
+        
 
         public void Dispose()
         {
@@ -54,9 +59,15 @@ namespace Deskband.UI
 
         private void _contextMenu_Popup(object sender, EventArgs e)
         {
+            _tooltipProvider.DisableTooltip();
             var location = _mcontainer.PointToClient(Cursor.Position);
             var moduleId = _mcontainer.LocateModuleAtPoint(location);
             SetItemsVisibility(moduleId ?? Guid.Empty);
+        }
+
+        private void _contextMenu_Collapse(object sender, EventArgs e)
+        {
+            _tooltipProvider.EnableTooltip();
         }
 
         public void SetItemsVisibility(Guid moduleId)

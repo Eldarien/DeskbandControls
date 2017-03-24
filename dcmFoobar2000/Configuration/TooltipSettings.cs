@@ -22,6 +22,12 @@ namespace dcmFoobar2000.Configuration
         [Category("Window"), DisplayName("Borderless Window"), TypeConverter(typeof(YesNoBooleanConverter))]
         public bool UseBorderlessWindow { get; set; }
 
+        [Category("Window"), DisplayName("Show Delay")]
+        public int ShowDelay { get; set; }
+
+        [Category("Window"), DisplayName("Keep Tooltip Open If Mouse Is Over It"), TypeConverter(typeof(YesNoBooleanConverter))]
+        public bool KeepOpenOnMouseOver { get; set; }
+
         [Browsable(false), SettingsNode("Album Art")]
         public AlbumArtSettings AlbumArt { get; set; }
 

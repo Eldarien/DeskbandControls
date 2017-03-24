@@ -15,5 +15,10 @@ namespace Deskband.UI
         {
             InitializeComponent();
         }
+
+        protected override bool ShowWithoutActivation
+        {
+            get { return true; }
+        }
     }
 }

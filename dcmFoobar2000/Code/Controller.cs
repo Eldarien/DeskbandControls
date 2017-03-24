@@ -732,6 +732,8 @@ namespace dcmFoobar2000.Code
                     Height = tcfg.Height,
                     BackgroundColor = tcfg.BackgroundColor,
                     UseBorderlessWindow = tcfg.UseBorderlessWindow,
+                    ShowDelay = tcfg.ShowDelay,
+                    KeepOpenOnMouseOver = tcfg.KeepOpenOnMouseOver,
                     CreateAction = CreateTooltipControls,
                     DestroyAction = DestroyTooltipControls
                 };

@@ -62,7 +62,7 @@ namespace dcmFoobar2000.Configuration
 
         [Browsable(false), SettingsNode("Tooltip")]
         public TooltipSettings Tooltip { get; set; } = new TooltipSettings {
-            Enabled = true, Width = 300, Height = 350, BackgroundColor = Color.Black,
+            Enabled = true, Width = 300, Height = 350, BackgroundColor = Color.Black, ShowDelay = 1000,
             AlbumArt = new AlbumArtSettings
             {
                 Visible = true, X = 0, Y = 0, Width = 300, Height = 300,

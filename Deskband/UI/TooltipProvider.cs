@@ -13,6 +13,7 @@ namespace Deskband.UI
         readonly IConfigurationProvider _config;
         readonly ModuleContainer _moduleContainer;
         readonly ISizeProvider _sizeProvider;
+        readonly Timer _showTimer;
 
         public TooltipProvider(Band band, IConfigurationProvider config, ModuleContainer moduleContainer, ISizeProvider sizeProvider)
         {
@@ -20,52 +21,82 @@ namespace Deskband.UI
             _config = config;
             _moduleContainer = moduleContainer;
             _sizeProvider = sizeProvider;
+            _showTimer = new Timer();
+            _showTimer.Tick += ShowTimer_Tick;
         }
 
         private Guid _moduleId;
         private TooltipInfo _ti;
         private TooltipForm _form;
         private int _borderDelta;
+        private bool _disabled;
 
         public void ShowTooltip(Guid moduleId, TooltipInfo ti)
         {
+            if (_disabled) return;
+
             _moduleId = moduleId;
             _ti = ti;
 
-            _form = new TooltipForm();
-            _form.TopMost = true;
-            _form.MinimizeBox = false;
-            _form.MaximizeBox = false;
-            _form.ControlBox = false;
-            _form.ShowInTaskbar = false;
-            var borderStyle = Environment.OSVersion.Version.Major < 10
-                ? FormBorderStyle.Sizable : FormBorderStyle.FixedSingle; // win 10 has no Aero and sizeble border looks ugly
-            _form.FormBorderStyle = ti.UseBorderlessWindow ? FormBorderStyle.None : borderStyle;
-            _form.Text = null;
-            _form.BackColor = ti.BackgroundColor;
+            _showTimer.Interval = _ti.ShowDelay;
+            _showTimer.Enabled = true;
+        }
 
-            _form.Width = _sizeProvider.MakeValue(_ti.Width);
-            _form.Height = _sizeProvider.MakeValue(_ti.Height);
-            _borderDelta = _form.Width - _form.ClientRectangle.Width;
-            _form.Width = _form.Width + _borderDelta;
-            _form.Height = _form.Height + _borderDelta;
+        private void ShowTimer_Tick(object sender, EventArgs e)
+        {
+            _showTimer.Enabled = false;
 
-            // Disable resizing
-            _form.MinimumSize = _form.Size;
-            _form.MaximumSize = _form.Size;
+            lock (_dohide_locker)
+            {
+                if (_ti == null) return;
 
-            SetPosition(_ti.Rect);
+                _form = new TooltipForm();
+                _form.TopMost = true;
+                _form.MinimizeBox = false;
+                _form.MaximizeBox = false;
+                _form.ControlBox = false;
+                _form.ShowInTaskbar = false;
+                var borderStyle = Environment.OSVersion.Version.Major < 10
+                    ? FormBorderStyle.Sizable : FormBorderStyle.FixedSingle; // win 10 has no Aero and sizeble border looks ugly
+                _form.FormBorderStyle = _ti.UseBorderlessWindow ? FormBorderStyle.None : borderStyle;
+                _form.Text = null;
 
-            _ti.CreateAction(_form);
-            _form.Show();
+                _form.BackColor = Color.FromArgb(0xFF, _ti.BackgroundColor.R, _ti.BackgroundColor.G, _ti.BackgroundColor.B);
+
+                _form.Width = _sizeProvider.MakeValue(_ti.Width);
+                _form.Height = _sizeProvider.MakeValue(_ti.Height);
+                _borderDelta = _form.Width - _form.ClientRectangle.Width;
+                _form.Width = _form.Width + _borderDelta;
+                _form.Height = _form.Height + _borderDelta;
+
+                // Disable resizing
+                _form.MinimumSize = _form.Size;
+                _form.MaximumSize = _form.Size;
+
+                SetPosition(_ti.Rect);
+
+                _ti.CreateAction(_form);
+
+                _form.Show();
+            }
+        }
+
+        public void DisableTooltip()
+        {
+            _disabled = true;
+            _showTimer.Enabled = false;
+        }
+
+        public void EnableTooltip()
+        {
+            _disabled = false;
         }
 
         private void SetPosition(Rectangle rc)
         {
-            var position = new Point(rc.Left + rc.Width / 2, rc.Top + rc.Height / 2);
-
-            var screen = Screen.FromControl(_form);
             var cfg = _config.GetConfiguration(Guid.Empty, ConfigurationModel.Default);
+            var position = new Point(rc.Left + rc.Width / 2, rc.Top + rc.Height / 2);
+            var screen = Screen.FromControl(_form);
             var taskbarInfo = _band.GetTaskbarSizeInfo();
             var layoutMode = cfg.GeneralSettings.DisplayMode == DisplayMode.Deskband ? taskbarInfo.Mode : cfg.FloatingWindowSettings.Mode;
             if (layoutMode == LayoutMode.Horizontal || cfg.GeneralSettings.DisplayMode == DisplayMode.FloatingWindow)
@@ -116,11 +147,11 @@ namespace Deskband.UI
             }
         }
 
-        private bool _cursorOverForm;
+        private bool _needToKeepOpen;
 
         public void RequestHideTooltip()
         {
-            if (_cursorOverForm) return;
+            if (_needToKeepOpen) return;
 
             DoHide();
         }
@@ -145,15 +176,22 @@ namespace Deskband.UI
 
         public void HandleMousePoint(Point globalPoint)
         {
-            if (_form != null)
+            bool mouseOverFrom = false;
+            lock (_dohide_locker)
             {
-                var bounds = new Rectangle(_form.Bounds.Location, _form.Bounds.Size);
-                bounds.Inflate(2, 2);
-                _cursorOverForm = bounds.Contains(globalPoint) || _moduleContainer.LocateModuleAtPoint(_moduleContainer.PointToClient(globalPoint)) == _moduleId;
-                if (!_cursorOverForm)
+                if (_form != null && _ti != null && _ti.KeepOpenOnMouseOver)
                 {
-                    DoHide();
+                    var bounds = new Rectangle(_form.Bounds.Location, _form.Bounds.Size);
+                    bounds.Inflate(2, 2);
+                    mouseOverFrom = bounds.Contains(globalPoint);
                 }
+            }
+            
+            _needToKeepOpen = mouseOverFrom || _moduleContainer.LocateModuleAtPoint(_moduleContainer.PointToClient(globalPoint)) == _moduleId;
+            if (!_needToKeepOpen)
+            {
+                _showTimer.Enabled = false;
+                DoHide();
             }
         }
     }
