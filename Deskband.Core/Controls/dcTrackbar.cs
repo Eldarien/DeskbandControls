@@ -213,6 +213,7 @@ namespace Deskband.Core.Controls
 
             int p = x * Range / clientWidth;
             if (p > Range) p = Range;
+            if (p < 0) p = 0;
 
             SetPosition(p);
 
