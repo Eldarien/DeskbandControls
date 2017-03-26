@@ -38,7 +38,9 @@ namespace Deskband.UI
             _moduleId = moduleId;
             _ti = ti;
 
-            _showTimer.Interval = _ti.ShowDelay;
+            CreateForm();
+
+            _showTimer.Interval = _ti.ShowDelay > 0 ? _ti.ShowDelay : 1;
             _showTimer.Enabled = true;
         }
 
@@ -49,33 +51,6 @@ namespace Deskband.UI
             lock (_dohide_locker)
             {
                 if (_ti == null) return;
-
-                _form = new TooltipForm();
-                _form.TopMost = true;
-                _form.MinimizeBox = false;
-                _form.MaximizeBox = false;
-                _form.ControlBox = false;
-                _form.ShowInTaskbar = false;
-                var borderStyle = Environment.OSVersion.Version.Major < 10
-                    ? FormBorderStyle.Sizable : FormBorderStyle.FixedSingle; // win 10 has no Aero and sizeble border looks ugly
-                _form.FormBorderStyle = _ti.UseBorderlessWindow ? FormBorderStyle.None : borderStyle;
-                _form.Text = null;
-
-                _form.BackColor = Color.FromArgb(0xFF, _ti.BackgroundColor.R, _ti.BackgroundColor.G, _ti.BackgroundColor.B);
-
-                _form.Width = _sizeProvider.MakeValue(_ti.Width);
-                _form.Height = _sizeProvider.MakeValue(_ti.Height);
-                _borderDelta = _form.Width - _form.ClientRectangle.Width;
-                _form.Width = _form.Width + _borderDelta;
-                _form.Height = _form.Height + _borderDelta;
-
-                // Disable resizing
-                _form.MinimumSize = _form.Size;
-                _form.MaximumSize = _form.Size;
-
-                SetPosition(_ti.Rect);
-
-                _ti.CreateAction(_form);
 
                 _form.Show();
             }
@@ -90,6 +65,36 @@ namespace Deskband.UI
         public void EnableTooltip()
         {
             _disabled = false;
+        }
+
+        private void CreateForm()
+        {
+            _form = new TooltipForm();
+            _form.TopMost = true;
+            _form.MinimizeBox = false;
+            _form.MaximizeBox = false;
+            _form.ControlBox = false;
+            _form.ShowInTaskbar = false;
+            var borderStyle = Environment.OSVersion.Version.Major < 10
+                ? FormBorderStyle.Sizable : FormBorderStyle.FixedSingle; // win 10 has no Aero and sizeble border looks ugly
+            _form.FormBorderStyle = _ti.UseBorderlessWindow ? FormBorderStyle.None : borderStyle;
+            _form.Text = null;
+
+            _form.BackColor = Color.FromArgb(0xFF, _ti.BackgroundColor.R, _ti.BackgroundColor.G, _ti.BackgroundColor.B);
+
+            _form.Width = _sizeProvider.MakeValue(_ti.Width);
+            _form.Height = _sizeProvider.MakeValue(_ti.Height);
+            _borderDelta = _form.Width - _form.ClientRectangle.Width;
+            _form.Width = _form.Width + _borderDelta;
+            _form.Height = _form.Height + _borderDelta;
+
+            // Disable resizing
+            _form.MinimumSize = _form.Size;
+            _form.MaximumSize = _form.Size;
+
+            SetPosition(_ti.Rect);
+
+            _ti.CreateAction(_form);
         }
 
         private void SetPosition(Rectangle rc)
