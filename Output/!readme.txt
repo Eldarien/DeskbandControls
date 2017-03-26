@@ -33,6 +33,14 @@ Eldarien (eldarien@live.com)
 --
 ** Changelog:
 
+March 26 2017
+  * Version 3.2
+  + Added tooltip delay option.
+  + Added keep tooltip open on hover option.
+  - Fixed tooltip crush when background color contains alpha channel.
+  - Fixed issue with trackbar background color transparency.
+  - Fixed issue where trackbar position could get less than 0.
+
 March 21 2017
   * Version 3.1.0
   + New installer/uninstaller system. Installer is integrated into foobar2000 plugin.
