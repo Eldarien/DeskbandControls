@@ -43,3 +43,5 @@
 #define DESKBAND_CMD_AlbumArt 17
 #define DESKBAND_CMD_FilePath 18
 #define DESKBAND_CMD_Version 19
+#define DESKBAND_CMD_Playlist 20
+

@@ -60,6 +60,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Code\Foobar2000Actions.cs" />
+    <Compile Include="Code\PlaylistEventArgs.cs" />
     <Compile Include="Configuration\ButtonSettingsContainer.cs" />
     <Compile Include="Configuration\MenuSettings.cs" />
     <Compile Include="Configuration\TextSettings.cs" />

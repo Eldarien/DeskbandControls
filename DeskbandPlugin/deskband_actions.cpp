@@ -47,7 +47,7 @@ namespace deskband_actions
 	void send_track_text(int index, pfc::string8 text)
 	{
 		const char *textPtr = text.get_ptr();
-		size_t  textLen = strlen(textPtr);
+		size_t textLen = strlen(textPtr);
 		size_t size = sizeof(int) + sizeof(size_t) + textLen + 1;
 
 		char *data = (char *)malloc(size);
@@ -63,7 +63,7 @@ namespace deskband_actions
 	void send_file_path(int index, pfc::string8 path)
 	{
 		const char *textPtr = path.get_ptr();
-		size_t  textLen = strlen(textPtr);
+		size_t textLen = strlen(textPtr);
 		size_t size = sizeof(int) + sizeof(size_t) + textLen + 1;
 
 		char *data = (char *)malloc(size);
@@ -72,6 +72,43 @@ namespace deskband_actions
 		memcpy(data + sizeof(int) + sizeof(size_t), textPtr, textLen);
 
 		send_command(DESKBAND_CMD_FilePath, data, size);
+
+		free(data);
+	}
+
+	void send_playlist(pfc::string_list_impl list, size_t current_index)
+	{
+		t_size count = list.get_count();
+		t_size total_len = 0;
+		for (t_size index = 0; index < count; index++)
+		{
+			auto item = list.get_item(index);
+			total_len += strlen(item);
+		}
+
+		t_size size = sizeof(t_size) * 2 + sizeof(t_size) * count + total_len + 1; // current_index, count, [] of len:text
+		char *data = (char *)malloc(size);
+		char *p = data;
+		
+		memcpy(p, &current_index, sizeof(t_size)); // current_index
+		p += sizeof(t_size);
+
+		memcpy(p, &count, sizeof(t_size)); // count
+		p += sizeof(t_size);
+
+		for (t_size index = 0; index < count; index++)
+		{
+			auto item = list.get_item(index);
+			t_size len = strlen(item);
+			
+			memcpy(p, &len, sizeof(t_size)); // len
+			p += sizeof(t_size);
+
+			memcpy(p, item, len); // string bytes
+			p += len;
+		}
+
+		send_command(DESKBAND_CMD_Playlist, data, size);
 
 		free(data);
 	}

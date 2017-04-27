@@ -50,5 +50,6 @@ namespace DeskbandBridge {
 		literal int AlbumArt = DESKBAND_CMD_AlbumArt;
 		literal int FilePath = DESKBAND_CMD_FilePath;
 		literal int Version = DESKBAND_CMD_Version;
+		literal int Playlist = DESKBAND_CMD_Playlist;
 	};
 }

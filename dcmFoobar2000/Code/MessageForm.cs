@@ -28,6 +28,7 @@ namespace dcmFoobar2000.Code
         public event EventHandler<ValueEventArgs<Tuple<byte[], bool>>> OnAlbumArt;
         public event EventHandler<TrackTextEventArgs> OnFilePath;
         public event EventHandler<ValueEventArgs<string>> OnVersion;
+        public event EventHandler<PlaylistEventArgs> OnPlaylist;
 
         public MessageForm()
         {
@@ -162,6 +163,25 @@ namespace dcmFoobar2000.Code
                                     Marshal.Copy(csd.lpData + sizeof(int), text8bytes, 0, text8size);
                                     string text = Encoding.UTF8.GetString(text8bytes);
                                     FireEvent(OnVersion, new ValueEventArgs<string>(text));
+                                }
+                                break;
+
+                            case DeskbandCommands.Playlist:
+                                {
+                                    // current_index, count, [] of len:text
+                                    IntPtr p = csd.lpData;
+
+                                    var currentIndex = (int)Marshal.PtrToStructure(p, typeof(int)); p += sizeof(int);
+                                    var count = (int)Marshal.PtrToStructure(p, typeof(int)); p += sizeof(int);
+                                    var list = new List<string>(count);
+                                    for (int i = 0; i < count; i++)
+                                    {
+                                        int len = (int)Marshal.PtrToStructure(p, typeof(int)); p += sizeof(int);
+                                        var bytes = new byte[len];
+                                        Marshal.Copy(p, bytes, 0, len); p += len;
+                                        list.Add(Encoding.UTF8.GetString(bytes));
+                                    }
+                                    FireEvent(OnPlaylist, new PlaylistEventArgs(currentIndex, list));
                                 }
                                 break;
                         }

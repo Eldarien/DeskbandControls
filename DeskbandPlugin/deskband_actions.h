@@ -7,6 +7,7 @@ namespace deskband_actions
 	void send_track_time(double time);
 	void send_track_text(int index, pfc::string8 text);
 	void send_file_path(int index, pfc::string8 path);
+	void send_playlist(pfc::string_list_impl list, size_t current_index);
 	void send_pause_state(bool state);
 	void send_stop();
 	void send_track_volume(float volume);
