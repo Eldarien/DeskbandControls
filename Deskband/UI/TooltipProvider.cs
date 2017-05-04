@@ -190,9 +190,9 @@ namespace Deskband.UI
                     bounds.Inflate(2, 2);
                     mouseOverFrom = bounds.Contains(globalPoint);
                 }
+
+                _needToKeepOpen = mouseOverFrom || _ti != null && _moduleContainer.LocateModuleAtPoint(_moduleContainer.PointToClient(globalPoint)) == _moduleId;
             }
-            
-            _needToKeepOpen = mouseOverFrom || _moduleContainer.LocateModuleAtPoint(_moduleContainer.PointToClient(globalPoint)) == _moduleId;
             if (!_needToKeepOpen)
             {
                 _showTimer.Enabled = false;
