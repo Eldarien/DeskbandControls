@@ -9,6 +9,10 @@ namespace deskband_actions
 	static void* last_album_art_buffer = NULL;
 	static t_size last_album_art_buffer_size = 0;
 	static bool last_album_art_stub = false;
+	
+	//static pfc::string_list_impl* last_playlist = NULL;
+	//static size_t last_playlist_current_index = 0;
+	static pfc::string8* playlist_format = NULL;
 
 	void send_command(int cmd, PVOID data, size_t size)
 	{
@@ -76,13 +80,67 @@ namespace deskband_actions
 		free(data);
 	}
 
+	void set_playlist_format(char* fmt, t_size len)
+	{
+		if (playlist_format != NULL)
+		{
+			delete playlist_format;
+			playlist_format = NULL;
+		}
+		playlist_format = new pfc::string8(fmt, len);
+	}
+
+	void handle_playlist_change(t_size p_playlist)
+	{
+		static_api_ptr_t<playlist_manager> pm;
+		t_size active_playlist = pm->get_active_playlist();
+		if (p_playlist != 0 && p_playlist != active_playlist)
+			return;
+
+		if (playlist_format == NULL)
+			return;
+
+		service_ptr_t<titleformat_object> format;
+		static_api_ptr_t<titleformat_compiler>()->compile(format, *playlist_format);
+
+		bit_array_true t;
+		metadb_handle_list meta_list;
+		pm->playlist_get_items(active_playlist, meta_list, t);
+
+		pfc::string_list_impl formatted_list;
+		t_size meta_count = meta_list.get_count();
+		for (t_size index = 0; index < meta_count; index++)
+		{
+			metadb_handle_ptr item = meta_list.get_item(index);
+			pfc::string8 text;
+			item->format_title(NULL, text, format, NULL);
+			formatted_list.add_item(text);
+		}
+
+		static_api_ptr_t<playback_control> control;
+		metadb_handle_ptr current_item;
+		control->get_now_playing(current_item);
+		t_size current_index = current_item != 0 ? meta_list.find_item(current_item) : 0;
+
+	/*	deskband_actions::send_playlist(formatted_list, current_index);
+	}
+
 	void send_playlist(pfc::string_list_impl list, size_t current_index)
 	{
-		t_size count = list.get_count();
+		if (last_playlist != NULL)
+		{
+			delete last_playlist;
+			last_playlist = NULL;
+		}
+
+		last_playlist = new pfc::string_list_impl(list);
+		last_playlist_current_index = current_index;*/
+
+		t_size count = formatted_list.get_count();
 		t_size total_len = 0;
 		for (t_size index = 0; index < count; index++)
 		{
-			auto item = list.get_item(index);
+			auto item = formatted_list.get_item(index);
 			total_len += strlen(item);
 		}
 
@@ -98,7 +156,7 @@ namespace deskband_actions
 
 		for (t_size index = 0; index < count; index++)
 		{
-			auto item = list.get_item(index);
+			auto item = formatted_list.get_item(index);
 			t_size len = strlen(item);
 			
 			memcpy(p, &len, sizeof(t_size)); // len
@@ -174,6 +232,9 @@ namespace deskband_actions
 		send_track_volume(last_volume);
 		send_stop_after_current(last_stop_after_current_state);
 		send_album_art(last_album_art_buffer, last_album_art_buffer_size, last_album_art_stub);
+
+		//if (last_playlist != NULL) send_playlist(*last_playlist, last_playlist_current_index);
+		handle_playlist_change(0);
 	}
 
 	void resend_last_nontrack_state()
@@ -181,6 +242,8 @@ namespace deskband_actions
 		send_track_volume(last_volume);
 		send_stop_after_current(last_stop_after_current_state);
 		send_album_art(last_album_art_buffer, last_album_art_buffer_size, last_album_art_stub);
+
+		handle_playlist_change(0);
 	}
 
 	void send_version()

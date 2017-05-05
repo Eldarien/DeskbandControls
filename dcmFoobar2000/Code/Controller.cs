@@ -103,7 +103,13 @@ namespace dcmFoobar2000.Code
                 _eventsInitialized = true;
             }
 
-            UpdateControlsState();
+            if (_stopped)
+            {
+                ClearTexts();
+                HandlePlaybackState(false);
+            }
+
+            _actions.Init(_stopped, _cfg);
         }
 
         public void Dispose()
@@ -417,6 +423,7 @@ namespace dcmFoobar2000.Code
             _messageForm.OnAlbumArt += (s, e) => HandleAlbumArt(e.Value.Item1, e.Value.Item2);
             _messageForm.OnFilePath += (s, e) => HandleFilePath(e.Text, e.Index);
             _messageForm.OnVersion += (s, e) => HandleVersion(e.Value);
+            _messageForm.OnPlaylist += (s, e) => HandlePlaylist(e.CurrentIndex, e.Playlist);
         }
 
         private void ShowOrHide(bool state)
@@ -552,6 +559,7 @@ namespace dcmFoobar2000.Code
             else
             {
                 _actions.SetVersion(false);
+                _actions.Init(_stopped, _cfg);
             }
         }
 
@@ -615,19 +623,7 @@ namespace dcmFoobar2000.Code
             }
         }
 
-        private void UpdateControlsState()
-        {
-            if (_stopped)
-            {
-                _actions.ResendLastNonTrackState();
-                ClearTexts();
-                HandlePlaybackState(false);
-            }
-            else
-            {
-                _actions.ResendLastState();
-            }
-        }
+        
 
         public void CopyArtistAndTitle()
         {
@@ -747,6 +743,49 @@ namespace dcmFoobar2000.Code
         public void HideTooltip()
         {
             _tooltipProvider.RequestHideTooltip();
+        }
+
+        private List<string> _playlist;
+        private List<Guid> _playlistMenuItems = new List<Guid>();
+
+        private void HandlePlaylist(int currentIndex, List<string> playlist)
+        {
+            foreach (var pi in _playlistMenuItems)
+            {
+                _menu.RemoveItem(pi);
+            }
+            _playlistMenuItems.Clear();
+
+            if (_playlist != null)
+            {
+                _playlist.Clear();
+                _playlist = null;
+            }
+
+            int playlistStartIndex = Math.Max(currentIndex - _cfg.Playlist.NumberOfItemsBeforeCurrent, 0);
+            int playlistEndIndex = Math.Min(playlistStartIndex + _cfg.Playlist.NumberOfItemsBeforeCurrent + _cfg.Playlist.NumberOfItemsAfterCurrent + 1, playlist.Count);
+            int playlistTakeCount = playlistEndIndex - playlistStartIndex;
+            currentIndex = currentIndex - playlistStartIndex;
+            _playlist = playlist.Skip(playlistStartIndex).Take(playlistTakeCount).ToList();
+
+            if (_cfg.Menu.Playlist)
+            {
+                for (int i = 0; i < _playlist.Count; i++)
+                {
+                    int idx = i + playlistStartIndex;
+                    var pi = _menu.AddItem(_id, null, _playlist[i], () => _actions.StartPlaylistIndex(idx));
+
+                    _playlistMenuItems.Add(pi);
+                    if (i == currentIndex)
+                    {
+                        _menu.SetItemCheckedState(pi, true);
+                    }
+                }
+                if (_playlist.Count > 0)
+                {
+                    _playlistMenuItems.Add(_menu.AddItem(_id, null, "-", null));
+                }
+            }
         }
     }
 }

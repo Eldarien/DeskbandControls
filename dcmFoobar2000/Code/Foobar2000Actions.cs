@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using dcmFoobar2000.Configuration;
 
 namespace dcmFoobar2000.Code
 {
@@ -22,9 +23,9 @@ namespace dcmFoobar2000.Code
             _msgFormHandle = messageForm.Handle;
         }
 
-        public void SetVersion(bool isWrong)
+        public void SetVersion(bool isLocked)
         {
-            _locked = isWrong;
+            _locked = isLocked;
             _hasVersion = true;
         }
 
@@ -59,6 +60,25 @@ namespace dcmFoobar2000.Code
             }
         }
 
+        public void Init(bool stopped, ConfigurationModel cfg)
+        {
+            byte[] formatBytes = Encoding.UTF8.GetBytes(cfg.Playlist.Format);
+            SendCommand(FB2KCommands.SetPlaylistFormat, formatBytes);
+
+            if (stopped)
+            {
+                SendCommand(FB2KCommands.ResendLastNonTrackState);
+            }
+            else
+            {
+                SendCommand(FB2KCommands.ResendLastState);
+            }
+        }
+
+        public void ResendLastState()
+        {
+            SendCommand(FB2KCommands.ResendLastState);
+        }
 
         public void Stop()
         {
@@ -122,16 +142,6 @@ namespace dcmFoobar2000.Code
             SendCommand(FB2KCommands.Volume, data);
         }
 
-        public void ResendLastState()
-        {
-            SendCommand(FB2KCommands.ResendLastState);
-        }
-
-        public void ResendLastNonTrackState()
-        {
-            SendCommand(FB2KCommands.ResendLastNonTrackState);
-        }
-
         public void ActivateFoobar()
         {
             var fw = User32.FindWindow(FB2KConstants.FoobarPluginMsgWindowClass, FB2KConstants.FoobarPluginMsgWindowTitle);
@@ -173,5 +183,13 @@ namespace dcmFoobar2000.Code
         {
             get { return GetFoobarPluginMessageWindow() != IntPtr.Zero; }
         }
+
+        public void StartPlaylistIndex(int i)
+        {
+            byte[] data = BitConverter.GetBytes(i);
+            SendCommand(FB2KCommands.StartPlaylistIndex, data);
+        }
+
+        
     }
 }

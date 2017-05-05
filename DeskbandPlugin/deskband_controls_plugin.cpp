@@ -16,6 +16,7 @@ namespace deskband_controls_plugin
 				setup_helper::launch_installer();
 			}
 
+			deskband_actions::send_version();
 			deskband_actions::show();
 		}
 
@@ -41,23 +42,23 @@ namespace deskband_controls_plugin
 
 		virtual void on_items_added(t_size p_playlist, t_size p_start, const pfc::list_base_const_t<metadb_handle_ptr> & p_data, const bit_array & p_selection)
 		{
-			handle_playlist_change(p_playlist);
+			deskband_actions::handle_playlist_change(p_playlist);
 		}
 		virtual void on_items_reordered(t_size p_playlist, const t_size * p_order, t_size p_count)
 		{
-			handle_playlist_change(p_playlist);
+			deskband_actions::handle_playlist_change(p_playlist);
 		}
 		virtual void on_items_removing(t_size p_playlist, const bit_array & p_mask, t_size p_old_count, t_size p_new_count) {}
 		virtual void on_items_removed(t_size p_playlist, const bit_array & p_mask, t_size p_old_count, t_size p_new_count)
 		{
-			handle_playlist_change(p_playlist);
+			deskband_actions::handle_playlist_change(p_playlist);
 		}
 		virtual void on_items_selection_change(t_size p_playlist, const bit_array & p_affected, const bit_array & p_state) {}
 		virtual void on_item_focus_change(t_size p_playlist, t_size p_from, t_size p_to) {}
 
 		virtual void on_items_modified(t_size p_playlist, const bit_array & p_mask)
 		{
-			handle_playlist_change(p_playlist);
+			deskband_actions::handle_playlist_change(p_playlist);
 		}
 
 		virtual void on_items_modified_fromplayback(t_size p_playlist, const bit_array & p_mask, play_control::t_display_level p_level) {}
@@ -72,38 +73,6 @@ namespace deskband_controls_plugin
 		virtual void on_default_format_changed() {}
 		virtual void on_playback_order_changed(t_size p_new_index) {}
 		virtual void on_playlist_locked(t_size p_playlist, bool p_locked) {}
-
-		void handle_playlist_change(t_size p_playlist)
-		{
-			static_api_ptr_t<playlist_manager> pm;
-			t_size active_playlist = pm->get_active_playlist();
-			if (p_playlist != 0 && p_playlist != active_playlist)
-				return;
-
-			service_ptr_t<titleformat_object> format;
-			static_api_ptr_t<titleformat_compiler>()->compile(format, "%artist% ==> %title%");
-
-			bit_array_true t;
-			metadb_handle_list list;
-			pm->playlist_get_items(active_playlist, list, t);
-
-			pfc::string_list_impl formatted_list;
-			t_size count = list.get_count();
-			for (t_size index = 0; index < count; index++)
-			{
-				metadb_handle_ptr item = list.get_item(index);
-				pfc::string8 text;
-				item->format_title(NULL, text, format, NULL);
-				formatted_list.add_item(text);
-			}
-
-			static_api_ptr_t<playback_control> control;
-			metadb_handle_ptr current_item;
-			control->get_now_playing(current_item);
-			t_size current_index = current_item != 0 ? list.find_item(current_item) : 0;
-
-			deskband_actions::send_playlist(formatted_list, current_index);
-		}
 	};
 	static service_factory_single_t<playlist_handler> foo_playlist_handler;
 
@@ -183,7 +152,8 @@ namespace deskband_controls_plugin
 				deskband_actions::send_album_art(NULL, 0, stub);
 			}
 
-			foo_playlist_handler.get_static_instance().handle_playlist_change(0);
+			//foo_playlist_handler.get_static_instance().handle_playlist_change(0);
+			deskband_actions::handle_playlist_change(0);
 		}
 	};
 	static play_callback_static_factory_t<playback_handler> foo_playback;

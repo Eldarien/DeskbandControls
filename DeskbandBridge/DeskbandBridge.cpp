@@ -34,6 +34,8 @@ namespace DeskbandBridge {
 		literal int FilePath = FOOBAR_PLUGIN_CMD_FilePath;
 		literal int Activate = FOOBAR_PLUGIN_CMD_Activate;
 		literal int GetVersion = FOOBAR_PLUGIN_CMD_GetVersion;
+		literal int SetPlaylistFormat = FOOBAR_PLUGIN_CMD_SetPlaylistFormat;
+		literal int StartPlaylistIndex = FOOBAR_PLUGIN_CMD_StartPlaylistIndex;
 	};
 
 	public ref class DeskbandCommands {

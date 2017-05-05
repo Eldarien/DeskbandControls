@@ -84,7 +84,16 @@ namespace dcmFoobar2000.Configuration
             CopyTitle = true,
             CopyArtist = true,
             OpenContainingFolder = true,
-            SearchInInternet = true
+            SearchInInternet = true,
+            Playlist = true
+        };
+
+        [Browsable(false), SettingsNode("Playlist")]
+        public PlaylistSettings Playlist { get; set; } = new PlaylistSettings
+        {
+            NumberOfItemsBeforeCurrent = 3,
+            NumberOfItemsAfterCurrent = 5,
+            Format = "%artist% - %title%"
         };
 
         public static object AddText(ConfigurationModel model)

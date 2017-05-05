@@ -28,6 +28,9 @@ namespace dcmFoobar2000.Configuration
         [DisplayName("Stop After Current")]
         public bool StopAfterCurrent { get; set; }
 
+        [Category("Playback"), TypeConverter(typeof(YesNoBooleanConverter))]
+        public bool Playlist { get; set; }
+
         [Category("Clipboard"), TypeConverter(typeof(YesNoBooleanConverter))]
         [DisplayName("Copy Artist and Title")]
         public bool CopyArtistAndTitle { get; set; }
@@ -47,5 +50,7 @@ namespace dcmFoobar2000.Configuration
         [Category("External"), TypeConverter(typeof(YesNoBooleanConverter))]
         [DisplayName("Search in Internet")]
         public bool SearchInInternet { get; set; }
+
+        
     }
 }

@@ -30,6 +30,8 @@
 #define FOOBAR_PLUGIN_CMD_FilePath 103
 #define FOOBAR_PLUGIN_CMD_Activate 104
 #define FOOBAR_PLUGIN_CMD_GetVersion 105
+#define FOOBAR_PLUGIN_CMD_SetPlaylistFormat 106
+#define FOOBAR_PLUGIN_CMD_StartPlaylistIndex 107
 
 #define DESKBAND_CMD_Show 1
 #define DESKBAND_CMD_Hide 2

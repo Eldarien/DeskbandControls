@@ -15,10 +15,10 @@ namespace msgwindow
 		HMODULE hInst = GetModuleHandle(NULL);
 
 		WNDCLASSW wc = { 0 };
-		wc.style         = CS_HREDRAW | CS_VREDRAW;
-		wc.hCursor       = LoadCursor(NULL, IDC_ARROW);
-		wc.hInstance     = hInst;
-		wc.lpfnWndProc   = WndProc;
+		wc.style = CS_HREDRAW | CS_VREDRAW;
+		wc.hCursor = LoadCursor(NULL, IDC_ARROW);
+		wc.hInstance = hInst;
+		wc.lpfnWndProc = WndProc;
 		wc.lpszClassName = class_name;
 		wc.hbrBackground = NULL;
 		RegisterClassW(&wc);
@@ -40,8 +40,9 @@ namespace msgwindow
 		void callback_run() override
 		{
 			static_api_ptr_t<playback_control> control;
+			static_api_ptr_t<metadb> db;
 
-			switch(cds.dwData)
+			switch (cds.dwData)
 			{
 			case FOOBAR_PLUGIN_CMD_PlayPause:
 				control->play_or_pause();
@@ -63,42 +64,42 @@ namespace msgwindow
 				control->start(playback_control::track_command_rand, false);
 				break;
 			case FOOBAR_PLUGIN_CMD_FormatString:
-				{
-					int index = *(int*)cds.lpData;
-					char *fmt = ((char *)(cds.lpData) + sizeof(int));
-					pfc::string8 fmt8 = pfc::string8(fmt, cds.cbData - sizeof(int));
+			{
+				int index = *(int*)cds.lpData;
+				char *fmt = ((char *)(cds.lpData) + sizeof(int));
+				pfc::string8 fmt8 = pfc::string8(fmt, cds.cbData - sizeof(int));
 
-					service_ptr_t<titleformat_object> format;
-					static_api_ptr_t<titleformat_compiler>()->compile(format, fmt8);
-					pfc::string8 value;
-					control->playback_format_title(NULL, value, format, NULL, control->display_level_all);
-					format.release();
+				service_ptr_t<titleformat_object> format;
+				static_api_ptr_t<titleformat_compiler>()->compile(format, fmt8);
+				pfc::string8 value;
+				control->playback_format_title(NULL, value, format, NULL, control->display_level_all);
+				format.release();
 
-					deskband_actions::send_track_text(index, value);
-				}
-				break;
+				deskband_actions::send_track_text(index, value);
+			}
+			break;
 			case FOOBAR_PLUGIN_CMD_FilePath:
-				{
-					int index = *(int*)cds.lpData;
+			{
+				int index = *(int*)cds.lpData;
 
-					metadb_handle_ptr h;
-					control->get_now_playing(h);
-				 	pfc::string8 path(h->get_location().get_path());
-					deskband_actions::send_file_path(index, path);
-				}
-				break;
+				metadb_handle_ptr h;
+				control->get_now_playing(h);
+				pfc::string8 path(h->get_location().get_path());
+				deskband_actions::send_file_path(index, path);
+			}
+			break;
 			case FOOBAR_PLUGIN_CMD_Seek:
-				{
-					int position = *(int*)cds.lpData;
-					control->playback_seek((double)position);
-				}
-				break;
+			{
+				int position = *(int*)cds.lpData;
+				control->playback_seek((double)position);
+			}
+			break;
 			case FOOBAR_PLUGIN_CMD_Volume:
-				{
-					float volume = *(float*)cds.lpData;
-					control->set_volume(volume);
-				}
-				break;
+			{
+				float volume = *(float*)cds.lpData;
+				control->set_volume(volume);
+			}
+			break;
 			case FOOBAR_PLUGIN_CMD_ResendLastState:
 				deskband_actions::resend_last_state();
 				break;
@@ -111,6 +112,33 @@ namespace msgwindow
 			case FOOBAR_PLUGIN_CMD_GetVersion:
 				deskband_actions::send_version();
 				break;
+			case FOOBAR_PLUGIN_CMD_SetPlaylistFormat:
+			{
+				char *fmt = (char *)(cds.lpData);
+				deskband_actions::set_playlist_format(fmt, cds.cbData);
+				deskband_actions::handle_playlist_change(0);
+			}
+			break;
+			case FOOBAR_PLUGIN_CMD_StartPlaylistIndex:
+			{
+				int index = *(int*)cds.lpData;
+				//TODO: figure this out
+				
+				static_api_ptr_t<playlist_manager> pm;
+				//t_size active_playlist = pm->get_active_playlist();
+				//bit_array_true t;
+				//metadb_handle_list meta_list;
+				//pm->playlist_get_items(active_playlist, meta_list, t);
+				//auto meta_item = meta_list.get_item(index);
+				//auto meta_handle = meta_item.get_ptr();
+				//pm->queue_add_item(meta_item);
+				//pm->activeplaylist_set_selection_single(index, true);
+				//control->stop();
+				//control->start();
+				pm->activeplaylist_execute_default_action(index);
+				
+			}
+			break;
 			}
 
 			// free lpData memory
