@@ -1,5 +1,5 @@
-Foobar 2000 Deskband Controls 3.1.0
------------------------------------
+ Deskband Controls
+-------------------
 
 HydrogenAudio forum topic: https://hydrogenaud.io/index.php/topic,78234.0.html
 
@@ -33,8 +33,13 @@ Eldarien (eldarien@live.com)
 --
 ** Changelog:
 
+May 09 2017
+  * Version 3.3.0
+  + Added playlist view in context menu.
+  - Minor bugfixes.
+
 March 26 2017
-  * Version 3.2
+  * Version 3.2.0
   + Added tooltip delay option.
   + Added keep tooltip open on hover option.
   - Fixed tooltip crush when background color contains alpha channel.
