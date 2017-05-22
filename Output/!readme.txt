@@ -33,6 +33,10 @@ Eldarien (eldarien@live.com)
 --
 ** Changelog:
 
+May 23 2017
+  * Version 3.3.1
+  - Button colorization bugfixes.
+
 May 09 2017
   * Version 3.3.0
   + Added playlist view in context menu.

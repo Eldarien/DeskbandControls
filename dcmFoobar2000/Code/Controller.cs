@@ -254,12 +254,10 @@ namespace dcmFoobar2000.Code
 
         private Image MakeColorizedImageFromIcon(Icon icon, Color color)
         {
-            Image image = icon.ToBitmap();
-            if (color == Color.White) return image;
-
-            Image colorizedImage = ImageHelpers.Colorize(image, color);
-            image.Dispose();
-            return colorizedImage;
+            using (Image image = icon.ToBitmap())
+            {
+                return ImageHelpers.Colorize(image, color);
+            }
         }
 
         private dcButton CreateButton(ButtonSettings settings, Icon icon1, Icon icon2, Action action)

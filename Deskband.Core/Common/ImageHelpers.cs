@@ -89,16 +89,15 @@ namespace Deskband.Core.Common
 
         public static Image Colorize(Image image, Color color)
         {
-            if (color == Color.Transparent || color == Color.White ||
-                color.A == 255 && color.R == 0 && color.G == 0 && color.B == 0)
-                return image;
+            if (color == Color.Transparent || color == Color.White)
+                return new Bitmap(image);
 
             var result = new Bitmap(image.Width, image.Height, PixelFormat.Format32bppArgb);
             result.SetResolution(image.HorizontalResolution, image.VerticalResolution);
 
-            float R = color.R / 255;
-            float G = color.G / 255;
-            float B = color.B / 255;
+            float R = color.R / 255f;
+            float G = color.G / 255f;
+            float B = color.B / 255f;
 
             float[][] coeff = {
                 new float[] { R, 0, 0, 0, 0 },
