@@ -115,6 +115,20 @@ namespace Deskband.Configuration
             return File.Exists(filePath);
         }
 
+        private IEnumerable<JToken> AllTokens(JArray obj)
+        {
+            var toSearch = new Stack<JToken>(obj.Children());
+            while (toSearch.Count > 0)
+            {
+                var inspected = toSearch.Pop();
+                yield return inspected;
+                foreach (var child in inspected)
+                {
+                    toSearch.Push(child);
+                }
+            }
+        }
+
         public void Load(string profileName = null)
         {
             var filePath = GetConfigFilePath(profileName);
@@ -122,6 +136,16 @@ namespace Deskband.Configuration
             {
                 var json = File.ReadAllText(filePath);
                 _data = JArray.Parse(json);
+
+                // fix possible null entries in config
+                foreach (var token in AllTokens(_data))
+                {
+                    if (token.Type == JTokenType.Null)
+                    {
+                        token.Replace(new JValue(""));
+                    }
+                }
+
                 _console.AddLine($"Profile \"{profileName ?? "Default"}\" loaded");
             }
         }

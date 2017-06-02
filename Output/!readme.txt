@@ -33,6 +33,10 @@ Eldarien (eldarien@live.com)
 --
 ** Changelog:
 
+June 2 2017
+  * Version 3.3.2
+  - Bugfixes related to loading config with null values.
+
 May 23 2017
   * Version 3.3.1
   - Button colorization bugfixes.
