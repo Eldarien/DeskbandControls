@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using System.Drawing;
+using Deskband.Extensions;
 
 namespace Deskband.UI
 {
@@ -84,7 +85,7 @@ namespace Deskband.UI
             if (String.IsNullOrWhiteSpace(text))
                 throw new ArgumentException("Text can not be null or empty", "text");
 
-            var item = new MenuItem(text, (s, e) => { handler?.Invoke(); });
+            var item = new MenuItem(text.Shorten(70), (s, e) => { handler?.Invoke(); });
             var entry = new MenuItemEntry { Id = Guid.NewGuid(), ModuleId = moduleId, MenuItem = item };
             item.Tag = entry;
 

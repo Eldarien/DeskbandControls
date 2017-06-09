@@ -33,6 +33,11 @@ Eldarien (eldarien@live.com)
 --
 ** Changelog:
 
+June 10 2017
+  * Version 3.3.3
+  + Added top/bottop padding settings for trackbars.
+  - Context menu text now trims at 70 characters.
+
 June 2 2017
   * Version 3.3.2
   - Bugfixes related to loading config with null values.

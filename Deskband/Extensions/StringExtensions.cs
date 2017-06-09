@@ -41,5 +41,12 @@ namespace Deskband.Extensions
 
             return sanitisedNamePart;
         }
+
+        public static string Shorten(this string s, int length)
+        {
+            return s.Length > length
+                ? s.Substring(0, length) + '\u2026'
+                : s;
+        }
     }
 }
