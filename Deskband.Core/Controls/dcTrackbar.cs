@@ -32,6 +32,8 @@ namespace Deskband.Core.Controls
             get { return _position; }
             set { if (!_mousePressed) { SetPosition(value); } }
         }
+        public int PaddingTop { get; set; }
+        public int PaddingBottom { get; set; }
         public bool ChangeOnMouseUp { get; set; }
         public int Range { get; set; }
 
@@ -166,7 +168,7 @@ namespace Deskband.Core.Controls
                 var backgroundBrush = Gdi32.CreateSolidBrush(backgroundColor);
                 var backgroundOldBrush = Gdi32.SelectObject(hdc, backgroundBrush);
 
-                Gdi32.Rectangle(hdc, rc.Left + offset, rc.Top + offset, rc.Right - offset, rc.Bottom - offset);
+                Gdi32.Rectangle(hdc, rc.Left + offset, rc.Top + offset + PaddingTop, rc.Right - offset, rc.Bottom - offset - PaddingBottom);
 
                 Gdi32.SelectObject(hdc, backgroundOldPen);
                 Gdi32.DeleteObject(backgroundPen);
@@ -184,7 +186,7 @@ namespace Deskband.Core.Controls
             if (!HideBorders)
             {
                 Gdi32.SelectObject(hdc, Gdi32.GetStockObject(StockObjects.HOLLOW_BRUSH));
-                Gdi32.RoundRect(hdc, rc.Left, rc.Top, rc.Right, rc.Bottom, 3, 3);
+                Gdi32.RoundRect(hdc, rc.Left, rc.Top + PaddingTop, rc.Right, rc.Bottom - PaddingBottom, 3, 3);
             }
 
             var brush = Gdi32.CreateSolidBrush(color);
@@ -195,7 +197,7 @@ namespace Deskband.Core.Controls
                 int offset = HideBorders ? 0 : 2;
                 int wx = (rc.Right - offset * 2) * _position / Range;
 
-                Gdi32.Rectangle(hdc, rc.Left + offset, rc.Top + offset, wx + offset, rc.Bottom - offset);
+                Gdi32.Rectangle(hdc, rc.Left + offset, rc.Top + offset + PaddingTop, wx + offset, rc.Bottom - offset - PaddingBottom);
             }
 
             Gdi32.SelectObject(hdc, oldBrush);

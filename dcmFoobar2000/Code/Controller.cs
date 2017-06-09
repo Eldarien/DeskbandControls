@@ -322,6 +322,8 @@ namespace dcmFoobar2000.Code
             trb.HideBorders = settings.HideBorders;
             trb.Range = 100;
             trb.Position = 0;
+            trb.PaddingTop = settings.PaddingTop;
+            trb.PaddingBottom = settings.PaddingBottom;
             trb.ChangeOnMouseUp = changeOnMouseUp;
             trb.OnPositionChanged += (s, e) => action(e.Value);
             trb.MouseUp += (s, e) => mouseUpAction();

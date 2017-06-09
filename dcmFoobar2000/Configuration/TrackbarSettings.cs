@@ -37,5 +37,11 @@ namespace dcmFoobar2000.Configuration
 
         [DisplayName("Hide Borders"), TypeConverter(typeof(YesNoBooleanConverter))]
         public bool HideBorders { get; set; }
+
+        [Category("Padding"), DisplayName("Top")]
+        public int PaddingTop { get; set; }
+
+        [Category("Padding"), DisplayName("Bottom")]
+        public int PaddingBottom { get; set; }
     }
 }
