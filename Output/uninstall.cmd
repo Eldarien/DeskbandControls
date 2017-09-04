@@ -10,7 +10,7 @@ echo Welcome to the Deskband Controls uninstaller.
 echo Administrative permissions required. Detecting permissions...
 
 rem Check permissions
-net session >nul 2>&1
+fsutil dirty query %systemdrive% >nul
 if %errorLevel% == 0 (
     echo Administrative permissions confirmed.
 ) else (

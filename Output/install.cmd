@@ -9,7 +9,7 @@ echo[
 echo Welcome to the Deskband Controls installer.
 
 rem Check permissions
-net session >nul 2>&1
+fsutil dirty query %systemdrive% >nul
 if %errorLevel% == 0 (
     echo Administrative permissions confirmed.
 ) else (
