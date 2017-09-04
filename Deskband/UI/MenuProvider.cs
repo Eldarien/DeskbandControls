@@ -85,7 +85,8 @@ namespace Deskband.UI
             if (String.IsNullOrWhiteSpace(text))
                 throw new ArgumentException("Text can not be null or empty", "text");
 
-            var item = new MenuItem(text.Shorten(70), (s, e) => { handler?.Invoke(); });
+            var preparedText = text.Shorten(70).Replace("&", "&&");
+            var item = new MenuItem(preparedText, (s, e) => { handler?.Invoke(); });
             var entry = new MenuItemEntry { Id = Guid.NewGuid(), ModuleId = moduleId, MenuItem = item };
             item.Tag = entry;
 
