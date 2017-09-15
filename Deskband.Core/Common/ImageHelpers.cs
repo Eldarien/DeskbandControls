@@ -63,6 +63,9 @@ namespace Deskband.Core.Common
 
         public static Image HQResize(Image image, int width, int height, bool preserveAspect)
         {
+            if (width <= 0 || height <= 0)
+                return Empty;
+
             if (preserveAspect)
             {
                 double originalRatio = (double)image.Width / (double)image.Height;
