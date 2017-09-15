@@ -16,6 +16,9 @@ using Deskband.Core.Common;
 using Deskband.Common;
 using Deskband.Configuration;
 using static Deskband.Core.WinApi.WinApiTypes;
+using System.IO;
+using System.Reflection;
+using Deskband.Console;
 
 namespace Deskband
 {
@@ -38,6 +41,7 @@ namespace Deskband
 
         private IntPtr _taskbarWindowHandle;
         private IKernel _kernel;
+        private ConsoleHandler _console;
 
         public Band() // Entry Point
         {
@@ -51,6 +55,10 @@ namespace Deskband
                 AssemblyResolver.Initialize();
 
                 _kernel = AppConfig.InitializeKernel(this);
+                _console = _kernel.Get<ConsoleHandler>();
+
+                var installationDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+                _console.AddLine($"Installation directory: {installationDir}");
 
                 using (var g = CreateGraphics())
                 {
