@@ -510,17 +510,19 @@ namespace dcmFoobar2000.Code
             HandlePlaybackState(false);
         }
 
+        private const double _volumeDbCoeff = 34.0; // this value matches best with foobar2000 volume control behaviour
+
         private void HandleVolume(float volume)
         {
-            //volume_in_percent = pow(10, (volume_in_db / 30)) * 100
-            int percent = (int)(Math.Pow(10.0, (volume / 30.0)) * 100.0);
+            //volume_in_percent = pow(10, (volume_in_db / coeff)) * 100
+            int percent = (int)(Math.Pow(10.0, (volume / _volumeDbCoeff)) * 100.0);
             _trbVolume.Position = percent;
         }
 
         private void SetVolume(int percent)
         {
-            // volume_in_db = 30 * log10 (volume_in_percent / 100)
-            float vdb = (float)(30.0 * Math.Log10((float)percent / 100.0));
+            // volume_in_db = coeff * log10 (volume_in_percent / 100)
+            float vdb = (float)(_volumeDbCoeff * Math.Log10(percent / 100.0));
             if (vdb < -100.0f) vdb = -100.0f;
             _actions.Volume(vdb);
         }
