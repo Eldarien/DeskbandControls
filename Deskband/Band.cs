@@ -1,24 +1,20 @@
 ﻿using Deskband.BandIntegration;
+using Deskband.Common;
+using Deskband.Console;
+using Deskband.Core.Common;
+using Deskband.Core.EventArguments;
 using Deskband.Core.Interfaces;
 using Deskband.Core.WinApi;
 using Deskband.Extensions;
+using Deskband.UI;
 using Ninject;
 using System;
-using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Windows.Forms;
-using Deskband.Core.EventArguments;
-using Deskband.UI;
-using Deskband.Core.Common;
-using Deskband.Common;
-using Deskband.Configuration;
-using static Deskband.Core.WinApi.WinApiTypes;
 using System.IO;
+using System.Linq;
 using System.Reflection;
-using Deskband.Console;
+using System.Runtime.InteropServices;
+using System.Windows.Forms;
 
 namespace Deskband
 {
@@ -132,6 +128,8 @@ namespace Deskband
         {
             _kernel.Dispose();
             base.Dispose(disposing);
+
+            GC.Collect();
         }
 
         public TaskbarSizeInfo GetTaskbarSizeInfo()

@@ -40,6 +40,12 @@ namespace Deskband.Core.Controls
         private Image _stubImage = ImageHelpers.Empty;
         public void SetStubImage(Image image)
         {
+            if (_stubImage != null && _stubImage != ImageHelpers.Empty)
+            {
+                _stubImage.Dispose();
+                _stubImage = null;
+            }
+
             _stubImage = image != null
                   ? ImageHelpers.HQResize(image, Width, Height, PreserveAspectRatio)
                   : ImageHelpers.Empty;
@@ -47,39 +53,38 @@ namespace Deskband.Core.Controls
 
         public void SetImage(Image image)
         {
+            var oldImage = Image;
             Image = image != null
                   ? ImageHelpers.HQResize(image, Width, Height, PreserveAspectRatio)
-                  : (EnableStubImage ? _stubImage : ImageHelpers.Empty);
+                  : (EnableStubImage
+                        ? (_stubImage != null ? new Bitmap(_stubImage) : ImageHelpers.Empty)
+                        : ImageHelpers.Empty);
+
+            if (oldImage != null && oldImage != ImageHelpers.Empty)
+            {
+                oldImage.Dispose();
+                oldImage = null;
+            }
         }
 
-        //    if (image == null)
-        //    {
-        //        stub = true;
-        //        image = ImageHelpers.GetImageFromFile(StubImagePath);
-        //        if (image == ImageHelpers.Empty)
-        //            image = Resources.NoCoverArt;
-        //    }
+        protected override void Dispose(bool disposing)
+        {
+            var oldImage = Image;
+            Image = ImageHelpers.Empty;
 
-        //    if (stub && doNotShowStub)
-        //    {
-        //        image = ImageHelpers.Empty;
-        //    }
+            if (oldImage != null && oldImage != ImageHelpers.Empty)
+            {
+                oldImage.Dispose();
+                oldImage = null;
+            }
+            
+            if (_stubImage != null && _stubImage != ImageHelpers.Empty)
+            {
+                _stubImage.Dispose();
+                _stubImage = null;
+            }
 
-        //    Image = image;
-        //}
-
-        //public static dcPicture Create(AlbumArtModel model)
-        //{
-        //    var pic = new dcPicture();
-
-        //    pic.Visible = model.Visible;
-        //    pic.Location = new Point(model.X, model.Y);
-        //    pic.Size = new Size(model.Width, model.Height);
-        //    pic.PreserveAspectRatio = model.PreserveAspectRatio;
-        //    pic.StubImagePath = model.StubImagePath;
-        //    pic.SetImage(null, true, model.DoNotShowStubImage);
-
-        //    return pic;
-        //}
+            base.Dispose(disposing);
+        }
     }
 }

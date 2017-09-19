@@ -119,6 +119,8 @@ namespace dcmFoobar2000.Code
             _messageForm.Lock();
             DestroyControls();
             _disposable.Dispose();
+
+            if (_tooltipAlbumArtImage != null) _tooltipAlbumArtImage.Dispose();
         }
 
         private List<IDisposable> _controls = new List<IDisposable>();
@@ -536,8 +538,10 @@ namespace dcmFoobar2000.Code
 
         private void HandleAlbumArt(byte[] imageBytes, bool stub)
         {
-            var img = ImageHelpers.GetImageFromByteArray(imageBytes);
-            UpdateAlbumArt(img, stub);
+            using (Image img = ImageHelpers.GetImageFromByteArray(imageBytes))
+            {
+                UpdateAlbumArt(img, stub);
+            }
         }
 
         private void HandleFilePath(string text, int index)
@@ -674,7 +678,14 @@ namespace dcmFoobar2000.Code
         private Image _tooltipAlbumArtImage;
         private void SetTooltipImage(Image image, bool stub)
         {
-            _tooltipAlbumArtImage = stub && _cfg.Tooltip.AlbumArt.DoNotShowStubImage ? null : image;
+            if (_tooltipAlbumArtImage != null)
+            {
+                _tooltipAlbumArtImage.Dispose();
+                _tooltipAlbumArtImage = null;
+            }
+            _tooltipAlbumArtImage = stub && _cfg.Tooltip.AlbumArt.DoNotShowStubImage
+                ? null
+                : (image == null ? null : new Bitmap(image));
             if (_tooltipAlbumArt != null)
             {
                 _tooltipAlbumArt.SetImage(_tooltipAlbumArtImage);
