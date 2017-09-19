@@ -33,6 +33,14 @@ Eldarien (eldarien@live.com)
 --
 ** Changelog:
 
+September 19 2017
+  * Version 3.4.0
+  - Fixed display of '&' symbol in playlist.
+  - Fixed admin rights detection in install scripts when Server service is disabled.
+  - Fixed crush when album art size is set to 0.
+  - Changed volume control handling to better match with foobar2000 volume control behaviour.
+  - Fixed memory leak in album art handler.
+
 June 10 2017
   * Version 3.3.3
   + Added top/bottop padding settings for trackbars.

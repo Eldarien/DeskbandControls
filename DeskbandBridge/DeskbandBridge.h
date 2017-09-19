@@ -4,7 +4,7 @@
 //	const int MAGIC_NUMBER = 42;
 //}
 
-#define DESKBAND_CONTROLS_VERSION "3.3.3" // Always use 3 numbers version (e.g. xx.y.z)
+#define DESKBAND_CONTROLS_VERSION "3.4.0" // Always use 3 numbers version (e.g. xx.y.z)
 #define DESKBAND_CONTROLS_TITLE "Deskband Controls"
 #define DESKBAND_CONTROLS_ABOUT_TEXT "(c) Eldarien (eldarien@live.com)\nhttps://hydrogenaud.io/index.php/topic,78234.0.html"
 
