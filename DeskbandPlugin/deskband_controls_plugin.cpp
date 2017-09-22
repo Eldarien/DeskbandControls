@@ -111,14 +111,15 @@ namespace deskband_controls_plugin
 		void on_playback_dynamic_info_track(const file_info & p_info) {}
 		void on_volume_change(float p_new_val)
 		{
-			deskband_actions::send_track_volume(p_new_val);
+			static_api_ptr_t<playback_control_v2> control;
+			deskband_actions::send_track_volume(p_new_val, control->get_volume_step());
 		}
 
 		void on_playback_new_track(metadb_handle_ptr p_track)
 		{
-			static_api_ptr_t<playback_control> control;
+			static_api_ptr_t<playback_control_v2> control;
 			deskband_actions::send_track_length(p_track->get_length()); // main flag that new track is starting
-			deskband_actions::send_track_volume(control->get_volume());
+			deskband_actions::send_track_volume(control->get_volume(), control->get_volume_step());
 			deskband_actions::send_stop_after_current(control->get_stop_after_current());
 			deskband_actions::send_pause_state(control->is_paused());
 

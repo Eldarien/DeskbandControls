@@ -23,7 +23,7 @@ namespace dcmFoobar2000.Code
         public event EventHandler<ValueEventArgs<bool>> OnPauseState;
         public event EventHandler<EventArgs> OnStop;
         public event EventHandler<ValueEventArgs<double>> OnTrackLength;
-        public event EventHandler<ValueEventArgs<float>> OnTrackVolume;
+        public event EventHandler<ValueEventArgs<Tuple<float, float>>> OnTrackVolume;
         public event EventHandler<ValueEventArgs<bool>> OnStopAfterCurrentState;
         public event EventHandler<ValueEventArgs<Tuple<byte[], bool>>> OnAlbumArt;
         public event EventHandler<TrackTextEventArgs> OnFilePath;
@@ -113,8 +113,9 @@ namespace dcmFoobar2000.Code
 
                             case DeskbandCommands.VolumeLevel:
                                 {
-                                    float volume = (float)Marshal.PtrToStructure(csd.lpData, typeof(float));
-                                    FireEvent(OnTrackVolume, new ValueEventArgs<float>(volume));
+                                    float[] data = new float[2];
+                                    Marshal.Copy(csd.lpData, data, 0, 2);
+                                    FireEvent(OnTrackVolume, new ValueEventArgs<Tuple<float, float>>(new Tuple<float, float>(data[0], data[1])));
                                 }
                                 break;
 

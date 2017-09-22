@@ -42,6 +42,8 @@ namespace dcmFoobar2000.Code
         private bool _stopped = true;
         private bool _paused;
         private bool _stop_after_current;
+        private float _volume;
+        private float _volume_step;
 
         // Controls
 
@@ -420,7 +422,7 @@ namespace dcmFoobar2000.Code
             _messageForm.OnTrackText += (s, e) => HandleTrackText(e.Text, e.Index);
             _messageForm.OnPauseState += (s, e) => HandlePauseState(e.Value);
             _messageForm.OnStop += (s, e) => HandleStop();
-            _messageForm.OnTrackVolume += (s, e) => HandleVolume(e.Value);
+            _messageForm.OnTrackVolume += (s, e) => HandleVolume(e.Value.Item1, e.Value.Item2);
             _messageForm.OnStopAfterCurrentState += (s, e) => HandleStopAfterCurrent(e.Value);
             _messageForm.OnAlbumArt += (s, e) => HandleAlbumArt(e.Value.Item1, e.Value.Item2);
             _messageForm.OnFilePath += (s, e) => HandleFilePath(e.Text, e.Index);
@@ -514,19 +516,29 @@ namespace dcmFoobar2000.Code
 
         private const double _volumeDbCoeff = 34.0; // this value matches best with foobar2000 volume control behaviour
 
-        private void HandleVolume(float volume)
+        private float LimitVolume(float volumeDb) => Math.Min(Math.Max(volumeDb, -100.0f), 0.0f);
+
+        //volume_in_percent = pow(10, (volume_in_db / coeff)) * 100
+        private int VolumeDbToPercent(float volumeDb) => (int)(Math.Pow(10.0, (volumeDb / _volumeDbCoeff)) * 100.0);
+
+        // volume_in_db = coeff * log10 (volume_in_percent / 100)
+        private float PercentToVolumeDb(int percent) => LimitVolume((float)(_volumeDbCoeff * Math.Log10(percent / 100.0)));
+
+        private void HandleVolume(float volume, float step)
         {
-            //volume_in_percent = pow(10, (volume_in_db / coeff)) * 100
-            int percent = (int)(Math.Pow(10.0, (volume / _volumeDbCoeff)) * 100.0);
-            _trbVolume.Position = percent;
+            _volume = volume;
+            _volume_step = step;
+            _trbVolume.Position = VolumeDbToPercent(volume);
         }
 
         private void SetVolume(int percent)
         {
-            // volume_in_db = coeff * log10 (volume_in_percent / 100)
-            float vdb = (float)(_volumeDbCoeff * Math.Log10(percent / 100.0));
-            if (vdb < -100.0f) vdb = -100.0f;
-            _actions.Volume(vdb);
+            _actions.Volume(PercentToVolumeDb(percent));
+        }
+
+        public void MouseWheel(int delta)
+        {
+            _actions.Volume(LimitVolume(_volume + (delta / 120) * _volume_step));
         }
 
         private void HandleStopAfterCurrent(bool state)
@@ -662,15 +674,6 @@ namespace dcmFoobar2000.Code
         public void DoubleClick()
         {
             _actions.ActivateFoobar();
-        }
-
-        public void MouseWheel(int delta)
-        {
-            var volume = _trbVolume.Position;
-            volume += delta * 3 / 120;
-            if (volume < 0) volume = 0;
-            if (volume > 100) volume = 100;
-            SetVolume(volume);
         }
 
         private bool _tooltipShowed = false;

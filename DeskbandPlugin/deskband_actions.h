@@ -11,7 +11,7 @@ namespace deskband_actions
 	void handle_playlist_change(t_size p_playlist);
 	void send_pause_state(bool state);
 	void send_stop();
-	void send_track_volume(float volume);
+	void send_track_volume(float volume, float step);
 	void send_stop_after_current(bool state);
 	void send_album_art(const void *art, t_size len, bool stub);
 	void resend_last_state();

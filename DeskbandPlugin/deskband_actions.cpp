@@ -5,6 +5,7 @@ namespace deskband_actions
 {
 	static double last_length = 0.0;
 	static float last_volume = 0.0;
+	static float last_volume_step = 0.0;
 	static bool last_stop_after_current_state = false;
 	static void* last_album_art_buffer = NULL;
 	static t_size last_album_art_buffer_size = 0;
@@ -182,10 +183,12 @@ namespace deskband_actions
 		send_command(DESKBAND_CMD_Stop, NULL, 0);
 	}
 
-	void send_track_volume(float volume)
+	void send_track_volume(float volume, float step)
 	{
 		last_volume = volume;
-		send_command(DESKBAND_CMD_VolumeLevel, &volume, sizeof(volume));
+		last_volume_step = step;
+		float data[] = { volume, step };
+		send_command(DESKBAND_CMD_VolumeLevel, &data, sizeof(data));
 	}
 
 	void send_stop_after_current(bool state)
@@ -229,7 +232,7 @@ namespace deskband_actions
 	void resend_last_state()
 	{
 		send_track_length(last_length);
-		send_track_volume(last_volume);
+		send_track_volume(last_volume, last_volume_step);
 		send_stop_after_current(last_stop_after_current_state);
 		send_album_art(last_album_art_buffer, last_album_art_buffer_size, last_album_art_stub);
 
@@ -239,7 +242,7 @@ namespace deskband_actions
 
 	void resend_last_nontrack_state()
 	{
-		send_track_volume(last_volume);
+		send_track_volume(last_volume, last_volume_step);
 		send_stop_after_current(last_stop_after_current_state);
 		send_album_art(last_album_art_buffer, last_album_art_buffer_size, last_album_art_stub);
 
