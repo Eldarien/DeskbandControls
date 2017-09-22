@@ -34,6 +34,9 @@ Eldarien (eldarien@live.com)
 ** Changelog:
 
 September 19 2017
+  * Version 3.4.1
+  - Volume control now follows volume step setting of foobar2000.
+
   * Version 3.4.0
   - Fixed display of '&' symbol in playlist.
   - Fixed admin rights detection in install scripts when Server service is disabled.
