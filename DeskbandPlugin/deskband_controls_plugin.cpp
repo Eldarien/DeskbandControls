@@ -87,6 +87,8 @@ namespace deskband_controls_plugin
 				flag_on_volume_change;
 		}
 
+		float _last_volume_step = 1.0f;
+
 		void on_playback_starting(play_control::t_track_command p_command,bool p_paused) {}
 		void on_playback_stop(play_control::t_stop_reason p_reason)
 		{
@@ -98,9 +100,16 @@ namespace deskband_controls_plugin
 		}
 		void on_playback_time(double p_time)
 		{
-			static_api_ptr_t<playback_control> control;
+			static_api_ptr_t<playback_control_v2> control;
 			deskband_actions::send_track_time(p_time);
 			deskband_actions::send_stop_after_current(control->get_stop_after_current());
+
+			float step = control->get_volume_step();
+			if (step != _last_volume_step)
+			{
+				_last_volume_step = step;
+				deskband_actions::send_track_volume(control->get_volume(), step);
+			}
 		}
 		void on_playback_pause(bool p_state)
 		{
