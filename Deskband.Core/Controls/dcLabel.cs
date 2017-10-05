@@ -85,6 +85,28 @@ namespace Deskband.Core.Controls
             }
         }
 
+        private Image _bkImage;
+        private int _bkImageX;
+        private int _bkImageY;
+        public void SetBkImage(Image bkImage, int x, int y, int width, int height, bool preserveAR)
+        {
+            if (_bkImage != null)
+            {
+                _bkImage.Dispose();
+                _bkImage = null;
+            }
+            if (bkImage != null)
+            {
+                Bitmap bmp = bkImage.Width != width || bkImage.Height != height
+                    ? (Bitmap)ImageHelpers.HQResize(bkImage, width, height, preserveAR)
+                    : new Bitmap(bkImage);
+
+                _bkImage = bmp;
+                _bkImageX = x;
+                _bkImageY = y;
+            }
+        }
+
         // private methods
 
         private void InitializeFont()
@@ -109,6 +131,12 @@ namespace Deskband.Core.Controls
         {
             Gdi32.DeleteObject(_hFont);
             _timer.Dispose();
+
+            if (_bkImage != null && _bkImage != ImageHelpers.Empty)
+            {
+                _bkImage.Dispose();
+                _bkImage = null;
+            }
 
             base.Dispose(disposing);
         }
@@ -166,16 +194,27 @@ namespace Deskband.Core.Controls
                 var bitmap = Gdi32.CreateDIBSection(memdc, ref dib, DIB_RGB_COLORS, 0, IntPtr.Zero, 0);
                 var oldBitmap = Gdi32.SelectObject(memdc, bitmap);
 
+                PaintBackground(memdc, rc);
+                PaintOutline(memdc, rc);
+
                 DTTOPTS opts = new DTTOPTS();
                 opts.dwSize = (UInt32)Marshal.SizeOf(typeof(DTTOPTS));
                 opts.dwFlags = DTT_COMPOSITED | DTT_TEXTCOLOR;
                 opts.crText = textColor;
 
-                UxTheme.DrawThemeParentBackground(Handle, memdc, ref rc);
-
-                PaintOutline(memdc, rc);
-
                 var t = PrepareScrollText(alphadc, rc, textFlags);
+
+                //TODO: add options for displaying shadow and/or text solid background
+                //if (_bkImage != null)
+                //{
+                //    var shRect = new RECT(t.Rect.Left + 2, t.Rect.Top + 2, t.Rect.Right + 2, t.Rect.Bottom + 2);
+                //    var shOpts = new DTTOPTS();
+                //    shOpts.dwSize = (UInt32)Marshal.SizeOf(typeof(DTTOPTS));
+                //    shOpts.dwFlags = DTT_COMPOSITED | DTT_TEXTCOLOR;
+                //    shOpts.crText = new COLORREF(Color.Black);
+                //    UxTheme.DrawThemeTextEx(hTheme, alphadc, 0, 0, t.Text, t.Text.Length, t.TextFlags, ref shRect, ref shOpts);
+                //}
+
                 UxTheme.DrawThemeTextEx(hTheme, alphadc, 0, 0, t.Text, t.Text.Length, t.TextFlags, ref t.Rect, ref opts);
 
                 var blendFunc = new BLENDFUNCTION(AC_SRC_OVER, 0, ForeColor.A, AC_SRC_ALPHA);
@@ -193,12 +232,11 @@ namespace Deskband.Core.Controls
                 var bitmap = Gdi32.CreateCompatibleBitmap(hdc, rc.Right, rc.Bottom);
                 var oldBitmap = Gdi32.SelectObject(memdc, bitmap);
 
+                PaintBackground(memdc, rc);
+                PaintOutline(memdc, rc);
+
                 var dtp = new DRAWTEXTPARAMS();
                 dtp.cbSize = (UInt32)Marshal.SizeOf(typeof(DRAWTEXTPARAMS));
-
-                UxTheme.DrawThemeParentBackground(Handle, memdc, ref rc);
-
-                PaintOutline(memdc, rc);
 
                 Gdi32.SetTextColor(memdc, textColor);
                 Gdi32.SetBkMode(memdc, TRANSPARENT);
@@ -227,6 +265,22 @@ namespace Deskband.Core.Controls
             Gdi32.DeleteDC(memdc);
 
             e.Graphics.ReleaseHdc(hdc);
+        }
+
+        private void PaintBackground(IntPtr dc, RECT rc)
+        {
+            if (_bkImage == null)
+            {
+                UxTheme.DrawThemeParentBackground(Handle, dc, ref rc);
+            }
+            else
+            {
+                var b = ((Bitmap)_bkImage).GetHbitmap(Color.Red);
+                var bdc = Gdi32.CreateCompatibleDC(dc);
+                Gdi32.SelectObject(bdc, b);
+                Gdi32.BitBlt(dc, 0, 0, rc.Width, rc.Height, bdc, Left - _bkImageX, Top - _bkImageY, SRCCOPY);
+                Gdi32.DeleteDC(bdc);
+            }
         }
 
         private void PaintOutline(IntPtr dc, RECT rc)

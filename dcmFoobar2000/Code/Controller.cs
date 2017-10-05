@@ -717,6 +717,12 @@ namespace dcmFoobar2000.Code
                 _tooltipAlbumArt = CreateAlbumArt(tcfg.AlbumArt);
                 _tooltipAlbumArt.SetImage(_tooltipAlbumArtImage);
                 form.Controls.Add(_tooltipAlbumArt);
+
+                var bkImage = _tooltipAlbumArt.Image;
+                foreach (var lbl in _tooltipLabels)
+                {
+                    lbl.SetBkImage(bkImage ?? Resources.Image_NoCoverArt, tcfg.AlbumArt.X, tcfg.AlbumArt.Y, tcfg.AlbumArt.Width, tcfg.AlbumArt.Height, tcfg.AlbumArt.PreserveAspectRatio);
+                }
             }
         }
 
