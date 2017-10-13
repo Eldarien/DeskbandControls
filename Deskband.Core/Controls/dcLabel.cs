@@ -37,6 +37,9 @@ namespace Deskband.Core.Controls
             ScrollSpeed = 100;
             ScrollStep = 5;
             ScrollSeparator = " **** ";
+
+            ShadowOffset = 2;
+            BackgroundColor = Color.Transparent;
         }
 
         // properties
@@ -57,6 +60,12 @@ namespace Deskband.Core.Controls
         }
 
         public HorizontalAlign TextAlign { get; set; }
+
+        public bool DisplayShadow { get; set; }
+        public Color ShadowColor { get; set; }
+        public int ShadowOffset { get; set; }
+
+        public Color BackgroundColor { get; set; }
 
         public bool DrawOutline { get; set; }
 
@@ -155,7 +164,8 @@ namespace Deskband.Core.Controls
 
         protected override void OnPaint(PaintEventArgs e)
         {
-            base.OnPaint(e);
+            ForeColor = Gdi32.FixBlackAlpha(ForeColor);
+            BackgroundColor = Gdi32.FixBlackAlpha(BackgroundColor);
 
             var hdc = e.Graphics.GetHdc();
             var memdc = Gdi32.CreateCompatibleDC(hdc);
@@ -173,56 +183,41 @@ namespace Deskband.Core.Controls
                 textFlags |= DT_RTLREADING;
 
             var dib = new BITMAPINFO();
-            dib.bmiHeader.biSize = Marshal.SizeOf(typeof(BITMAPINFOHEADER));
-            dib.bmiHeader.biHeight = -(rc.Bottom - rc.Top); // negative because DrawThemeTextEx() uses a top-down DIB
-            dib.bmiHeader.biWidth = rc.Right - rc.Left;
-            dib.bmiHeader.biPlanes = 1;
-            dib.bmiHeader.biBitCount = 32;
-            dib.bmiHeader.biCompression = BI_RGB;
+            Gdi32.FillBitmapInfo(ref dib, rc.Width, rc.Height);
 
             var alphadc = Gdi32.CreateCompatibleDC(hdc);
             Gdi32.SelectObject(alphadc, _hFont);
 
             var alphabitmap = Gdi32.CreateDIBSection(alphadc, ref dib, DIB_RGB_COLORS, 0, IntPtr.Zero, 0);
             var oldalphaBitmap = Gdi32.SelectObject(alphadc, alphabitmap);
-            Gdi32.SelectObject(alphadc, Gdi32.GetStockObject(StockObjects.HOLLOW_BRUSH));
-            Gdi32.SelectObject(alphadc, Gdi32.GetStockObject(StockObjects.NULL_PEN));
-            Gdi32.Rectangle(alphadc, 0, 0, rc.Right - rc.Left, rc.Bottom - rc.Top);
+            Gdi32.FillAlphadc(alphadc, ref rc, StockObjects.HOLLOW_BRUSH, StockObjects.NULL_PEN);
 
             if (DwmApi.DwmIsCompositionEnabled())
             {
                 var bitmap = Gdi32.CreateDIBSection(memdc, ref dib, DIB_RGB_COLORS, 0, IntPtr.Zero, 0);
                 var oldBitmap = Gdi32.SelectObject(memdc, bitmap);
 
-                PaintBackground(memdc, rc);
-                PaintOutline(memdc, rc);
+                PaintBackground(memdc, rc, ref dib);
+                if (DrawOutline) Gdi32.DrawOutline(memdc, ref rc);
 
                 DTTOPTS opts = new DTTOPTS();
                 opts.dwSize = (UInt32)Marshal.SizeOf(typeof(DTTOPTS));
                 opts.dwFlags = DTT_COMPOSITED | DTT_TEXTCOLOR;
-                opts.crText = textColor;
 
                 var t = PrepareScrollText(alphadc, rc, textFlags);
 
-                //TODO: add options for displaying shadow and/or text solid background
-                //if (_bkImage != null)
-                //{
-                //    var shRect = new RECT(t.Rect.Left + 2, t.Rect.Top + 2, t.Rect.Right + 2, t.Rect.Bottom + 2);
-                //    var shOpts = new DTTOPTS();
-                //    shOpts.dwSize = (UInt32)Marshal.SizeOf(typeof(DTTOPTS));
-                //    shOpts.dwFlags = DTT_COMPOSITED | DTT_TEXTCOLOR;
-                //    shOpts.crText = new COLORREF(Color.Black);
-                //    UxTheme.DrawThemeTextEx(hTheme, alphadc, 0, 0, t.Text, t.Text.Length, t.TextFlags, ref shRect, ref shOpts);
-                //}
+                if (DisplayShadow)
+                {
+                    opts.crText = new COLORREF(ShadowColor);
+                    UxTheme.DrawThemeTextEx(hTheme, alphadc, 0, 0, t.Text, t.Text.Length, t.TextFlags, ref t.ShadowRect, ref opts);
+                }
 
+                opts.crText = textColor;
                 UxTheme.DrawThemeTextEx(hTheme, alphadc, 0, 0, t.Text, t.Text.Length, t.TextFlags, ref t.Rect, ref opts);
 
-                var blendFunc = new BLENDFUNCTION(AC_SRC_OVER, 0, ForeColor.A, AC_SRC_ALPHA);
-                Gdi32.AlphaBlend(memdc, rc.Left, rc.Top, rc.Right - rc.Left, rc.Bottom - rc.Top, alphadc,
-                    0, 0, rc.Right - rc.Left, rc.Bottom - rc.Top,
-                    blendFunc);
+                Gdi32.DoAlphaBlendToMemdc(memdc, ref rc, alphadc, ForeColor.A);
 
-                Gdi32.BitBlt(hdc, rc.Left, rc.Top, rc.Right - rc.Left, rc.Bottom - rc.Top, memdc, 0, 0, SRCCOPY);
+                Gdi32.BitBlt(hdc, rc.Left, rc.Top, rc.Width, rc.Height, memdc, 0, 0, SRCCOPY);
 
                 Gdi32.SelectObject(memdc, oldBitmap);
                 Gdi32.DeleteObject(bitmap);
@@ -232,19 +227,25 @@ namespace Deskband.Core.Controls
                 var bitmap = Gdi32.CreateCompatibleBitmap(hdc, rc.Right, rc.Bottom);
                 var oldBitmap = Gdi32.SelectObject(memdc, bitmap);
 
-                PaintBackground(memdc, rc);
-                PaintOutline(memdc, rc);
+                PaintBackground(memdc, rc, ref dib);
+                if (DrawOutline) Gdi32.DrawOutline(memdc, ref rc);
 
                 var dtp = new DRAWTEXTPARAMS();
                 dtp.cbSize = (UInt32)Marshal.SizeOf(typeof(DRAWTEXTPARAMS));
 
-                Gdi32.SetTextColor(memdc, textColor);
+                var t = PrepareScrollText(memdc, rc, textFlags);
                 Gdi32.SetBkMode(memdc, TRANSPARENT);
 
-                var t = PrepareScrollText(memdc, rc, textFlags);
+                if (DisplayShadow)
+                {
+                    Gdi32.SetTextColor(memdc, new COLORREF(ShadowColor));
+                    User32.DrawTextEx(memdc, t.Text, t.Text.Length, ref t.ShadowRect, t.TextFlags, ref dtp);
+                }
+
+                Gdi32.SetTextColor(memdc, textColor);
                 User32.DrawTextEx(memdc, t.Text, t.Text.Length, ref t.Rect, t.TextFlags, ref dtp);
 
-                Gdi32.BitBlt(hdc, rc.Left, rc.Top, rc.Right - rc.Left, rc.Bottom - rc.Top, memdc, 0, 0, SRCCOPY);
+                Gdi32.BitBlt(hdc, rc.Left, rc.Top, rc.Width, rc.Height, memdc, 0, 0, SRCCOPY);
 
                 Gdi32.SelectObject(memdc, oldBitmap);
                 Gdi32.DeleteObject(bitmap);
@@ -267,7 +268,7 @@ namespace Deskband.Core.Controls
             e.Graphics.ReleaseHdc(hdc);
         }
 
-        private void PaintBackground(IntPtr dc, RECT rc)
+        private void PaintBackground(IntPtr dc, RECT rc, ref BITMAPINFO dib)
         {
             if (_bkImage == null)
             {
@@ -280,16 +281,29 @@ namespace Deskband.Core.Controls
                 Gdi32.SelectObject(bdc, b);
                 Gdi32.BitBlt(dc, 0, 0, rc.Width, rc.Height, bdc, Left - _bkImageX, Top - _bkImageY, SRCCOPY);
                 Gdi32.DeleteDC(bdc);
+                Gdi32.DeleteObject(b);
             }
-        }
-
-        private void PaintOutline(IntPtr dc, RECT rc)
-        {
-            if (DrawOutline)
+            if (BackgroundColor != Color.Transparent)
             {
-                Gdi32.SelectObject(dc, Gdi32.GetStockObject(StockObjects.HOLLOW_BRUSH));
-                Gdi32.SelectObject(dc, Gdi32.GetStockObject(StockObjects.WHITE_PEN));
-                Gdi32.Rectangle(dc, 0, 0, rc.Right - rc.Left, rc.Bottom - rc.Top);
+                var bdc = Gdi32.CreateCompatibleDC(dc);
+                var bitmap = Gdi32.CreateCompatibleBitmap(dc, rc.Right, rc.Bottom);
+                Gdi32.SelectObject(bdc, bitmap);
+
+                var color = new COLORREF(BackgroundColor);
+                var brush = Gdi32.CreateSolidBrush(color);
+                var pen = Gdi32.CreatePen(PenStyle.PS_SOLID, 1, color);
+                Gdi32.SelectObject(bdc, brush);
+                Gdi32.SelectObject(bdc, pen);
+                Gdi32.Rectangle(bdc, 0, 0, rc.Width, rc.Height);
+
+                var pixels = new COLORREF[Width * Height];
+                Gdi32.FixAlphaChannel(bdc, bitmap, (uint)rc.Height, ref pixels, ref dib, color);
+                Gdi32.DoAlphaBlendToMemdc(dc, ref rc, bdc, BackgroundColor.A);
+
+                Gdi32.DeleteObject(pen);
+                Gdi32.DeleteObject(brush);
+                Gdi32.DeleteObject(bitmap);
+                Gdi32.DeleteDC(bdc);
             }
         }
 
@@ -298,6 +312,7 @@ namespace Deskband.Core.Controls
             public string Text;
             public RECT Rect;
             public uint TextFlags;
+            public RECT ShadowRect;
         }
 
         private TextWithRect PrepareScrollText(IntPtr dc, RECT rc, uint textFlags)
@@ -308,7 +323,7 @@ namespace Deskband.Core.Controls
                 var len = text.Length;
                 var fullTextSize = Size.Empty;
                 Gdi32.GetTextExtentPoint32(dc, text, len, out fullTextSize);
-                if (fullTextSize.Width > rc.Right - rc.Left)
+                if (fullTextSize.Width > rc.Width)
                 {
                     var tsb = new StringBuilder();
                     var textSize = Size.Empty;
@@ -327,266 +342,9 @@ namespace Deskband.Core.Controls
                     textFlags &= ~(DT_CENTER | DT_RIGHT); // Always align to left when scrolling
                 }
             }
-            return new TextWithRect { Text = text, Rect = rc, TextFlags = textFlags };
+            var shOffset = ShadowOffset;
+            var shRect = new RECT(rc.Left + shOffset, rc.Top + shOffset, rc.Right + shOffset, rc.Bottom + shOffset);
+            return new TextWithRect { Text = text, Rect = rc, TextFlags = textFlags, ShadowRect = shRect };
         }
-
-        /*
-        // old
-
-        private bool isRtlText;
-
-        public override string Text
-        {
-            get { return base.Text; }
-            set
-            {
-                if (base.Text != value)
-                {
-                    isRtlText = WinApiHelpers.IsTextRtl(value);
-                    base.Text = value;
-
-                    _lastRefresh = DateTime.MinValue; // force refresh
-                    Refresh();
-                }
-            }
-        }
-
-        public bool AlignTextToRight { get; set; }
-
-        public bool EnableScroll { get; set; }
-
-        public bool DrawOutline { get; set; }
-
-        private DateTime _lastRefresh;
-
-        public override void Refresh()
-        {
-            var now = DateTime.Now;
-            if ((now - _lastRefresh).TotalMilliseconds < 100)
-                return;
-
-            _lastRefresh = now;
-
-            User32.InvalidateRect(this.Handle, IntPtr.Zero, false);
-        }
-
-        
-
-        protected override void Dispose(bool disposing)
-        {
-            Gdi32.DeleteObject(_hFont);
-
-            base.Dispose(disposing);
-        }
-
-        public void ScrollTick()
-        {
-            if (!EnableScroll)
-            {
-                _scrollPos = 0;
-                return;
-            }
-            _scrollPos++;
-            Refresh();
-        }
-
-        private string PrepareScrolledText(IntPtr hdc)
-        {
-            if (!EnableScroll)
-            {
-                return this.Text;
-            }
-
-            var len = Text.Length;
-            var fullTextSize = Size.Empty;
-            Gdi32.GetTextExtentPoint32(hdc, Text, len, out fullTextSize);
-            if (fullTextSize.Width > this.Size.Width)
-            {
-                const string scrollSeparator = " **** ";
-                int scrollSeparatorLen = scrollSeparator.Length;
-                if (_scrollPos >= len + scrollSeparatorLen)
-                    _scrollPos = 0;
-
-                var textBuffer = new StringBuilder(Text.Length * 2 + scrollSeparatorLen * 2);
-                textBuffer.Append(scrollSeparator);
-                textBuffer.Append(Text);
-                textBuffer.Append(scrollSeparator);
-                textBuffer.Append(Text);
-
-                bool rmode = AlignTextToRight && !isRtlText || !AlignTextToRight && isRtlText;
-                int xlen = (len + scrollSeparatorLen) * 2 -
-                    (rmode ? len + scrollSeparatorLen - _scrollPos : _scrollPos);
-
-                return textBuffer.ToString(rmode ? 0 : _scrollPos, xlen);
-            }
-            else
-            {
-                return this.Text;
-            }
-        }
-
-        //private IntPtr GetTextFont()
-        //{
-        //    const string rebarWindowClass = "ReBarWindow32";
-        //    var hParent = this.Handle;
-        //    var parentWindowClass = new StringBuilder(256);
-        //    while (parentWindowClass.ToString() != rebarWindowClass)
-        //    {
-        //        hParent = WinApi.GetParent(hParent);
-        //        if (hParent == IntPtr.Zero)
-        //        {
-        //            break;
-        //        }
-        //        parentWindowClass.Clear();
-        //        WinApi.RealGetWindowClass(hParent, parentWindowClass, (uint)parentWindowClass.Capacity);
-        //    }
-
-        //    var hFont = Environment.OSVersion.Version.Major < 6 || hParent == IntPtr.Zero
-        //        ? WinApi.GetStockObject(WinApi.StockObjects.DEFAULT_GUI_FONT)
-        //        : (IntPtr)WinApi.SendMessage(hParent, WinApi.WM_GETFONT, IntPtr.Zero, IntPtr.Zero);
-
-        //    return hFont;
-        //}
-
-        protected override void OnPaint(PaintEventArgs e)
-        {
-            base.OnPaint(e);
-
-            var hdc = e.Graphics.GetHdc();
-            var memdc = Gdi32.CreateCompatibleDC(hdc);
-
-            var hTheme = UxTheme.OpenThemeData(IntPtr.Zero, "BUTTON");
-
-            //var hFont = this.Font.ToHfont();
-
-            var oldFont = Gdi32.SelectObject(memdc, _hFont);
-
-            var rc = new RECT(ClientRectangle);
-
-            string text = PrepareScrolledText(memdc);
-
-            var textColor = new COLORREF(this.ForeColor);
-
-            var textFlags = DT_NOPREFIX;
-            if (this.AlignTextToRight)
-                textFlags |= DT_RIGHT;
-            if (isRtlText)
-                textFlags |= DT_RTLREADING;
-
-            var dib = new BITMAPINFO();
-            dib.bmiHeader.biSize = Marshal.SizeOf(typeof(BITMAPINFOHEADER));
-            dib.bmiHeader.biHeight = -(rc.bottom - rc.top); // negative because DrawThemeTextEx() uses a top-down DIB
-            dib.bmiHeader.biWidth = rc.right - rc.left;
-            dib.bmiHeader.biPlanes = 1;
-            dib.bmiHeader.biBitCount = 32;
-            dib.bmiHeader.biCompression = BI_RGB;
-
-            var alphadc = Gdi32.CreateCompatibleDC(hdc);
-            Gdi32.SelectObject(alphadc, _hFont);
-
-            var alphabitmap = Gdi32.CreateDIBSection(alphadc, ref dib, DIB_RGB_COLORS, 0, IntPtr.Zero, 0);
-            var oldalphaBitmap = Gdi32.SelectObject(alphadc, alphabitmap);
-            Gdi32.SelectObject(alphadc, Gdi32.GetStockObject(StockObjects.HOLLOW_BRUSH));
-            Gdi32.SelectObject(alphadc, Gdi32.GetStockObject(StockObjects.NULL_PEN));
-            Gdi32.Rectangle(alphadc, 0, 0, rc.right - rc.left, rc.bottom - rc.top);
-
-            if (DwmApi.DwmIsCompositionEnabled())
-            {
-                var bitmap = Gdi32.CreateDIBSection(memdc, ref dib, DIB_RGB_COLORS, 0, IntPtr.Zero, 0);
-                var oldBitmap = Gdi32.SelectObject(memdc, bitmap);
-
-                var opts = new DTTOPTS();
-                opts.dwSize = (UInt32)Marshal.SizeOf(typeof(DTTOPTS));
-                opts.dwFlags = DTT_COMPOSITED | DTT_TEXTCOLOR;
-                opts.crText = textColor;
-
-                UxTheme.DrawThemeParentBackground(Handle, memdc, ref rc);
-
-                if (this.DrawOutline)
-                {
-                    Gdi32.SelectObject(memdc, Gdi32.GetStockObject(StockObjects.HOLLOW_BRUSH));
-                    Gdi32.SelectObject(memdc, Gdi32.GetStockObject(StockObjects.WHITE_PEN));
-                    Gdi32.Rectangle(memdc, 0, 0, rc.right - rc.left, rc.bottom - rc.top);
-                }
-
-                UxTheme.DrawThemeTextEx(hTheme, alphadc, 0, 0, text, text.Length, textFlags, ref rc, ref opts);
-
-                var blendFunc = new BLENDFUNCTION(AC_SRC_OVER, 0, ForeColor.A, AC_SRC_ALPHA);
-                Gdi32.AlphaBlend(memdc, rc.left, rc.top, rc.right - rc.left, rc.bottom - rc.top, alphadc,
-                    0, 0, rc.right - rc.left, rc.bottom - rc.top,
-                    blendFunc);
-
-                Gdi32.BitBlt(hdc, rc.left, rc.top, rc.right - rc.left, rc.bottom - rc.top, memdc, 0, 0, SRCCOPY);
-
-                Gdi32.SelectObject(memdc, oldBitmap);
-                Gdi32.DeleteObject(bitmap);
-            }
-            else
-            {
-                var bitmap = Gdi32.CreateCompatibleBitmap(hdc, rc.right, rc.bottom);
-                var oldBitmap = Gdi32.SelectObject(memdc, bitmap);
-
-                var dtp = new DRAWTEXTPARAMS();
-                dtp.cbSize = (UInt32)Marshal.SizeOf(typeof(DRAWTEXTPARAMS));
-
-                UxTheme.DrawThemeParentBackground(Handle, memdc, ref rc);
-
-                if (this.DrawOutline)
-                {
-                    Gdi32.SelectObject(memdc, Gdi32.GetStockObject(StockObjects.HOLLOW_BRUSH));
-                    Gdi32.SelectObject(memdc, Gdi32.GetStockObject(StockObjects.WHITE_PEN));
-                    Gdi32.Rectangle(memdc, 0, 0, rc.right - rc.left, rc.bottom - rc.top);
-                }
-
-                //WinApi.SetTextColor(alphadc, textColor);
-                //WinApi.SetBkMode(alphadc, WinApi.TRANSPARENT);
-
-                //WinApi.DrawTextEx(alphadc, text, text.Length, ref rc, textFlags, ref dtp);
-
-                //var blendFunc = new WinApi.BLENDFUNCTION(WinApi.AC_SRC_OVER, 0, ForeColor.A, WinApi.AC_SRC_ALPHA);
-                //WinApi.AlphaBlend(memdc, rc.left, rc.top, rc.right - rc.left, rc.bottom - rc.top, alphadc,
-                //    0, 0, rc.right - rc.left, rc.bottom - rc.top,
-                //    blendFunc);
-
-                Gdi32.SetTextColor(memdc, textColor);
-                Gdi32.SetBkMode(memdc, TRANSPARENT);
-                User32.DrawTextEx(memdc, text, text.Length, ref rc, textFlags, ref dtp);
-
-                Gdi32.BitBlt(hdc, rc.left, rc.top, rc.right - rc.left, rc.bottom - rc.top, memdc, 0, 0, SRCCOPY);
-
-                Gdi32.SelectObject(memdc, oldBitmap);
-                Gdi32.DeleteObject(bitmap);
-            }
-
-            // Cleanup
-
-            Gdi32.SelectObject(alphadc, oldalphaBitmap);
-            Gdi32.DeleteObject(alphabitmap);
-            Gdi32.ReleaseDC(alphadc, -1);
-            Gdi32.DeleteDC(alphadc);
-
-            Gdi32.SelectObject(memdc, oldFont);
-            //WinApi.DeleteObject(hFont);
-
-            UxTheme.CloseThemeData(hTheme);
-
-            Gdi32.ReleaseDC(memdc, -1);
-            Gdi32.DeleteDC(memdc);
-
-            e.Graphics.ReleaseHdc(hdc);
-        }
-
-        protected override void WndProc(ref Message m)
-        {
-            if (m.Msg == WM_NCHITTEST)
-            {
-                m.Result = (IntPtr)HTTRANSPARENT;
-            }
-            else
-            {
-                base.WndProc(ref m);
-            }
-        }
-        */
     }
 }

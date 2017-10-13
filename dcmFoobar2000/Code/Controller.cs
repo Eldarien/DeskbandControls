@@ -346,6 +346,10 @@ namespace dcmFoobar2000.Code
             lbl.Size = _sp.MakeSize(settings.Width, settings.Height);
             lbl.ForeColor = settings.FontColor;
             lbl.TextAlign = settings.HorizontalAlign;
+            lbl.DisplayShadow = settings.DisplayShadow;
+            lbl.ShadowColor = settings.ShadowColor;
+            lbl.ShadowOffset = settings.ShadowOffset;
+            lbl.BackgroundColor = settings.BackgroundColor;
             lbl.EnableScrolling = settings.EnableScroll;
             lbl.ScrollSpeed = settings.ScrollSpeed;
             lbl.ScrollStep = settings.ScrollStep;

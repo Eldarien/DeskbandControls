@@ -83,5 +83,58 @@ namespace Deskband.Core.WinApi
 
         [DllImport("gdi32.dll")]
         public static extern int GetDeviceCaps(IntPtr hdc, int nIndex);
+
+        public static System.Drawing.Color FixBlackAlpha(System.Drawing.Color color)
+        {
+            if (color.R == 0 && color.G == 0 && color.B == 0)
+                color = System.Drawing.Color.FromArgb(color.A, 1, 1, 1);
+            return color;
+        }
+
+        public static void FillBitmapInfo(ref BITMAPINFO dib, int width, int height)
+        {
+            dib.bmiHeader.biSize = Marshal.SizeOf(typeof(BITMAPINFOHEADER));
+            dib.bmiHeader.biHeight = -height; // negative because GDI functions use a top-down DIB
+            dib.bmiHeader.biWidth = width;
+            dib.bmiHeader.biPlanes = 1;
+            dib.bmiHeader.biBitCount = 32;
+            dib.bmiHeader.biCompression = BI_RGB;
+        }
+
+        public static void FixAlphaChannel(IntPtr alphadc, IntPtr alphabitmap, uint lines, ref COLORREF[] pixels, ref BITMAPINFO dib, COLORREF colorToFix)
+        {
+            
+            var rgbColorToFix = (colorToFix.ColorDWORD & 0x000000FF) << 16 | (colorToFix.ColorDWORD & 0x0000FF00) | (colorToFix.ColorDWORD & 0x00FF0000) >> 16;
+
+            Gdi32.GetDIBits(alphadc, alphabitmap, 0, lines, pixels, ref dib, 0);
+            for (int i = 0; i < pixels.Length; i++)
+            {
+                if (pixels[i].ColorDWORD == rgbColorToFix)
+                    pixels[i].ColorDWORD |= 0xFF000000;
+            }
+            Gdi32.SetDIBits(alphadc, alphabitmap, 0, lines, pixels, ref dib, 0);
+        }
+
+        public static void FillAlphadc(IntPtr alphadc, ref RECT rc, StockObjects brush, StockObjects pen)
+        {
+            Gdi32.SelectObject(alphadc, Gdi32.GetStockObject(brush));
+            Gdi32.SelectObject(alphadc, Gdi32.GetStockObject(pen));
+            Gdi32.Rectangle(alphadc, 0, 0, rc.Right - rc.Left, rc.Bottom - rc.Top);
+        }
+
+        public static void DoAlphaBlendToMemdc(IntPtr memdc, ref RECT rc, IntPtr alphadc, byte alpha)
+        {
+            var blendFunc = new BLENDFUNCTION(AC_SRC_OVER, 0, alpha, AC_SRC_ALPHA);
+            Gdi32.AlphaBlend(memdc, rc.Left, rc.Top, rc.Width, rc.Height,
+                alphadc, 0, 0, rc.Width, rc.Height,
+                blendFunc);
+        }
+
+        public static void DrawOutline(IntPtr memdc, ref RECT rc)
+        {
+            Gdi32.SelectObject(memdc, Gdi32.GetStockObject(StockObjects.HOLLOW_BRUSH));
+            Gdi32.SelectObject(memdc, Gdi32.GetStockObject(StockObjects.WHITE_PEN));
+            Gdi32.Rectangle(memdc, 0, 0, rc.Width, rc.Height);
+        }
     }
 }

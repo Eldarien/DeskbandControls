@@ -56,12 +56,8 @@ namespace Deskband.Core.Controls
 
         protected override void OnPaint(PaintEventArgs e)
         {
-            // Fix for black color alpha blend issue
-            if (ForeColor.R == 0 && ForeColor.G == 0 && ForeColor.B == 0)
-                ForeColor = Color.FromArgb(ForeColor.A, 1, 1, 1);
-
-            if (BackgroundColor.R == 0 && BackgroundColor.G == 0 && BackgroundColor.B == 0)
-                BackgroundColor = Color.FromArgb(BackgroundColor.A, 1, 1, 1);
+            ForeColor = Gdi32.FixBlackAlpha(ForeColor);
+            BackgroundColor = Gdi32.FixBlackAlpha(BackgroundColor);
 
             var color = new COLORREF(ForeColor);
             var backgroundColor = new COLORREF(BackgroundColor);
@@ -71,48 +67,37 @@ namespace Deskband.Core.Controls
             var memdc = Gdi32.CreateCompatibleDC(hdc);
 
             var dib = new BITMAPINFO();
-            dib.bmiHeader.biSize = Marshal.SizeOf(typeof(BITMAPINFOHEADER));
-            dib.bmiHeader.biHeight = -(rc.Bottom - rc.Top); // negative because DrawThemeTextEx() uses a top-down DIB
-            dib.bmiHeader.biWidth = rc.Right - rc.Left;
-            dib.bmiHeader.biPlanes = 1;
-            dib.bmiHeader.biBitCount = 32;
-            dib.bmiHeader.biCompression = BI_RGB;
+            Gdi32.FillBitmapInfo(ref dib, rc.Width, rc.Height);
 
             var bitmap = Gdi32.CreateDIBSection(memdc, ref dib, DIB_RGB_COLORS, 0, IntPtr.Zero, 0);
             var oldBitmap = Gdi32.SelectObject(memdc, bitmap);
 
             // background & outline
             UxTheme.DrawThemeParentBackground(Handle, memdc, ref rc);
-            if (this.DrawOutline)
-            {
-                Gdi32.SelectObject(memdc, Gdi32.GetStockObject(StockObjects.HOLLOW_BRUSH));
-                Gdi32.SelectObject(memdc, Gdi32.GetStockObject(StockObjects.WHITE_PEN));
-                Gdi32.Rectangle(memdc, 0, 0, rc.Right - rc.Left, rc.Bottom - rc.Top);
-            }
+            if (DrawOutline) Gdi32.DrawOutline(memdc, ref rc);
 
             var alphadc = Gdi32.CreateCompatibleDC(hdc);
             var alphabitmap = Gdi32.CreateDIBSection(alphadc, ref dib, DIB_RGB_COLORS, 0, IntPtr.Zero, 0);
             var oldalphaBitmap = Gdi32.SelectObject(alphadc, alphabitmap);
             var pixels = new COLORREF[Width * Height];
 
-            FillAlphadc(alphadc, ref rc, StockObjects.HOLLOW_BRUSH, StockObjects.NULL_PEN);
+            Gdi32.FillAlphadc(alphadc, ref rc, StockObjects.HOLLOW_BRUSH, StockObjects.NULL_PEN);
           
             if (UseBackgroundColor)
             {
                 Internal_PaintBackground(alphadc, rc, backgroundColor);
-                FixAlphaChannel(alphadc, alphabitmap, ref pixels, ref dib, backgroundColor);
-                DoAlphaBlendToMemdc(memdc, ref rc, alphadc, BackgroundColor.A);
+                Gdi32.FixAlphaChannel(alphadc, alphabitmap, (uint)Height, ref pixels, ref dib, backgroundColor);
+                Gdi32.DoAlphaBlendToMemdc(memdc, ref rc, alphadc, BackgroundColor.A);
 
                 // clear alphadc
-                FillAlphadc(alphadc, ref rc, StockObjects.BLACK_BRUSH, StockObjects.BLACK_PEN);
+                Gdi32.FillAlphadc(alphadc, ref rc, StockObjects.BLACK_BRUSH, StockObjects.BLACK_PEN);
             }
 
             Internal_PaintContent(alphadc, rc, color, backgroundColor);
-            FixAlphaChannel(alphadc, alphabitmap, ref pixels, ref dib, color);
-            DoAlphaBlendToMemdc(memdc, ref rc, alphadc, ForeColor.A);
-            
+            Gdi32.FixAlphaChannel(alphadc, alphabitmap, (uint)Height, ref pixels, ref dib, color);
+            Gdi32.DoAlphaBlendToMemdc(memdc, ref rc, alphadc, ForeColor.A);
 
-            Gdi32.BitBlt(hdc, rc.Left, rc.Top, rc.Right - rc.Left, rc.Bottom - rc.Top, memdc, 0, 0, SRCCOPY);
+            Gdi32.BitBlt(hdc, rc.Left, rc.Top, rc.Width, rc.Height, memdc, 0, 0, SRCCOPY);
 
             Gdi32.SelectObject(memdc, oldBitmap);
             Gdi32.DeleteObject(bitmap);
@@ -126,34 +111,6 @@ namespace Deskband.Core.Controls
             Gdi32.DeleteDC(memdc);
 
             e.Graphics.ReleaseHdc(hdc);
-        }
-
-        private void FixAlphaChannel(IntPtr alphadc, IntPtr alphabitmap, ref COLORREF[] pixels, ref BITMAPINFO dib, COLORREF colorToFix)
-        {
-            var rgbColorToFix = (colorToFix.ColorDWORD & 0x000000FF) << 16 | (colorToFix.ColorDWORD & 0x0000FF00) | (colorToFix.ColorDWORD & 0x00FF0000) >> 16;
-
-            Gdi32.GetDIBits(alphadc, alphabitmap, 0, (uint)Height, pixels, ref dib, 0);
-            for (int i = 0; i < pixels.Length; i++)
-            {
-                if (pixels[i].ColorDWORD == rgbColorToFix)
-                    pixels[i].ColorDWORD |= 0xFF000000;
-            }
-            Gdi32.SetDIBits(alphadc, alphabitmap, 0, (uint)Height, pixels, ref dib, 0);
-        }
-
-        private void DoAlphaBlendToMemdc(IntPtr memdc, ref RECT rc, IntPtr alphadc, byte alpha)
-        {
-            var blendFunc = new BLENDFUNCTION(AC_SRC_OVER, 0, alpha, AC_SRC_ALPHA);
-            Gdi32.AlphaBlend(memdc, rc.Left, rc.Top, rc.Right - rc.Left, rc.Bottom - rc.Top, alphadc,
-                0, 0, rc.Right - rc.Left, rc.Bottom - rc.Top,
-                blendFunc);
-        }
-
-        private void FillAlphadc(IntPtr alphadc, ref RECT rc, StockObjects brush, StockObjects pen)
-        {
-            Gdi32.SelectObject(alphadc, Gdi32.GetStockObject(brush));
-            Gdi32.SelectObject(alphadc, Gdi32.GetStockObject(pen));
-            Gdi32.Rectangle(alphadc, 0, 0, rc.Right - rc.Left, rc.Bottom - rc.Top);
         }
 
         private void Internal_PaintBackground(IntPtr hdc, RECT rc, COLORREF backgroundColor)
