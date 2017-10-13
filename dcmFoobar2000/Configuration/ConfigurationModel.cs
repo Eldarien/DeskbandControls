@@ -62,10 +62,10 @@ namespace dcmFoobar2000.Configuration
 
         [Browsable(false), SettingsNode("Tooltip")]
         public TooltipSettings Tooltip { get; set; } = new TooltipSettings {
-            Enabled = true, Width = 300, Height = 350, BackgroundColor = Color.Black, ShowDelay = 1000,
+            Enabled = true, Width = 400, Height = 400, BackgroundColor = Color.Black, ShowDelay = 1000,
             AlbumArt = new AlbumArtSettings
             {
-                Visible = true, X = 0, Y = 0, Width = 300, Height = 300,
+                Visible = true, X = 0, Y = 0, Width = 400, Height = 400,
                 DoNotShowStubImage = false, PreserveAspectRatio = true
             }
         };
@@ -119,16 +119,20 @@ namespace dcmFoobar2000.Configuration
 
                 cfg.Tooltip.Texts.Add(new TooltipTextSettings
                 {
-                    Name = "Artist", X = 0, Y = 300, Width = 300, Height = 20, Visible = true,
+                    Name = "Artist", X = 0, Y = 350, Width = 400, Height = 25, Visible = true,
                     Format = "%artist%", ScrollSeparator = " **** ", ScrollSpeed = 30, ScrollStep = 1,
-                    FontName = "Segoe UI", FontSize = 12, FontStyleBold = true, FontColor = Color.LightGray,
+                    FontName = "Segoe UI", FontSize = 12, FontStyleBold = true, FontColor = Color.White,
+                    BackgroundColor = Color.FromArgb(0x90, 0, 0, 0),
+                    DisplayShadow = true, ShadowColor = Color.Black,
                     HorizontalAlign = HorizontalAlign.Center
                 });
                 cfg.Tooltip.Texts.Add(new TooltipTextSettings
                 {
-                    Name = "Title", X = 0, Y = 325, Width = 300, Height = 24, Visible = true,
+                    Name = "Title", X = 0, Y = 375, Width = 400, Height = 25, Visible = true,
                     Format = "%title%", ScrollSeparator = " **** ", ScrollSpeed = 30, ScrollStep = 1,
-                    FontName = "Segoe UI", FontSize = 12, FontStyleBold = false, FontColor = Color.LightGray,
+                    FontName = "Segoe UI", FontSize = 12, FontStyleBold = true, FontColor = Color.White,
+                    BackgroundColor = Color.FromArgb(0x90, 0, 0, 0),
+                    DisplayShadow = true, ShadowColor = Color.Black,
                     HorizontalAlign = HorizontalAlign.Center
                 });
 
