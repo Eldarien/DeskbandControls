@@ -96,7 +96,7 @@ namespace Deskband.Core.Controls
         private Image _bkImage;
         private int _bkImageX;
         private int _bkImageY;
-        public void SetBkImage(Image bkImage, int x, int y, int width, int height, bool preserveAR)
+        public void SetBkImage(Image bkImage, int x, int y)
         {
             if (_bkImage != null)
             {
@@ -105,11 +105,7 @@ namespace Deskband.Core.Controls
             }
             if (bkImage != null)
             {
-                Bitmap bmp = bkImage.Width != width || bkImage.Height != height
-                    ? (Bitmap)ImageHelpers.HQResize(bkImage, width, height, preserveAR)
-                    : new Bitmap(bkImage);
-
-                _bkImage = bmp;
+                _bkImage = new Bitmap(bkImage);
                 _bkImageX = x;
                 _bkImageY = y;
             }

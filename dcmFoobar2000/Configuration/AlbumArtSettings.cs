@@ -27,7 +27,7 @@ namespace dcmFoobar2000.Configuration
         public string StubImagePath { get { return _stubImagePath; } set { _stubImagePath = PathHelpers.TryPlaceEnvVars(value); } }
         private string _stubImagePath;
 
-        [Category("Image"), DisplayName("Do Not Use Stub Image"), TypeConverter(typeof(YesNoBooleanConverter))]
+        [Category("Image"), DisplayName("Do Not Use Stub Image From Player"), TypeConverter(typeof(YesNoBooleanConverter))]
         public bool DoNotShowStubImage { get; set; }
 
         [Category("Image"), DisplayName("Preserve Aspect Ratio"), TypeConverter(typeof(YesNoBooleanConverter))]

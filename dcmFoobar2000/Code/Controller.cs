@@ -301,16 +301,7 @@ namespace dcmFoobar2000.Code
             aa.Location = _sp.MakePoint(settings.X, settings.Y);
             aa.Size = _sp.MakeSize(settings.Width, settings.Height);
             aa.PreserveAspectRatio = settings.PreserveAspectRatio;
-            aa.EnableStubImage = !settings.DoNotShowStubImage;
-            Image stubImage = ImageHelpers.Empty;
-            if (settings.StubImagePath != null)
-            {
-                stubImage = ImageHelpers.GetImageFromFile(Environment.ExpandEnvironmentVariables(settings.StubImagePath));
-            }
-            if (stubImage == ImageHelpers.Empty)
-                stubImage = Resources.Image_NoCoverArt;
-            aa.SetStubImage(stubImage);
-            aa.SetImage(null);
+            aa.SetImage(ResolveAlbumArtImage(null, true, settings));
             return aa;
         }
 
@@ -366,10 +357,29 @@ namespace dcmFoobar2000.Code
             _btnStopAC.Refresh();
         }
 
+        private Image ResolveAlbumArtImage(Image image, bool stub, AlbumArtSettings aaSettings)
+        {
+            if (aaSettings.DoNotShowStubImage && stub)
+            {
+                image = null;
+            }
+            if (image == null)
+            {
+                if (aaSettings.StubImagePath != null)
+                {
+                    image = ImageHelpers.GetImageFromFile(Environment.ExpandEnvironmentVariables(aaSettings.StubImagePath));
+                }
+            }
+            if (image == null || image == ImageHelpers.Empty)
+            {
+                image = Resources.Image_NoCoverArt;
+            }
+            return image;
+        }
+
         private void UpdateAlbumArt(Image image, bool stub)
         {
-            _picAlbumArt.SetImage(stub && _cfg.AlbumArt.DoNotShowStubImage ? null : image);
-
+            _picAlbumArt.SetImage(ResolveAlbumArtImage(image, stub, _cfg.AlbumArt));
             SetTooltipImage(image, stub);
         }
 
@@ -683,17 +693,41 @@ namespace dcmFoobar2000.Code
         private Image _tooltipAlbumArtImage;
         private void SetTooltipImage(Image image, bool stub)
         {
+            var tcfg = _cfg.Tooltip;
+            image = ResolveAlbumArtImage(image, stub, tcfg.AlbumArt);
+            if (image != null)
+            {
+                image = new Bitmap(image); // Copy image for tooltip
+            }
+
             if (_tooltipAlbumArtImage != null)
             {
                 _tooltipAlbumArtImage.Dispose();
                 _tooltipAlbumArtImage = null;
             }
-            _tooltipAlbumArtImage = stub && _cfg.Tooltip.AlbumArt.DoNotShowStubImage
-                ? null
-                : (image == null ? null : new Bitmap(image));
+            _tooltipAlbumArtImage = image;
+            
             if (_tooltipAlbumArt != null)
             {
                 _tooltipAlbumArt.SetImage(_tooltipAlbumArtImage);
+                SetTooltipLabelsImage();
+            }
+        }
+
+        private void SetTooltipLabelsImage()
+        {
+            var tcfg = _cfg.Tooltip;
+            var bkImage = _tooltipAlbumArt.Image;
+            foreach (var lbl in _tooltipLabels)
+            {
+                var x = tcfg.AlbumArt.X;
+                var y = tcfg.AlbumArt.Y;
+                if (bkImage != null)
+                {
+                    if (bkImage.Width < tcfg.AlbumArt.Width) x = (tcfg.AlbumArt.Width - bkImage.Width) / 2;
+                    if (bkImage.Height < tcfg.AlbumArt.Height) y = (tcfg.AlbumArt.Height - bkImage.Height) / 2;
+                }
+                lbl.SetBkImage(bkImage, x, y);
             }
         }
 
@@ -720,11 +754,7 @@ namespace dcmFoobar2000.Code
                 _tooltipAlbumArt.SetImage(_tooltipAlbumArtImage);
                 form.Controls.Add(_tooltipAlbumArt);
 
-                var bkImage = _tooltipAlbumArt.Image;
-                foreach (var lbl in _tooltipLabels)
-                {
-                    lbl.SetBkImage(bkImage ?? Resources.Image_NoCoverArt, tcfg.AlbumArt.X, tcfg.AlbumArt.Y, tcfg.AlbumArt.Width, tcfg.AlbumArt.Height, tcfg.AlbumArt.PreserveAspectRatio);
-                }
+                SetTooltipLabelsImage();
             }
         }
 
