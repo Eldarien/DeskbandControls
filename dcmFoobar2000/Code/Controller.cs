@@ -322,7 +322,6 @@ namespace dcmFoobar2000.Code
             trb.Size = _sp.MakeSize(settings.Width, settings.Heigth);
             trb.ForeColor = settings.Color;
             trb.BackgroundColor = settings.BackgroundColor;
-            trb.UseBackgroundColor = settings.UseBackgroundColor;
             trb.HideBorders = settings.HideBorders;
             trb.Range = 100;
             trb.Position = 0;
@@ -346,7 +345,6 @@ namespace dcmFoobar2000.Code
             lbl.Size = _sp.MakeSize(settings.Width, settings.Height);
             lbl.ForeColor = settings.FontColor;
             lbl.TextAlign = settings.HorizontalAlign;
-            lbl.DisplayShadow = settings.DisplayShadow;
             lbl.ShadowColor = settings.ShadowColor;
             lbl.ShadowOffset = settings.ShadowOffset;
             lbl.BackgroundColor = settings.BackgroundColor;

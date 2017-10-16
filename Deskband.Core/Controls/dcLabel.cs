@@ -61,7 +61,6 @@ namespace Deskband.Core.Controls
 
         public HorizontalAlign TextAlign { get; set; }
 
-        public bool DisplayShadow { get; set; }
         public Color ShadowColor { get; set; }
         public int ShadowOffset { get; set; }
 
@@ -206,7 +205,7 @@ namespace Deskband.Core.Controls
 
                 var t = PrepareScrollText(alphadc, rc, textFlags);
 
-                if (DisplayShadow)
+                if (ShadowColor != Color.Transparent)
                 {
                     opts.crText = new COLORREF(ShadowColor);
                     UxTheme.DrawThemeTextEx(hTheme, alphadc, 0, 0, t.Text, t.Text.Length, t.TextFlags, ref t.ShadowRect, ref opts);
@@ -236,7 +235,7 @@ namespace Deskband.Core.Controls
                 var t = PrepareScrollText(memdc, rc, textFlags);
                 Gdi32.SetBkMode(memdc, TRANSPARENT);
 
-                if (DisplayShadow)
+                if (ShadowColor != Color.Transparent)
                 {
                     Gdi32.SetTextColor(memdc, new COLORREF(ShadowColor));
                     User32.DrawTextEx(memdc, t.Text, t.Text.Length, ref t.ShadowRect, t.TextFlags, ref dtp);

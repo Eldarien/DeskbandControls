@@ -30,10 +30,7 @@ namespace dcmFoobar2000.Configuration
         public Color Color { get; set; }
 
         [Category("Colors"), DisplayName("Background Color"), TypeConverter(typeof(ColorHexConverter))]
-        public Color BackgroundColor { get; set; }
-
-        [Category("Colors"), DisplayName("Use Background Color"), TypeConverter(typeof(YesNoBooleanConverter))]
-        public bool UseBackgroundColor { get; set; }
+        public Color BackgroundColor { get; set; } = Color.Transparent;
 
         [DisplayName("Hide Borders"), TypeConverter(typeof(YesNoBooleanConverter))]
         public bool HideBorders { get; set; }

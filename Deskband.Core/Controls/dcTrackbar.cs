@@ -24,7 +24,7 @@ namespace Deskband.Core.Controls
         }
 
         public Color BackgroundColor { get; set; }
-        public bool UseBackgroundColor { get; set; }
+        //public bool UseBackgroundColor { get; set; }
         public bool DrawOutline { get; set; }
         public bool HideBorders { get; set; }
         public int Position
@@ -60,7 +60,7 @@ namespace Deskband.Core.Controls
             BackgroundColor = Gdi32.FixBlackAlpha(BackgroundColor);
 
             var color = new COLORREF(ForeColor);
-            var backgroundColor = new COLORREF(BackgroundColor);
+            
             var rc = new RECT(ClientRectangle);
             var hdc = e.Graphics.GetHdc();
 
@@ -83,8 +83,9 @@ namespace Deskband.Core.Controls
 
             Gdi32.FillAlphadc(alphadc, ref rc, StockObjects.HOLLOW_BRUSH, StockObjects.NULL_PEN);
           
-            if (UseBackgroundColor)
+            if (BackgroundColor != Color.Transparent)
             {
+                var backgroundColor = new COLORREF(BackgroundColor);
                 Internal_PaintBackground(alphadc, rc, backgroundColor);
                 Gdi32.FixAlphaChannel(alphadc, alphabitmap, (uint)Height, ref pixels, ref dib, backgroundColor);
                 Gdi32.DoAlphaBlendToMemdc(memdc, ref rc, alphadc, BackgroundColor.A);
@@ -93,7 +94,7 @@ namespace Deskband.Core.Controls
                 Gdi32.FillAlphadc(alphadc, ref rc, StockObjects.BLACK_BRUSH, StockObjects.BLACK_PEN);
             }
 
-            Internal_PaintContent(alphadc, rc, color, backgroundColor);
+            Internal_PaintContent(alphadc, rc, color);
             Gdi32.FixAlphaChannel(alphadc, alphabitmap, (uint)Height, ref pixels, ref dib, color);
             Gdi32.DoAlphaBlendToMemdc(memdc, ref rc, alphadc, ForeColor.A);
 
@@ -115,27 +116,24 @@ namespace Deskband.Core.Controls
 
         private void Internal_PaintBackground(IntPtr hdc, RECT rc, COLORREF backgroundColor)
         {
-            if (UseBackgroundColor)
-            {
-                int offset = HideBorders ? 0 : 2;
+            int offset = HideBorders ? 0 : 2;
 
-                var backgroundPen = Gdi32.CreatePen(PenStyle.PS_SOLID, 0, backgroundColor);
-                var backgroundOldPen = Gdi32.SelectObject(hdc, backgroundPen);
+            var backgroundPen = Gdi32.CreatePen(PenStyle.PS_SOLID, 0, backgroundColor);
+            var backgroundOldPen = Gdi32.SelectObject(hdc, backgroundPen);
 
-                var backgroundBrush = Gdi32.CreateSolidBrush(backgroundColor);
-                var backgroundOldBrush = Gdi32.SelectObject(hdc, backgroundBrush);
+            var backgroundBrush = Gdi32.CreateSolidBrush(backgroundColor);
+            var backgroundOldBrush = Gdi32.SelectObject(hdc, backgroundBrush);
 
-                Gdi32.Rectangle(hdc, rc.Left + offset, rc.Top + offset + PaddingTop, rc.Right - offset, rc.Bottom - offset - PaddingBottom);
+            Gdi32.Rectangle(hdc, rc.Left + offset, rc.Top + offset + PaddingTop, rc.Right - offset, rc.Bottom - offset - PaddingBottom);
 
-                Gdi32.SelectObject(hdc, backgroundOldPen);
-                Gdi32.DeleteObject(backgroundPen);
+            Gdi32.SelectObject(hdc, backgroundOldPen);
+            Gdi32.DeleteObject(backgroundPen);
 
-                Gdi32.SelectObject(hdc, backgroundOldBrush);
-                Gdi32.DeleteObject(backgroundBrush);
-            }
+            Gdi32.SelectObject(hdc, backgroundOldBrush);
+            Gdi32.DeleteObject(backgroundBrush);
         }
 
-        private void Internal_PaintContent(IntPtr hdc, RECT rc, COLORREF color, COLORREF backgroundColor)
+        private void Internal_PaintContent(IntPtr hdc, RECT rc, COLORREF color)
         {
             var pen = Gdi32.CreatePen(PenStyle.PS_SOLID, 0, color);
             var oldPen = Gdi32.SelectObject(hdc, pen);

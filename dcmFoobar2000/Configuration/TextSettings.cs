@@ -56,12 +56,8 @@ namespace dcmFoobar2000.Configuration
         [Category("Font"), DisplayName("Font Color"), TypeConverter(typeof(ColorHexConverter))]
         public Color FontColor { get; set; } = Color.White;
 
-        [Category("Font"), DisplayName("Display Shadow")]
-        [TypeConverter(typeof(YesNoBooleanConverter))]
-        public bool DisplayShadow { get; set; }
-
         [Category("Font"), DisplayName("Shadow Color"), TypeConverter(typeof(ColorHexConverter))]
-        public Color ShadowColor { get; set; } = Color.Black;
+        public Color ShadowColor { get; set; } = Color.Transparent;
 
         [Category("Font"), DisplayName("Shadow Offset")]
         public int ShadowOffset { get; set; } = 2;

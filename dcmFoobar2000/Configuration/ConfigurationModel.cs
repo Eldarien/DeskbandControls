@@ -123,7 +123,7 @@ namespace dcmFoobar2000.Configuration
                     Format = "%artist%", ScrollSeparator = " **** ", ScrollSpeed = 30, ScrollStep = 1,
                     FontName = "Segoe UI", FontSize = 12, FontStyleBold = true, FontColor = Color.White,
                     BackgroundColor = Color.FromArgb(0x90, 0, 0, 0),
-                    DisplayShadow = true, ShadowColor = Color.Black,
+                    ShadowColor = Color.Black,
                     HorizontalAlign = HorizontalAlign.Center
                 });
                 cfg.Tooltip.Texts.Add(new TooltipTextSettings
@@ -132,7 +132,7 @@ namespace dcmFoobar2000.Configuration
                     Format = "%title%", ScrollSeparator = " **** ", ScrollSpeed = 30, ScrollStep = 1,
                     FontName = "Segoe UI", FontSize = 12, FontStyleBold = true, FontColor = Color.White,
                     BackgroundColor = Color.FromArgb(0x90, 0, 0, 0),
-                    DisplayShadow = true, ShadowColor = Color.Black,
+                    ShadowColor = Color.Black,
                     HorizontalAlign = HorizontalAlign.Center
                 });
 
