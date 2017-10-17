@@ -59,6 +59,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Code\AlbumArtAccessor.cs" />
     <Compile Include="Code\Foobar2000Actions.cs" />
     <Compile Include="Code\PlaylistEventArgs.cs" />
     <Compile Include="Configuration\ButtonSettingsContainer.cs" />

@@ -32,10 +32,14 @@ namespace dcmFoobar2000.Code
         private MessageForm _messageForm;
 
         private DisposableContainer _disposable;
-        //private Container _container;
+
         private Timer _hideTimer;
         private const int _hideTimerInitialInterval = 1000;
         private const int _hideTimerRegularInterval = 300;
+
+        private AlbumArtAccessor _aaAccessor;
+        private Timer _aaStubTimer;
+        private const int _aaStubTimerInterval = 500;
 
         private bool _eventsInitialized;
 
@@ -85,10 +89,15 @@ namespace dcmFoobar2000.Code
             _messageForm = messageForm;
 
             _disposable = new DisposableContainer();
-            //_container = _disposable.Add(new Container());
+
             _hideTimer = _disposable.Add(new Timer());
             _hideTimer.Interval = _hideTimerInitialInterval;
             _hideTimer.Tick += (s, e) => HandleHideTimerTick();
+
+            _aaAccessor = _disposable.Add(new AlbumArtAccessor());
+            _aaStubTimer = _disposable.Add(new Timer());
+            _aaStubTimer.Interval = _aaStubTimerInterval;
+            _aaStubTimer.Tick += (s, e) => HandleAlbumArtStubTick();
         }
 
         public void ApplyConfiguration()
@@ -107,6 +116,7 @@ namespace dcmFoobar2000.Code
 
             if (_stopped)
             {
+                UpdateAlbumArt();
                 ClearTexts();
                 HandlePlaybackState(false);
             }
@@ -121,8 +131,6 @@ namespace dcmFoobar2000.Code
             _messageForm.Lock();
             DestroyControls();
             _disposable.Dispose();
-
-            if (_tooltipAlbumArtImage != null) _tooltipAlbumArtImage.Dispose();
         }
 
         private List<IDisposable> _controls = new List<IDisposable>();
@@ -301,7 +309,7 @@ namespace dcmFoobar2000.Code
             aa.Location = _sp.MakePoint(settings.X, settings.Y);
             aa.Size = _sp.MakeSize(settings.Width, settings.Height);
             aa.PreserveAspectRatio = settings.PreserveAspectRatio;
-            aa.SetImage(ResolveAlbumArtImage(null, true, settings));
+            //aa.SetImage(ResolveAlbumArtImage(null, true, settings));
             return aa;
         }
 
@@ -357,9 +365,22 @@ namespace dcmFoobar2000.Code
             _btnStopAC.Refresh();
         }
 
-        private Image ResolveAlbumArtImage(Image image, bool stub, AlbumArtSettings aaSettings)
+        private void HandleAlbumArtStubTick()
         {
-            if (aaSettings.DoNotShowStubImage && stub)
+            _aaStubTimer.Enabled = false;
+            _aaAccessor.SetBitmap(null, true);
+            UpdateAlbumArt();
+        }
+
+        private void ResolveAlbumArtImage(dcPicture pic, AlbumArtSettings aaSettings)
+        {
+            if (pic == null)
+                return;
+
+            var aaData = _aaAccessor.GetBitmapData();
+            Image image = aaData.Bitmap;
+            bool dispose = false;
+            if (aaSettings.DoNotShowStubImage && aaData.IsStub)
             {
                 image = null;
             }
@@ -368,19 +389,25 @@ namespace dcmFoobar2000.Code
                 if (aaSettings.StubImagePath != null)
                 {
                     image = ImageHelpers.GetImageFromFile(Environment.ExpandEnvironmentVariables(aaSettings.StubImagePath));
+                    dispose = true;
                 }
             }
             if (image == null || image == ImageHelpers.Empty)
             {
                 image = Resources.Image_NoCoverArt;
             }
-            return image;
+            pic.SetImage(image); // pic creates its own copy of image
+            if (dispose)
+            {
+                image.Dispose();
+            }
         }
 
-        private void UpdateAlbumArt(Image image, bool stub)
+        private void UpdateAlbumArt()
         {
-            _picAlbumArt.SetImage(ResolveAlbumArtImage(image, stub, _cfg.AlbumArt));
-            SetTooltipImage(image, stub);
+            ResolveAlbumArtImage(_picAlbumArt, _cfg.AlbumArt);
+            ResolveAlbumArtImage(_tooltipAlbumArt, _cfg.Tooltip.AlbumArt);
+            SetTooltipLabelsImage();
         }
 
         private void UpdatePosition(int pos, int? range = null)
@@ -463,7 +490,6 @@ namespace dcmFoobar2000.Code
             _paused = false;
             UpdateButtonIcons();
             UpdatePosition(0, (int)length);
-            UpdateAlbumArt(null, true);
             UpdateTexts();
             ResetTextsScrollPosition();
 
@@ -518,11 +544,11 @@ namespace dcmFoobar2000.Code
         {
             _paused = false;
             _stopped = true;
+            _aaStubTimer.Enabled = true;
+
             UpdateButtonIcons();
             UpdatePosition(0);
-            UpdateAlbumArt(null, true);
             ClearTexts();
-
             HandlePlaybackState(false);
         }
 
@@ -562,10 +588,11 @@ namespace dcmFoobar2000.Code
 
         private void HandleAlbumArt(byte[] imageBytes, bool stub)
         {
-            using (Image img = ImageHelpers.GetImageFromByteArray(imageBytes))
-            {
-                UpdateAlbumArt(img, stub);
-            }
+            var bmp = ImageHelpers.GetImageFromByteArray(imageBytes);
+            _aaAccessor.SetBitmap(bmp, stub);
+            _aaStubTimer.Enabled = false;
+
+            UpdateAlbumArt();
         }
 
         private void HandleFilePath(string text, int index)
@@ -690,32 +717,12 @@ namespace dcmFoobar2000.Code
 
         private bool _tooltipShowed = false;
         private dcPicture _tooltipAlbumArt = null;
-        private Image _tooltipAlbumArtImage;
-        private void SetTooltipImage(Image image, bool stub)
-        {
-            var tcfg = _cfg.Tooltip;
-            image = ResolveAlbumArtImage(image, stub, tcfg.AlbumArt);
-            if (image != null)
-            {
-                image = new Bitmap(image); // Copy image for tooltip
-            }
-
-            if (_tooltipAlbumArtImage != null)
-            {
-                _tooltipAlbumArtImage.Dispose();
-                _tooltipAlbumArtImage = null;
-            }
-            _tooltipAlbumArtImage = image;
-            
-            if (_tooltipAlbumArt != null)
-            {
-                _tooltipAlbumArt.SetImage(_tooltipAlbumArtImage);
-                SetTooltipLabelsImage();
-            }
-        }
 
         private void SetTooltipLabelsImage()
         {
+            if (_tooltipAlbumArt == null)
+                return;
+
             var tcfg = _cfg.Tooltip;
             var bkImage = _tooltipAlbumArt.Image;
             foreach (var lbl in _tooltipLabels)
@@ -751,7 +758,7 @@ namespace dcmFoobar2000.Code
             if (tcfg.AlbumArt.Visible)
             {
                 _tooltipAlbumArt = CreateAlbumArt(tcfg.AlbumArt);
-                _tooltipAlbumArt.SetImage(_tooltipAlbumArtImage);
+                ResolveAlbumArtImage(_tooltipAlbumArt, tcfg.AlbumArt);
                 form.Controls.Add(_tooltipAlbumArt);
 
                 SetTooltipLabelsImage();
@@ -763,6 +770,8 @@ namespace dcmFoobar2000.Code
             _tooltipShowed = false;
 
             RemoveAndDestroyControl(_tooltipAlbumArt);
+            _tooltipAlbumArt = null;
+
             foreach (var lbl in _tooltipLabels)
             {
                 RemoveAndDestroyControl(lbl);
