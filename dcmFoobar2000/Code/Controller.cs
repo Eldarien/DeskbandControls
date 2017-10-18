@@ -281,7 +281,7 @@ namespace dcmFoobar2000.Code
 
             if (settings.Icon1Path != null)
             {
-                var image = ImageHelpers.GetImageFromFile(Environment.ExpandEnvironmentVariables(settings.Icon1Path));
+                var image = ImageHelpers.GetImageFromFile(PathHelpers.ResolvePath(settings.Icon1Path, _cfg.PathToFoobar2000));
                 if (image != null) btn.Image = image;
             }
             if (icon1 != null && btn.Image == null)
@@ -291,7 +291,7 @@ namespace dcmFoobar2000.Code
 
             if (settings.Icon2Path != null)
             {
-                var image = ImageHelpers.GetImageFromFile(Environment.ExpandEnvironmentVariables(settings.Icon2Path));
+                var image = ImageHelpers.GetImageFromFile(PathHelpers.ResolvePath(settings.Icon2Path, _cfg.PathToFoobar2000));
                 if (image != null) btn.AdditionalImage = image;
             }
             if (icon2 != null && btn.AdditionalImage == null)
@@ -387,7 +387,7 @@ namespace dcmFoobar2000.Code
             {
                 if (aaSettings.StubImagePath != null)
                 {
-                    image = ImageHelpers.GetImageFromFile(Environment.ExpandEnvironmentVariables(aaSettings.StubImagePath));
+                    image = ImageHelpers.GetImageFromFile(PathHelpers.ResolvePath(aaSettings.StubImagePath, _cfg.PathToFoobar2000));
                     dispose = true;
                 }
             }

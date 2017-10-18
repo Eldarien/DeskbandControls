@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 
 namespace Deskband.Core.Common
 {
@@ -14,6 +15,15 @@ namespace Deskband.Core.Common
                 path = $"%APPDATA%{path.Substring(appData.Length)}";
             }
             return path;
+        }
+
+        public static string ResolvePath(string path, string rootPath)
+        {
+            if (path.StartsWith("..", StringComparison.OrdinalIgnoreCase))
+            {
+                path = Path.Combine(rootPath, path);
+            }
+            return Environment.ExpandEnvironmentVariables(path);
         }
     }
 }
