@@ -35,7 +35,6 @@ Eldarien (eldarien@live.com)
 
 October 19 2017
   * Version 3.5.0
-  + Support for background image in a texts.
   + Support for transparent background for texts in tooltip.
   + Support for text shadow.
   + Ability to delete profile in settings.
