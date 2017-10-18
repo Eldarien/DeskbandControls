@@ -25,7 +25,7 @@ namespace dcmFoobar2000.Configuration
         }
 
         [Category("General"), DisplayName("Path to folder with foobar2000.exe")]
-        public string PathToFoobar2000 { get; set; } = @"%PROGRAMFILES(x86)%\foobar2000";
+        public string PathToFoobar2000 { get; set; } = Environment.Is64BitOperatingSystem ? @"%PROGRAMFILES(x86)%\foobar2000" : @"%PROGRAMFILES%\foobar2000";
 
         [DisplayName("Hide if not playing"), TypeConverter(typeof(YesNoBooleanConverter))]
         public bool HideIfNotPlaying { get; set; } = true;
