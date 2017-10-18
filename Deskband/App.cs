@@ -17,6 +17,8 @@ namespace Deskband
 {
     public class App
     {
+        private const int BandMinWidth = 10; // Reserved width to be able to click on to access context menu
+
         readonly Band _band;
         readonly IEnumerable<IModule> _modules;
 
@@ -107,18 +109,24 @@ namespace Deskband
         {
             _console.AddDebugLine(String.Format("Module container resized: {0}x{1}", _moduleContainer.Size.Width, _moduleContainer.Size.Height));
 
-            if (!_floatingForm.Visible)
+            var cfg = _config.GetConfiguration(Guid.Empty, ConfigurationModel.Default);
+            if (cfg.GeneralSettings.DisplayMode == DisplayMode.Deskband)
             {
                 var tsi = _band.GetTaskbarSizeInfo();
                 _band.MinSize = new Size(tsi.Mode == LayoutMode.Horizontal ? _moduleContainer.Size.Width : _moduleContainer.Size.Height, 0);
             }
             else
             {
-                _band.MinSize = new Size(10, 0);
+                _band.MinSize = new Size(BandMinWidth, 0);
             }
 
             _band.ExecBandInfoChangedCommand();
             _floatingForm.Size = _moduleContainer.Size;
+
+            if (cfg.GeneralSettings.DisplayMode == DisplayMode.FloatingWindow)
+            {
+                _floatingForm.Visible = _moduleContainer.Size.Width > 0;
+            }
         }
 
         private void ApplyConfiguration()
@@ -153,6 +161,7 @@ namespace Deskband
                     m.Configuration.StretchBackgroundImage
                  ));
 
+            _moduleContainer.MinWidth = cfg.GeneralSettings.DisplayMode == DisplayMode.Deskband ? BandMinWidth : 0;
             var layoutMode = cfg.GeneralSettings.DisplayMode == DisplayMode.Deskband ? _band.GetTaskbarSizeInfo().Mode : cfg.FloatingWindowSettings.Mode;
             _moduleContainer.UpdateModules(modulesSizeInfo, cfg.GeneralSettings.DrawBorders, layoutMode);
             

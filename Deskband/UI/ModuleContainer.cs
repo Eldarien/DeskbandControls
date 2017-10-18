@@ -12,13 +12,10 @@ namespace Deskband.UI
 {
     public class ModuleContainer : ControlsContainer, IModuleContainer
     {
-        //private readonly Band _band;
         private List<ModuleContainerEntry> _entries = new List<ModuleContainerEntry>();
         private LayoutMode _layoutMode;
-        //public ModuleContainer(Band band)
-        //{
-        //    _band = band;
-        //}
+
+        public int MinWidth { get; set; }
 
         private ModuleContainerEntry Entry(Guid moduleId)
         {
@@ -112,9 +109,8 @@ namespace Deskband.UI
         {
             _entries.ForEach(x => x.Container.Visible = !x.Hidden && !x.Disabled);
 
-            //var tsi = _band.GetTaskbarSizeInfo();
-            var resultSize = new Size(10, this.Size.Height);
-            var visibleEntries = _entries.Where(x => x.Container.Visible);
+            var resultSize = new Size(MinWidth, this.Size.Height);
+            var visibleEntries = _entries.Where(x => !x.Hidden && !x.Disabled);//x.Container.Visible);
             if (visibleEntries.Any())
             {
                 // place controls in a row or column depending on taskbar position
