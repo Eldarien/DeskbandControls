@@ -711,7 +711,7 @@ namespace dcmFoobar2000.Code
 
         public void DoubleClick()
         {
-            _actions.ActivateFoobar();
+            _actions.ActivateFoobar(_cfg.PathToFoobar2000);
         }
 
         private bool _tooltipShowed = false;

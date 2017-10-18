@@ -142,14 +142,14 @@ namespace dcmFoobar2000.Code
             SendCommand(FB2KCommands.Volume, data);
         }
 
-        public void ActivateFoobar()
+        public void ActivateFoobar(string pathToFoobar2000)
         {
             var fw = User32.FindWindow(FB2KConstants.FoobarPluginMsgWindowClass, FB2KConstants.FoobarPluginMsgWindowTitle);
             if (fw == IntPtr.Zero)
             {
                 var searchPaths = new[]
                 {
-                    Environment.ExpandEnvironmentVariables(@"%PROGRAMFILES(x86)%\foobar2000")
+                    Environment.ExpandEnvironmentVariables(pathToFoobar2000)
                 };
 
                 foreach (var path in searchPaths)
