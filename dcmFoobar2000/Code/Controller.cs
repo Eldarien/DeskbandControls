@@ -354,6 +354,7 @@ namespace dcmFoobar2000.Code
 
             if (settings.DetectHttpLinks)
             {
+                lbl.HandleClicks = true;
                 lbl.Click += Lbl_Click;
             }
             return lbl;

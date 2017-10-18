@@ -33,6 +33,20 @@ Eldarien (eldarien@live.com)
 --
 ** Changelog:
 
+October 19 2017
+  * Version 3.5.0
+  + Support for background image in a texts.
+  + Support for transparent background for texts in tooltip.
+  + Support for text shadow.
+  + Ability to delete profile in settings.
+  + Ability to configure path to folder with foobar2000.exe.
+  + Support for relative paths (to fb2k root folder) in album art stub image and button icons.
+  + Ability to detect HTTP links in texts and open web browser on click.
+  - Fixed stub image appearing for a moment when swithcing tracks.
+  - Fixed size issues when in floating window mode.
+  - Fixed some album art handling code.
+  
+
 September 22 2017
   * Version 3.4.1
   - Volume control now follows volume step setting of foobar2000.

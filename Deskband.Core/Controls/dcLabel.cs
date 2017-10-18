@@ -111,6 +111,8 @@ namespace Deskband.Core.Controls
             }
         }
 
+        public bool HandleClicks { get; set; }
+
         // private methods
 
         private void InitializeFont()
@@ -145,17 +147,17 @@ namespace Deskband.Core.Controls
             base.Dispose(disposing);
         }
 
-        //protected override void WndProc(ref Message m)
-        //{
-        //    if (m.Msg == WM_NCHITTEST)
-        //    {
-        //        m.Result = (IntPtr)HTTRANSPARENT;
-        //    }
-        //    else
-        //    {
-        //        base.WndProc(ref m);
-        //    }
-        //}
+        protected override void WndProc(ref Message m)
+        {
+            if (m.Msg == WM_NCHITTEST && !HandleClicks)
+            {
+                m.Result = (IntPtr)HTTRANSPARENT;
+            }
+            else
+            {
+                base.WndProc(ref m);
+            }
+        }
 
         protected override void OnPaint(PaintEventArgs e)
         {
