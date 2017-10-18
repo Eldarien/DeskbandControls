@@ -90,6 +90,11 @@
     <Compile Include="Console\ConsoleHandler.cs" />
     <Compile Include="Integration\ActiveWindowWatcher.cs" />
     <Compile Include="Integration\GlobalMouseHook.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <Compile Include="Settings\NodeData.cs" />
     <Compile Include="Settings\SettingsForm.cs">
       <SubType>Form</SubType>
@@ -153,6 +158,10 @@
   <ItemGroup>
     <EmbeddedResource Include="Console\ConsoleForm.resx">
       <DependentUpon>ConsoleForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Include="Settings\SettingsForm.resx">
       <DependentUpon>SettingsForm.cs</DependentUpon>

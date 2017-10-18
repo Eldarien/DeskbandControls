@@ -28,6 +28,8 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SettingsForm));
             this.panel1 = new System.Windows.Forms.Panel();
             this.cbProfiles = new System.Windows.Forms.ComboBox();
             this.btnLoad = new System.Windows.Forms.Button();
@@ -38,12 +40,15 @@
             this.panel2 = new System.Windows.Forms.Panel();
             this.tvItems = new System.Windows.Forms.TreeView();
             this.pgSettings = new System.Windows.Forms.PropertyGrid();
+            this.btnDeleteProfile = new System.Windows.Forms.Button();
+            this.imageList1 = new System.Windows.Forms.ImageList(this.components);
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.SuspendLayout();
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.btnDeleteProfile);
             this.panel1.Controls.Add(this.cbProfiles);
             this.panel1.Controls.Add(this.btnLoad);
             this.panel1.Controls.Add(this.btnSave);
@@ -73,9 +78,9 @@
             this.btnLoad.FlatAppearance.BorderColor = System.Drawing.SystemColors.ControlDark;
             this.btnLoad.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnLoad.Font = new System.Drawing.Font("Segoe UI Semibold", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.btnLoad.Location = new System.Drawing.Point(264, 3);
+            this.btnLoad.Location = new System.Drawing.Point(294, 3);
             this.btnLoad.Name = "btnLoad";
-            this.btnLoad.Size = new System.Drawing.Size(100, 23);
+            this.btnLoad.Size = new System.Drawing.Size(90, 23);
             this.btnLoad.TabIndex = 12;
             this.btnLoad.Text = "Load && Apply";
             this.btnLoad.UseVisualStyleBackColor = true;
@@ -86,9 +91,9 @@
             this.btnSave.FlatAppearance.BorderColor = System.Drawing.SystemColors.ControlDark;
             this.btnSave.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnSave.Font = new System.Drawing.Font("Segoe UI Semibold", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.btnSave.Location = new System.Drawing.Point(370, 3);
+            this.btnSave.Location = new System.Drawing.Point(390, 3);
             this.btnSave.Name = "btnSave";
-            this.btnSave.Size = new System.Drawing.Size(100, 23);
+            this.btnSave.Size = new System.Drawing.Size(90, 23);
             this.btnSave.TabIndex = 11;
             this.btnSave.Text = "Apply && Save";
             this.btnSave.UseVisualStyleBackColor = true;
@@ -166,6 +171,25 @@
             this.pgSettings.TabIndex = 3;
             this.pgSettings.ToolbarVisible = false;
             // 
+            // btnDeleteProfile
+            // 
+            this.btnDeleteProfile.FlatAppearance.BorderColor = System.Drawing.SystemColors.ControlDark;
+            this.btnDeleteProfile.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnDeleteProfile.Font = new System.Drawing.Font("Segoe UI Semibold", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.btnDeleteProfile.ImageKey = "Delete";
+            this.btnDeleteProfile.ImageList = this.imageList1;
+            this.btnDeleteProfile.Location = new System.Drawing.Point(264, 3);
+            this.btnDeleteProfile.Name = "btnDeleteProfile";
+            this.btnDeleteProfile.Size = new System.Drawing.Size(23, 23);
+            this.btnDeleteProfile.TabIndex = 14;
+            this.btnDeleteProfile.UseVisualStyleBackColor = true;
+            // 
+            // imageList1
+            // 
+            this.imageList1.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageList1.ImageStream")));
+            this.imageList1.TransparentColor = System.Drawing.Color.Transparent;
+            this.imageList1.Images.SetKeyName(0, "Delete");
+            // 
             // SettingsForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
@@ -200,5 +224,7 @@
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.TreeView tvItems;
         private System.Windows.Forms.PropertyGrid pgSettings;
+        private System.Windows.Forms.Button btnDeleteProfile;
+        private System.Windows.Forms.ImageList imageList1;
     }
 }

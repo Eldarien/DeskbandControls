@@ -129,6 +129,19 @@ namespace Deskband.Configuration
             }
         }
 
+        public void Delete(string profileName)
+        {
+            if (profileName == null)
+                return;
+
+            var filePath = GetConfigFilePath(profileName);
+            if (File.Exists(filePath))
+            {
+                File.Delete(filePath);
+                _console.AddLine($"Profile \"{profileName}\" was deleted");
+            }
+        }
+
         public void Load(string profileName = null)
         {
             var filePath = GetConfigFilePath(profileName);

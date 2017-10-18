@@ -309,7 +309,6 @@ namespace dcmFoobar2000.Code
             aa.Location = _sp.MakePoint(settings.X, settings.Y);
             aa.Size = _sp.MakeSize(settings.Width, settings.Height);
             aa.PreserveAspectRatio = settings.PreserveAspectRatio;
-            //aa.SetImage(ResolveAlbumArtImage(null, true, settings));
             return aa;
         }
 

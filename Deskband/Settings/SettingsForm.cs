@@ -35,6 +35,7 @@ namespace Deskband.Settings
             LoadProfilesList();
 
             cbProfiles.SelectedIndexChanged += CbProfiles_SelectedIndexChanged;
+            btnDeleteProfile.Click += BtnDeleteProfile_Click;
             btnSave.Click += BtnSave_Click;
             btnLoad.Click += BtnLoad_Click;
             btnOK.Click += BtnOK_Click;
@@ -74,6 +75,18 @@ namespace Deskband.Settings
         {
             var isNew = cbProfiles.SelectedIndex == 0;
             btnLoad.Enabled = !isNew;
+            btnDeleteProfile.Enabled = !isNew;
+        }
+
+        private void BtnDeleteProfile_Click(object sender, EventArgs e)
+        {
+            var profileName = cbProfiles.SelectedItem.ToString();
+            var q = MessageBox.Show($"Are you sure to delete profile \"{profileName}\"?", "", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            if (q != DialogResult.Yes)
+                return;
+
+            _config.Delete(profileName);
+            LoadProfilesList();
         }
 
         private void BtnSave_Click(object sender, EventArgs e)

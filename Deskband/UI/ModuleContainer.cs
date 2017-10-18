@@ -110,7 +110,7 @@ namespace Deskband.UI
             _entries.ForEach(x => x.Container.Visible = !x.Hidden && !x.Disabled);
 
             var resultSize = new Size(MinWidth, this.Size.Height);
-            var visibleEntries = _entries.Where(x => !x.Hidden && !x.Disabled);//x.Container.Visible);
+            var visibleEntries = _entries.Where(x => !x.Hidden && !x.Disabled);
             if (visibleEntries.Any())
             {
                 // place controls in a row or column depending on taskbar position

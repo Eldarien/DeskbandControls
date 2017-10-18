@@ -55,8 +55,6 @@ namespace Deskband.Core.Common
             }
             catch
             {
-                //MessageBox.Show(String.Format("Unable to load image file:\n{0}\nAdditional information:\n{1}",
-                //    fileName, ex.Message), "Deskband Controls", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             return Empty;
         }
@@ -66,28 +64,34 @@ namespace Deskband.Core.Common
             if (width <= 0 || height <= 0)
                 return Empty;
 
-            if (preserveAspect)
+            try
             {
-                double originalRatio = (double)image.Width / (double)image.Height;
-                double resultRatio = (double)width / (double)height;
-                if (originalRatio > resultRatio)
-                    height = (int)(width / originalRatio);
-                else
-                    width = (int)(height * originalRatio);
+                if (preserveAspect)
+                {
+                    double originalRatio = (double)image.Width / (double)image.Height;
+                    double resultRatio = (double)width / (double)height;
+                    if (originalRatio > resultRatio)
+                        height = (int)(width / originalRatio);
+                    else
+                        width = (int)(height * originalRatio);
+                }
+
+                var result = new Bitmap(width, height, PixelFormat.Format32bppArgb);
+                result.SetResolution(image.HorizontalResolution, image.VerticalResolution);
+
+                using (var g = Graphics.FromImage(result))
+                {
+                    g.CompositingQuality = CompositingQuality.HighQuality;
+                    g.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                    g.SmoothingMode = SmoothingMode.HighQuality;
+                    g.DrawImage(image, 0, 0, result.Width, result.Height);
+                }
+                return result;
             }
-
-            var result = new Bitmap(width, height, PixelFormat.Format32bppArgb);
-            result.SetResolution(image.HorizontalResolution, image.VerticalResolution);
-
-            using (var g = Graphics.FromImage(result))
+            catch
             {
-                g.CompositingQuality = CompositingQuality.HighQuality;
-                g.InterpolationMode = InterpolationMode.HighQualityBicubic;
-                g.SmoothingMode = SmoothingMode.HighQuality;
-                g.DrawImage(image, 0, 0, result.Width, result.Height);
             }
-
-            return result;
+            return Empty;
         }
 
         public static Image Colorize(Image image, Color color)
