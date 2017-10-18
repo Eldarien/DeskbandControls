@@ -11,6 +11,7 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
 namespace dcmFoobar2000.Code
@@ -350,7 +351,22 @@ namespace dcmFoobar2000.Code
             lbl.ScrollSpeed = settings.ScrollSpeed;
             lbl.ScrollStep = settings.ScrollStep;
             lbl.ScrollSeparator = settings.ScrollSeparator;
+
+            if (settings.DetectHttpLinks)
+            {
+                lbl.Click += Lbl_Click;
+            }
             return lbl;
+        }
+
+        private void Lbl_Click(object sender, EventArgs e)
+        {
+            var lbl = (dcLabel)sender;
+            var urlMatch = Regex.Match(lbl.Text, @"((http|https):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&amp;:/~\+#]*[\w\-\@?^=%&amp;/~\+#])?)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+            if (urlMatch.Success)
+            {
+                Shell32.ShellExecute(IntPtr.Zero, "open", urlMatch.Value, null, null, WinApiTypes.SW_SHOWNORMAL);
+            }
         }
 
         private void UpdateButtonIcons()

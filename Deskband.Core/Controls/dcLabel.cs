@@ -145,17 +145,17 @@ namespace Deskband.Core.Controls
             base.Dispose(disposing);
         }
 
-        protected override void WndProc(ref Message m)
-        {
-            if (m.Msg == WM_NCHITTEST)
-            {
-                m.Result = (IntPtr)HTTRANSPARENT;
-            }
-            else
-            {
-                base.WndProc(ref m);
-            }
-        }
+        //protected override void WndProc(ref Message m)
+        //{
+        //    if (m.Msg == WM_NCHITTEST)
+        //    {
+        //        m.Result = (IntPtr)HTTRANSPARENT;
+        //    }
+        //    else
+        //    {
+        //        base.WndProc(ref m);
+        //    }
+        //}
 
         protected override void OnPaint(PaintEventArgs e)
         {
