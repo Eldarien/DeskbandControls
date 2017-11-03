@@ -41,7 +41,7 @@ October 19 2017
   + Ability to configure path to folder with foobar2000.exe.
   + Support for relative paths (to fb2k root folder) in album art stub image and button icons.
   + Ability to detect HTTP links in texts and open web browser on click.
-  - Fixed stub image appearing for a moment when swithcing tracks.
+  - Fixed stub image appearing for a moment when switching tracks.
   - Fixed size issues when in floating window mode.
   - Fixed some album art handling code.
   

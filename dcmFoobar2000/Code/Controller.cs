@@ -785,7 +785,10 @@ namespace dcmFoobar2000.Code
         {
             _tooltipShowed = false;
 
-            RemoveAndDestroyControl(_tooltipAlbumArt);
+            if (_cfg.Tooltip.AlbumArt.Visible)
+            {
+                RemoveAndDestroyControl(_tooltipAlbumArt);
+            }
             _tooltipAlbumArt = null;
 
             foreach (var lbl in _tooltipLabels)
