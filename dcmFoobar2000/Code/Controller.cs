@@ -40,7 +40,7 @@ namespace dcmFoobar2000.Code
 
         private AlbumArtAccessor _aaAccessor;
         private Timer _aaStubTimer;
-        private const int _aaStubTimerInterval = 500;
+        private const int _aaStubTimerInterval = 1500;
 
         private bool _eventsInitialized;
 
