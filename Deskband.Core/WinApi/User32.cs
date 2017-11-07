@@ -77,5 +77,8 @@ namespace Deskband.Core.WinApi
 
         [DllImport("user32.dll")]
         public static extern bool SetForegroundWindow(IntPtr hWnd);
+
+        [DllImport("user32.dll")]
+        public static extern uint GetDpiForWindow(IntPtr hWnd); // Win10 only
     }
 }

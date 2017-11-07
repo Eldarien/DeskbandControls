@@ -372,6 +372,7 @@ namespace Deskband.Core.WinApi
         public const int WM_NCHITTEST = 0x0084;
         public const int WM_COPYDATA = 0x4A;
         public const int WM_DPICHANGED = 0x02E0;
+        public const int WM_DPICHANGED_AFTERPARENT = 0x02E3; // Win10 only
         public const int WM_SETTINGCHANGE = 0x001A;
 
         public struct COPYDATASTRUCT

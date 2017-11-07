@@ -1,4 +1,5 @@
-﻿using Deskband.Core.WinApi;
+﻿using Deskband.Core.Common;
+using Deskband.Core.WinApi;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -19,11 +20,43 @@ namespace Deskband.Core.Controls
 
         public bool DrawOutline { get; set; }
 
-        //public Enums.ButtonKindType Kind { get; set; }
-
         public bool ShowAdditionalImage { get; set; }
 
-        public Image AdditionalImage { get; set; }
+        public new Image Image
+        {
+            get { return base.Image; }
+            private set { base.Image = value; }
+        }
+
+        public Image Image2 { get; private set; }
+
+        public void SetImage(Image image)
+        {
+            var oldImage = Image;
+            Image = image != null
+                  ? ImageHelpers.HQResize(image, Width, Height, true)
+                  : ImageHelpers.Empty;
+
+            if (oldImage != null && oldImage != ImageHelpers.Empty)
+            {
+                oldImage.Dispose();
+                oldImage = null;
+            }
+        }
+
+        public void SetImage2(Image image)
+        {
+            var oldImage = Image2;
+            Image2 = image != null
+                  ? ImageHelpers.HQResize(image, Width, Height, true)
+                  : ImageHelpers.Empty;
+
+            if (oldImage != null && oldImage != ImageHelpers.Empty)
+            {
+                oldImage.Dispose();
+                oldImage = null;
+            }
+        }
 
         public override void Refresh()
         {
@@ -32,8 +65,6 @@ namespace Deskband.Core.Controls
 
         public dcButton()
         {
-            InitializeComponent();
-
             this.BackColor = Color.Transparent;
         }
 
@@ -51,7 +82,7 @@ namespace Deskband.Core.Controls
             e.Graphics.ReleaseHdc(hdc);
 
             var image = ShowAdditionalImage
-                ? (AdditionalImage != null ? AdditionalImage : Image)
+                ? (Image2 != null ? Image2 : Image)
                 : Image;
 
             if (image != null)
@@ -89,55 +120,25 @@ namespace Deskband.Core.Controls
             }
         }
 
-        //public static AeroButton Create(ButtonModel model, bool outline)
-        //{
-        //    var button = new AeroButton();
-        //    button.DrawOutline = outline;
-        //    button.Kind = model.Kind;
+        protected override void Dispose(bool disposing)
+        {
+            var oldImage1 = Image;
+            Image = ImageHelpers.Empty;
+            if (oldImage1 != null && oldImage1 != ImageHelpers.Empty)
+            {
+                oldImage1.Dispose();
+                oldImage1 = null;
+            }
 
-        //    var image = ImageHelpers.GetImageFromFile(model.IconPath);
-        //    var additionalImage = ImageHelpers.GetImageFromFile(model.AdditionalIconPath);
-        //    if (image == ImageHelpers.Empty)
-        //    {
-        //        switch (model.Kind)
-        //        {
-        //            case Enums.ButtonKindType.Stop:
-        //                image = Resources.Icon_Stop.ToBitmap();
-        //                break;
+            var oldImage2 = Image2;
+            Image2 = ImageHelpers.Empty;
+            if (oldImage2 != null && oldImage2 != ImageHelpers.Empty)
+            {
+                oldImage2.Dispose();
+                oldImage2 = null;
+            }
 
-        //            case Enums.ButtonKindType.PlayPause:
-        //                image = Resources.Icon_Play.ToBitmap();
-        //                additionalImage = Resources.Icon_Pause.ToBitmap();
-        //                break;
-
-        //            case Enums.ButtonKindType.Previous:
-        //                image = Resources.Icon_Prev.ToBitmap();
-        //                break;
-
-        //            case Enums.ButtonKindType.Next:
-        //                image = Resources.Icon_Next.ToBitmap();
-        //                break;
-
-        //            case Enums.ButtonKindType.Random:
-        //                image = Resources.Icon_Random.ToBitmap();
-        //                break;
-
-        //            case Enums.ButtonKindType.StopAfterCurrent:
-        //                image = Resources.Icon_StopAfterCurrentOff.ToBitmap();
-        //                additionalImage = Resources.Icon_StopAfterCurrentOn.ToBitmap();
-        //                break;
-        //        }
-        //    }
-
-        //    var colorizeColor = model.ColorizeColor.AsDrawingColor();
-        //    button.Image = ImageHelpers.Colorize(image, colorizeColor);
-        //    button.AdditionalImage = ImageHelpers.Colorize(additionalImage, colorizeColor);
-
-        //    button.Location = new Point(model.X, model.Y);
-        //    button.Size = new Size(model.Width, model.Height);
-        //    button.Visible = model.Visible;
-
-        //    return button;
-        //}
+            base.Dispose(disposing);
+        }
     }
 }

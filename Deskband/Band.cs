@@ -53,13 +53,15 @@ namespace Deskband
                 _kernel = AppConfig.InitializeKernel(this);
                 _console = _kernel.Get<ConsoleHandler>();
 
+                _console.AddLine($"OS version: {Environment.OSVersion.Version}");
+
                 var installationDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
                 _console.AddLine($"Installation directory: {installationDir}");
 
-                using (var g = CreateGraphics())
-                {
-                    DPIChanged?.Invoke(this, new ValueEventArgs<int>((int)g.DpiX));
-                }
+                var dpi = GetTaskbarDPI();
+                _console.AddLine($"Taskbar DPI: {dpi}");
+                DPIChanged?.Invoke(this, new ValueEventArgs<int>(dpi));
+                
 
                 foreach (var m in _kernel.GetAll<IModule>())
                 {
@@ -70,6 +72,19 @@ namespace Deskband
             catch (Exception ex)
             {
                 MessageBox.Show(ex.ToString(), "Deskband Controls Startup Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private int GetTaskbarDPI()
+        {
+            if (Environment.OSVersion.Version.Major >= 10)
+            {
+                return (int)User32.GetDpiForWindow(_taskbarWindowHandle);
+            }
+            
+            using (var g = CreateGraphics())
+            {
+                return (int)g.DpiX;
             }
         }
 
@@ -101,9 +116,10 @@ namespace Deskband
                 }
             }
 
-            if (m.Msg == WinApiTypes.WM_DPICHANGED)
+            if (m.Msg == WinApiTypes.WM_DPICHANGED_AFTERPARENT)
             {
-                int dpi = ((int)m.WParam).LowWord();
+                var dpi = GetTaskbarDPI();
+                _console.AddDebugLine($"DPI changed to {dpi}");
                 DPIChanged?.Invoke(this, new ValueEventArgs<int>(dpi));
             }
 

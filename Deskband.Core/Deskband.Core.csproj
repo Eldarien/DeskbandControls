@@ -83,9 +83,6 @@
     <Compile Include="Controls\dcButton.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Controls\dcButton.Designer.cs">
-      <DependentUpon>dcButton.cs</DependentUpon>
-    </Compile>
     <Compile Include="Controls\dcLabel.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -94,9 +91,6 @@
     </Compile>
     <Compile Include="Controls\dcTrackbar.cs">
       <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Controls\dcTrackbar.Designer.cs">
-      <DependentUpon>dcTrackbar.cs</DependentUpon>
     </Compile>
     <Compile Include="EventArguments\ValueEventArgs.cs" />
     <Compile Include="Configuration\ConfigurationObjectBase.cs" />

@@ -122,7 +122,7 @@ namespace dcmFoobar2000.Configuration
 
                 cfg.Tooltip.Texts.Add(new TooltipTextSettings
                 {
-                    Name = "Artist", X = 0, Y = 350, Width = 400, Height = 25, Visible = true,
+                    Name = "Artist", X = 0, Y = 350, Width = 400, Height = 26, Visible = true,
                     Format = "%artist%", ScrollSeparator = " **** ", ScrollSpeed = 30, ScrollStep = 1,
                     FontName = "Segoe UI", FontSize = 12, FontStyleBold = true, FontColor = Color.White,
                     BackgroundColor = Color.FromArgb(0x90, 0, 0, 0),
@@ -131,7 +131,7 @@ namespace dcmFoobar2000.Configuration
                 });
                 cfg.Tooltip.Texts.Add(new TooltipTextSettings
                 {
-                    Name = "Title", X = 0, Y = 375, Width = 400, Height = 25, Visible = true,
+                    Name = "Title", X = 0, Y = 375, Width = 400, Height = 26, Visible = true,
                     Format = "%title%", ScrollSeparator = " **** ", ScrollSpeed = 30, ScrollStep = 1,
                     FontName = "Segoe UI", FontSize = 12, FontStyleBold = true, FontColor = Color.White,
                     BackgroundColor = Color.FromArgb(0x90, 0, 0, 0),

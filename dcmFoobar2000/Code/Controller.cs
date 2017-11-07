@@ -280,25 +280,44 @@ namespace dcmFoobar2000.Code
             btn.Location = _sp.MakePoint(settings.X, settings.Y);
             btn.Size = _sp.MakeSize(settings.Width, settings.Height);
 
+            Image image1 = null;
             if (settings.Icon1Path != null)
             {
-                var image = ImageHelpers.GetImageFromFile(PathHelpers.ResolvePath(settings.Icon1Path, _cfg.PathToFoobar2000));
-                if (image != null) btn.Image = image;
+                image1 = ImageHelpers.GetImageFromFile(PathHelpers.ResolvePath(settings.Icon1Path, _cfg.PathToFoobar2000));
             }
-            if (icon1 != null && btn.Image == null)
+            if (icon1 != null && image1 == null)
             {
-                btn.Image = MakeColorizedImageFromIcon(icon1, settings.ColorizeColor);
+                image1 = MakeColorizedImageFromIcon(icon1, settings.ColorizeColor);
+            }
+            if (image1 != null)
+            {
+                btn.SetImage(image1);
+                if (image1 != ImageHelpers.Empty)
+                {
+                    image1.Dispose();
+                    image1 = null;
+                }
             }
 
+            Image image2 = null;
             if (settings.Icon2Path != null)
             {
-                var image = ImageHelpers.GetImageFromFile(PathHelpers.ResolvePath(settings.Icon2Path, _cfg.PathToFoobar2000));
-                if (image != null) btn.AdditionalImage = image;
+                image2 = ImageHelpers.GetImageFromFile(PathHelpers.ResolvePath(settings.Icon2Path, _cfg.PathToFoobar2000));
             }
-            if (icon2 != null && btn.AdditionalImage == null)
+            if (icon2 != null && image2 == null)
             {
-                btn.AdditionalImage = MakeColorizedImageFromIcon(icon2, settings.ColorizeColor);
+                image2 = MakeColorizedImageFromIcon(icon2, settings.ColorizeColor);
             }
+            if (image2 != null)
+            {
+                btn.SetImage2(image2);
+                if (image2 != ImageHelpers.Empty)
+                {
+                    image2.Dispose();
+                    image2 = null;
+                }
+            }
+
             btn.Click += (s, e) => action();
             return btn;
         }

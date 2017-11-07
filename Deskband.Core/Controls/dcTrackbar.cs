@@ -42,8 +42,6 @@ namespace Deskband.Core.Controls
 
         public dcTrackbar()
         {
-            InitializeComponent();
-
             Cursor = Cursors.Hand;
             BackColor = Color.Transparent;
         }
