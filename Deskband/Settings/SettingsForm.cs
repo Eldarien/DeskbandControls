@@ -175,7 +175,7 @@ namespace Deskband.Settings
             cmdControls.ForEach(ctrl => { this.Controls.Remove(ctrl); ctrl.Dispose(); });
             cmdControls.Clear();
 
-            int btnWidth = _sp.MakeValue(100);
+            int btnWidth = _sp.MakeInitialValue(100);
             
             if (memberInfo != null)
             {
@@ -193,7 +193,7 @@ namespace Deskband.Settings
                         };
                         btn.Text = cmd.Name;
                         btn.Width = btnWidth;
-                        btn.Height = _sp.MakeValue(btn.Height);
+                        btn.Height = _sp.MakeInitialValue(btn.Height);
                         this.panel2.Controls.Add(btn);
                         btn.BringToFront();
                         cmdControls.Add(btn);
@@ -211,16 +211,16 @@ namespace Deskband.Settings
                 lastBtnLeft = nextBtnLeft;
                 nextBtnLeft = nextBtnLeft - btnWidth - 3;
 
-                btn.Top = _sp.MakeValue(10);
+                btn.Top = _sp.MakeInitialValue(10);
                 btn.Anchor = AnchorStyles.Top | AnchorStyles.Right;
                 cmdIndex++;
             }
 
             var lbl = new Label();
             lbl.Text = text;
-            lbl.Size = new Size(lastBtnLeft - pgSettings.Left, _sp.MakeValue(25));
+            lbl.Size = new Size(lastBtnLeft - pgSettings.Left, _sp.MakeInitialValue(25));
             lbl.Left = pgSettings.Left;
-            lbl.Top = _sp.MakeValue(8);
+            lbl.Top = _sp.MakeInitialValue(8);
             lbl.Font = new Font(this.Font.Name, 14, FontStyle.Bold);
             lbl.Anchor = AnchorStyles.Left | AnchorStyles.Top | AnchorStyles.Right;
             this.panel2.Controls.Add(lbl);

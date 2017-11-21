@@ -10,9 +10,11 @@ namespace Deskband.Core.Interfaces
     {
         int DPI { get; }
         float Scale { get; }
+        float InitialScale { get; }
 
         Point MakePoint(int x, int y);
         Size MakeSize(int width, int height);
         int MakeValue(int value);
+        int MakeInitialValue(int value);
     }
 }

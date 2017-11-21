@@ -38,8 +38,6 @@ namespace dcmFoobar2000
             kernel.Bind<Controller>().ToSelf();
 
             _controller = kernel.Get<Controller>();
-
-            _console.AddLine("foobar2000 module initialized");
         }
 
         public void Dispose()

@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using Deskband.Core.Interfaces;
+﻿using Deskband.Core.Interfaces;
 using Deskband.Core.WinApi;
+using System.Drawing;
 
 namespace Deskband.UI
 {
@@ -12,6 +8,7 @@ namespace Deskband.UI
     {
         private int _dpi;
         private float _scale;
+        private float? _initialScale;
 
         public SizeProvider(Band band)
         {
@@ -22,10 +19,12 @@ namespace Deskband.UI
         {
             _dpi = e.Value;
             _scale = (float)_dpi / WinApiTypes.USER_DEFAULT_SCREEN_DPI;
+            if (_initialScale == null) _initialScale = _scale;
         }
 
-        public int DPI { get { return _dpi; } }
-        public float Scale { get { return _scale; } }
+        public int DPI => _dpi;
+        public float Scale => _scale;
+        public float InitialScale => _initialScale ?? _scale;
 
         public Point MakePoint(int x, int y)
         {
@@ -40,6 +39,11 @@ namespace Deskband.UI
         public int MakeValue(int value)
         {
             return (int)(value * _scale);
+        }
+
+        public int MakeInitialValue(int value)
+        {
+            return (int)(value * (_initialScale ?? _scale));
         }
     }
 }

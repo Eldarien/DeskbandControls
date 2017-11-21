@@ -2,8 +2,6 @@
 using Deskband.Core.Interfaces;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 
 namespace Deskband.Console
@@ -20,8 +18,6 @@ namespace Deskband.Console
         {
             _sp = sizeProvider;
             _lines = new List<Tuple<string, bool>>();
-
-            AddLine($"{DeskbandBridge.FB2KConstants.DeskbandControlsTitle} {DeskbandBridge.FB2KConstants.DeskbandControlsVersion}");
         }
 
         private void InitializeForm()
@@ -44,14 +40,13 @@ namespace Deskband.Console
         {
             _form = null;
 
-            if (OnConsoleToggle != null)
-                OnConsoleToggle(this, new ValueEventArgs<bool>(false));
+            OnConsoleToggle?.Invoke(this, new ValueEventArgs<bool>(false));
         }
 
         private void SetFormSizeAndPosition()
         {
-            _form.Width = _sp.MakeValue(600);
-            _form.Height = _sp.MakeValue(350);
+            _form.Width = _sp.MakeInitialValue(800);
+            _form.Height = _sp.MakeInitialValue(350);
 
             var screen = Screen.FromControl(_form);
             _form.Left = screen.WorkingArea.Width - _form.Width;
@@ -75,8 +70,7 @@ namespace Deskband.Console
                 _form.Show();
                 SendLinesToForm(false);
 
-                if (OnConsoleToggle != null)
-                    OnConsoleToggle(this, new ValueEventArgs<bool>(true));
+                OnConsoleToggle?.Invoke(this, new ValueEventArgs<bool>(true));
             }
         }
 

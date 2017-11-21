@@ -53,6 +53,7 @@ namespace Deskband
                 _kernel = AppConfig.InitializeKernel(this);
                 _console = _kernel.Get<ConsoleHandler>();
 
+                _console.AddLine($"{DeskbandBridge.FB2KConstants.DeskbandControlsTitle} {DeskbandBridge.FB2KConstants.DeskbandControlsVersion}");
                 _console.AddLine($"OS version: {Environment.OSVersion.Version}");
 
                 var installationDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
@@ -66,6 +67,7 @@ namespace Deskband
                 foreach (var m in _kernel.GetAll<IModule>())
                 {
                     m.Initialize(_kernel);
+                    _console.AddLine($"Module \"{m.Name}\" initialized");
                 }
                 _kernel.Get<App>().Run();
             }

@@ -35,8 +35,6 @@ namespace dcmWeather
             _menuProvider.AddItem(ModuleId, gid, "Submenu test 1", null);
             _menuProvider.AddItem(ModuleId, gid, "Submenu test 2", null);
             _menuProvider.AddItem(ModuleId, null, "-", null);
-
-            _console.AddLine("Weather module initialized");
         }
 
         public void Dispose()
