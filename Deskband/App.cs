@@ -164,7 +164,7 @@ namespace Deskband
             _moduleContainer.MinWidth = cfg.GeneralSettings.DisplayMode == DisplayMode.Deskband ? BandMinWidth : 0;
             var layoutMode = cfg.GeneralSettings.DisplayMode == DisplayMode.Deskband ? _band.GetTaskbarSizeInfo().Mode : cfg.FloatingWindowSettings.Mode;
             _moduleContainer.UpdateModules(modulesSizeInfo, cfg.GeneralSettings.DrawBorders, layoutMode);
-            
+
             foreach (var m in _modules)
             {
                 m.ApplyConfiguration();

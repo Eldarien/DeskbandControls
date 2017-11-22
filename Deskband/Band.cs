@@ -62,7 +62,7 @@ namespace Deskband
                 var dpi = GetTaskbarDPI();
                 _console.AddLine($"Taskbar DPI: {dpi}");
                 DPIChanged?.Invoke(this, new ValueEventArgs<int>(dpi));
-                
+
 
                 foreach (var m in _kernel.GetAll<IModule>())
                 {
@@ -83,7 +83,7 @@ namespace Deskband
             {
                 return (int)User32.GetDpiForWindow(_taskbarWindowHandle);
             }
-            
+
             using (var g = CreateGraphics())
             {
                 return (int)g.DpiX;
