@@ -65,9 +65,9 @@ namespace msgwindow
 				break;
 			case FOOBAR_PLUGIN_CMD_FormatString:
 			{
-				int index = *(int*)cds.lpData;
-				char *fmt = ((char *)(cds.lpData) + sizeof(int));
-				pfc::string8 fmt8 = pfc::string8(fmt, cds.cbData - sizeof(int));
+				GUID id = *(GUID*)cds.lpData;
+				char *fmt = ((char *)(cds.lpData) + sizeof(GUID));
+				pfc::string8 fmt8 = pfc::string8(fmt, cds.cbData - sizeof(GUID));
 
 				service_ptr_t<titleformat_object> format;
 				static_api_ptr_t<titleformat_compiler>()->compile(format, fmt8);
@@ -75,10 +75,10 @@ namespace msgwindow
 				control->playback_format_title(NULL, value, format, NULL, control->display_level_all);
 				format.release();
 
-				deskband_actions::send_track_text(index, value);
+				deskband_actions::send_track_text(id, value);
 			}
 			break;
-			case FOOBAR_PLUGIN_CMD_FilePath:
+			/*case FOOBAR_PLUGIN_CMD_FilePath:
 			{
 				int index = *(int*)cds.lpData;
 
@@ -87,7 +87,7 @@ namespace msgwindow
 				pfc::string8 path(h->get_location().get_path());
 				deskband_actions::send_file_path(index, path);
 			}
-			break;
+			break;*/
 			case FOOBAR_PLUGIN_CMD_Seek:
 			{
 				int position = *(int*)cds.lpData;
@@ -123,7 +123,7 @@ namespace msgwindow
 			{
 				int index = *(int*)cds.lpData;
 				//TODO: figure this out
-				
+
 				static_api_ptr_t<playlist_manager> pm;
 				//t_size active_playlist = pm->get_active_playlist();
 				//bit_array_true t;
@@ -136,7 +136,7 @@ namespace msgwindow
 				//control->stop();
 				//control->start();
 				pm->activeplaylist_execute_default_action(index);
-				
+
 			}
 			break;
 			}

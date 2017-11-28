@@ -27,7 +27,6 @@
 #define FOOBAR_PLUGIN_CMD_FormatString 100
 #define FOOBAR_PLUGIN_CMD_Seek 101
 #define FOOBAR_PLUGIN_CMD_Volume 102
-#define FOOBAR_PLUGIN_CMD_FilePath 103
 #define FOOBAR_PLUGIN_CMD_Activate 104
 #define FOOBAR_PLUGIN_CMD_GetVersion 105
 #define FOOBAR_PLUGIN_CMD_SetPlaylistFormat 106
@@ -43,7 +42,6 @@
 #define DESKBAND_CMD_VolumeLevel 15
 #define DESKBAND_CMD_StopAfterCurrentState 16
 #define DESKBAND_CMD_AlbumArt 17
-#define DESKBAND_CMD_FilePath 18
 #define DESKBAND_CMD_Version 19
 #define DESKBAND_CMD_Playlist 20
 

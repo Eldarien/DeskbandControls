@@ -1,4 +1,5 @@
 ﻿using Deskband.Core.Configuration;
+using System;
 using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Design;
@@ -93,5 +94,10 @@ namespace dcmFoobar2000.Configuration
 
         [Category("Scroll"), DisplayName("Scroll Separator")]
         public string ScrollSeparator { get; set; } = " **** ";
+
+
+        // Helper methods
+
+        public string GetFormatFromPausedState(bool paused) => paused && !String.IsNullOrWhiteSpace(PausedFormat) ? PausedFormat : Format;
     }
 }

@@ -26,7 +26,6 @@ namespace dcmFoobar2000.Code
         public event EventHandler<ValueEventArgs<Tuple<float, float>>> OnTrackVolume;
         public event EventHandler<ValueEventArgs<bool>> OnStopAfterCurrentState;
         public event EventHandler<ValueEventArgs<Tuple<byte[], bool>>> OnAlbumArt;
-        public event EventHandler<TrackTextEventArgs> OnFilePath;
         public event EventHandler<ValueEventArgs<string>> OnVersion;
         public event EventHandler<PlaylistEventArgs> OnPlaylist;
 
@@ -84,12 +83,12 @@ namespace dcmFoobar2000.Code
 
                             case DeskbandCommands.Text:
                                 {
-                                    int index = (int)Marshal.PtrToStructure(csd.lpData, typeof(int));
-                                    int text8size = (int)Marshal.PtrToStructure(csd.lpData + sizeof(int), typeof(int));
+                                    Guid id = (Guid)Marshal.PtrToStructure(csd.lpData, typeof(Guid));
+                                    int text8size = (int)Marshal.PtrToStructure(csd.lpData + Marshal.SizeOf<Guid>(), typeof(int));
                                     byte[] text8bytes = new byte[text8size];
-                                    Marshal.Copy(csd.lpData + sizeof(int) * 2, text8bytes, 0, text8size);
+                                    Marshal.Copy(csd.lpData + Marshal.SizeOf<Guid>() + sizeof(int), text8bytes, 0, text8size);
                                     string text = Encoding.UTF8.GetString(text8bytes);
-                                    FireEvent(OnTrackText, new TrackTextEventArgs(index, text));
+                                    FireEvent(OnTrackText, new TrackTextEventArgs(id, text));
                                 }
                                 break;
 
@@ -143,17 +142,6 @@ namespace dcmFoobar2000.Code
                                     //bool stub = (bool)Marshal.PtrToStructure(csd.lpData + sizeof(int) + imageLen, typeof(bool));
 
                                     FireEvent(OnAlbumArt, new ValueEventArgs<Tuple<byte[], bool>>(new Tuple<byte[], bool>(art, stub)));
-                                }
-                                break;
-
-                            case DeskbandCommands.FilePath:
-                                {
-                                    int index = (int)Marshal.PtrToStructure(csd.lpData, typeof(int));
-                                    int text8size = (int)Marshal.PtrToStructure(csd.lpData + sizeof(int), typeof(int));
-                                    byte[] text8bytes = new byte[text8size];
-                                    Marshal.Copy(csd.lpData + sizeof(int) * 2, text8bytes, 0, text8size);
-                                    string text = Encoding.UTF8.GetString(text8bytes);
-                                    FireEvent(OnFilePath, new TrackTextEventArgs(index, text));
                                 }
                                 break;
 

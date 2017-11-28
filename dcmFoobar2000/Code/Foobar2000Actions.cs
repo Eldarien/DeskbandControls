@@ -8,11 +8,13 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using dcmFoobar2000.Configuration;
+using System.Threading.Tasks;
 
 namespace dcmFoobar2000.Code
 {
     public class Foobar2000Actions
     {
+        private readonly MessageForm _msgForm;
         private readonly IntPtr _msgFormHandle;
 
         private bool _locked;
@@ -20,6 +22,9 @@ namespace dcmFoobar2000.Code
 
         public Foobar2000Actions(MessageForm messageForm)
         {
+            _msgForm = messageForm;
+            _msgForm.OnTrackText += _msgForm_OnTrackText;
+
             _msgFormHandle = messageForm.Handle;
         }
 
@@ -110,24 +115,32 @@ namespace dcmFoobar2000.Code
             SendCommand(FB2KCommands.ToggleSAC);
         }
 
-        public void FormatString(int index, string format)
+
+        private Dictionary<Guid, Action<string>> _formatStringHandlers = new Dictionary<Guid, Action<string>>();
+
+        public void FormatString(string format, Action<string> handler)
         {
             if (String.IsNullOrEmpty(format))
                 return;
 
+            var id = Guid.NewGuid();
+            _formatStringHandlers.Add(id, handler);
+
+            byte[] idBytes = id.ToByteArray();
             byte[] formatBytes = Encoding.UTF8.GetBytes(format);
-            byte[] indexBytes = BitConverter.GetBytes(index);
-
-            byte[] data = new byte[indexBytes.Length + formatBytes.Length];
-            Array.Copy(indexBytes, data, indexBytes.Length);
-            Array.Copy(formatBytes, 0, data, indexBytes.Length, formatBytes.Length);
-
+            byte[] data = new byte[idBytes.Length + formatBytes.Length];
+            Array.Copy(idBytes, data, idBytes.Length);
+            Array.Copy(formatBytes, 0, data, idBytes.Length, formatBytes.Length);
             SendCommand(FB2KCommands.FormatString, data);
         }
 
-        public void FilePath(int index)
+        private void _msgForm_OnTrackText(object sender, TrackTextEventArgs e)
         {
-            SendCommand(FB2KCommands.FilePath, BitConverter.GetBytes(index));
+            if (_formatStringHandlers.TryGetValue(e.Id, out Action<string> handler))
+            {
+                _formatStringHandlers.Remove(e.Id);
+                handler(e.Text);
+            }
         }
 
         public void Seek(int position)
@@ -190,6 +203,6 @@ namespace dcmFoobar2000.Code
             SendCommand(FB2KCommands.StartPlaylistIndex, data);
         }
 
-        
+
     }
 }

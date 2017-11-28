@@ -7,10 +7,8 @@ using Deskband.Core.WinApi;
 using DeskbandBridge;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Drawing;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
@@ -454,26 +452,17 @@ namespace dcmFoobar2000.Code
 
         private void UpdateTexts()
         {
-            for (int i = 0; i < _labels.Count(); i++)
+            for (int i = 0; i < _labels.Count; i++)
             {
-                var cfg = _cfg.Texts[i];
-                FormatString(i, cfg);
+                var lbl = _labels[i];
+                _actions.FormatString(_cfg.Texts[i].GetFormatFromPausedState(_paused), s => lbl.Text = s);
             }
 
-            for (int i = _tooltipIndex; i < _tooltipLabels.Count() + _tooltipIndex; i++)
+            for (int i = 0; i < _tooltipLabels.Count; i++)
             {
-                var cfg = _cfg.Tooltip.Texts[i - _tooltipIndex];
-                FormatString(i, cfg);
+                var lbl = _tooltipLabels[i];
+                _actions.FormatString(_cfg.Tooltip.Texts[i].GetFormatFromPausedState(_paused), s => lbl.Text = s);
             }
-        }
-
-        private void FormatString(int index, TextSettingsBase ts)
-        {
-            var format = _paused
-                ? (String.IsNullOrWhiteSpace(ts.PausedFormat) ? ts.Format : ts.PausedFormat)
-                : ts.Format;
-
-            _actions.FormatString(index, format);
         }
 
         private void ClearTexts()
@@ -493,13 +482,11 @@ namespace dcmFoobar2000.Code
             _messageForm.OnFoobarHide += (s, e) => ShowOrHide(false);
             _messageForm.OnTrackLength += (s, e) => HandleTrackLength(e.Value);
             _messageForm.OnTrackTime += (s, e) => HandleTrackTime(e.Value);
-            _messageForm.OnTrackText += (s, e) => HandleTrackText(e.Text, e.Index);
             _messageForm.OnPauseState += (s, e) => HandlePauseState(e.Value);
             _messageForm.OnStop += (s, e) => HandleStop();
             _messageForm.OnTrackVolume += (s, e) => HandleVolume(e.Value.Item1, e.Value.Item2);
             _messageForm.OnStopAfterCurrentState += (s, e) => HandleStopAfterCurrent(e.Value);
             _messageForm.OnAlbumArt += (s, e) => HandleAlbumArt(e.Value.Item1, e.Value.Item2);
-            _messageForm.OnFilePath += (s, e) => HandleFilePath(e.Text, e.Index);
             _messageForm.OnVersion += (s, e) => HandleVersion(e.Value);
             _messageForm.OnPlaylist += (s, e) => HandlePlaylist(e.CurrentIndex, e.Playlist);
         }
@@ -540,30 +527,6 @@ namespace dcmFoobar2000.Code
             // it means that we have no track info, ask for it.
             if (_stopped)
                 _actions.ResendLastState();
-        }
-
-        private void HandleTrackText(string text, int index)
-        {
-            if (index >= _tooltipIndex)
-            {
-                if (index < _tooltipLabels.Count() + _tooltipIndex)
-                {
-                    var lbl = _tooltipLabels[index - _tooltipIndex];
-                    lbl.Text = text;
-                }
-            }
-            else if (index >= 0)
-            {
-                if (index < _labels.Count())
-                {
-                    var lbl = _labels[index];
-                    lbl.Text = text;
-                }
-            }
-            else
-            {
-                HandleFormatString(text, index);
-            }
         }
 
         private void HandlePauseState(bool state)
@@ -630,15 +593,6 @@ namespace dcmFoobar2000.Code
             UpdateAlbumArt();
         }
 
-        private void HandleFilePath(string text, int index)
-        {
-            if (text.StartsWith("file://"))
-            {
-                var args = String.Format("/select,\"{0}\"", text);
-                Shell32.ShellExecute(IntPtr.Zero, "open", "explorer.exe", args, null, WinApiTypes.SW_SHOWNORMAL);
-            }
-        }
-
         private void HandleVersion(string version)
         {
             if (version != FB2KConstants.DeskbandControlsVersion)
@@ -693,56 +647,44 @@ namespace dcmFoobar2000.Code
             _mcontainer.Hide(Foobar2000Module.ModuleId);
         }
 
-        private void HandleFormatString(string text, int index)
-        {
-            switch (index)
-            {
-                case FormatStringIndex.InternetSearch:
-                    {
-                        // www.google.com/search?q=%q%
-                        var url = _cfg.InternetSearchUrl.Replace("%q%", Uri.EscapeDataString(text));
-                        Shell32.ShellExecute(IntPtr.Zero, "open", url, null, null, WinApiTypes.SW_SHOWNORMAL);
-                    }
-                    break;
-
-                case FormatStringIndex.CopyArtistAndTitle:
-                case FormatStringIndex.CopyTitle:
-                case FormatStringIndex.CopyArtist:
-                    {
-                        Clipboard.SetText(text);
-                    }
-                    break;
-            }
-        }
-
-        
-
         public void CopyArtistAndTitle()
         {
-            _actions.FormatString(FormatStringIndex.CopyArtistAndTitle, "%artist% - %title%");
+            _actions.FormatString("%artist% - %title%", s => Clipboard.SetText(s));
             _lastActiveWindowActivator.Activate();
         }
 
         public void CopyTitle()
         {
-            _actions.FormatString(FormatStringIndex.CopyTitle, "%title%");
+            _actions.FormatString("%title%", s => Clipboard.SetText(s));
             _lastActiveWindowActivator.Activate();
         }
 
         public void CopyArtist()
         {
-            _actions.FormatString(FormatStringIndex.CopyArtist, "%artist%");
+            _actions.FormatString("%artist%", s => Clipboard.SetText(s));
             _lastActiveWindowActivator.Activate();
         }
 
         public void OpenContainingFolder()
         {
-            _actions.FilePath(0);
+            _actions.FormatString("%path%", s =>
+            {
+                if (s.Length > 3 && (s.StartsWith(@"\\") || s.Substring(1).StartsWith(@":\")))
+                {
+                    var args = String.Format("/select,\"{0}\"", s);
+                    Shell32.ShellExecute(IntPtr.Zero, "open", "explorer.exe", args, null, WinApiTypes.SW_SHOWNORMAL);
+                }
+            });
         }
 
         public void SearchInInternet()
         {
-            _actions.FormatString(FormatStringIndex.InternetSearch, _cfg.InternetSearchFormat);
+            _actions.FormatString(_cfg.InternetSearchFormat, s =>
+            {
+                // www.google.com/search?q=%q%
+                var url = _cfg.InternetSearchUrl.Replace("%q%", Uri.EscapeDataString(s));
+                Shell32.ShellExecute(IntPtr.Zero, "open", url, null, null, WinApiTypes.SW_SHOWNORMAL);
+            });
         }
 
         public void DoubleClick()
@@ -774,7 +716,6 @@ namespace dcmFoobar2000.Code
         }
 
         private List<dcLabel> _tooltipLabels = new List<dcLabel>();
-        private const int _tooltipIndex = 1000;
 
         private void CreateTooltipControls(Form form)
         {

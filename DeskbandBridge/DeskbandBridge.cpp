@@ -31,7 +31,6 @@ namespace DeskbandBridge {
 		literal int FormatString = FOOBAR_PLUGIN_CMD_FormatString;
 		literal int Seek = FOOBAR_PLUGIN_CMD_Seek;
 		literal int Volume = FOOBAR_PLUGIN_CMD_Volume;
-		literal int FilePath = FOOBAR_PLUGIN_CMD_FilePath;
 		literal int Activate = FOOBAR_PLUGIN_CMD_Activate;
 		literal int GetVersion = FOOBAR_PLUGIN_CMD_GetVersion;
 		literal int SetPlaylistFormat = FOOBAR_PLUGIN_CMD_SetPlaylistFormat;
@@ -50,7 +49,6 @@ namespace DeskbandBridge {
 		literal int VolumeLevel = DESKBAND_CMD_VolumeLevel;
 		literal int StopAfterCurrentState = DESKBAND_CMD_StopAfterCurrentState;
 		literal int AlbumArt = DESKBAND_CMD_AlbumArt;
-		literal int FilePath = DESKBAND_CMD_FilePath;
 		literal int Version = DESKBAND_CMD_Version;
 		literal int Playlist = DESKBAND_CMD_Playlist;
 	};

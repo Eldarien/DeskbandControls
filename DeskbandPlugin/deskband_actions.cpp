@@ -10,7 +10,7 @@ namespace deskband_actions
 	static void* last_album_art_buffer = NULL;
 	static t_size last_album_art_buffer_size = 0;
 	static bool last_album_art_stub = false;
-	
+
 	//static pfc::string_list_impl* last_playlist = NULL;
 	//static size_t last_playlist_current_index = 0;
 	static pfc::string8* playlist_format = NULL;
@@ -49,34 +49,18 @@ namespace deskband_actions
 		send_command(DESKBAND_CMD_TrackTime, &time, sizeof(time));
 	}
 
-	void send_track_text(int index, pfc::string8 text)
+	void send_track_text(GUID id, pfc::string8 text)
 	{
 		const char *textPtr = text.get_ptr();
 		size_t textLen = strlen(textPtr);
-		size_t size = sizeof(int) + sizeof(size_t) + textLen + 1;
+		size_t size = sizeof(GUID) + sizeof(size_t) + textLen + 1;
 
 		char *data = (char *)malloc(size);
-		memcpy(data, &index, sizeof(int));
-		memcpy(data + sizeof(int), &textLen, sizeof(size_t));
-		memcpy(data + sizeof(int) + sizeof(size_t), textPtr, textLen);
+		memcpy(data, &id, sizeof(GUID));
+		memcpy(data + sizeof(GUID), &textLen, sizeof(size_t));
+		memcpy(data + sizeof(GUID) + sizeof(size_t), textPtr, textLen);
 
 		send_command(DESKBAND_CMD_Text, data, size);
-
-		free(data);
-	}
-
-	void send_file_path(int index, pfc::string8 path)
-	{
-		const char *textPtr = path.get_ptr();
-		size_t textLen = strlen(textPtr);
-		size_t size = sizeof(int) + sizeof(size_t) + textLen + 1;
-
-		char *data = (char *)malloc(size);
-		memcpy(data, &index, sizeof(int));
-		memcpy(data + sizeof(int), &textLen, sizeof(size_t));
-		memcpy(data + sizeof(int) + sizeof(size_t), textPtr, textLen);
-
-		send_command(DESKBAND_CMD_FilePath, data, size);
 
 		free(data);
 	}
@@ -148,7 +132,7 @@ namespace deskband_actions
 		t_size size = sizeof(t_size) * 2 + sizeof(t_size) * count + total_len + 1; // current_index, count, [] of len:text
 		char *data = (char *)malloc(size);
 		char *p = data;
-		
+
 		memcpy(p, &current_index, sizeof(t_size)); // current_index
 		p += sizeof(t_size);
 
@@ -159,7 +143,7 @@ namespace deskband_actions
 		{
 			auto item = formatted_list.get_item(index);
 			t_size len = strlen(item);
-			
+
 			memcpy(p, &len, sizeof(t_size)); // len
 			p += sizeof(t_size);
 

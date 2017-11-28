@@ -72,7 +72,6 @@
     <Compile Include="Configuration\ButtonSettings.cs" />
     <Compile Include="Configuration\ConfigurationModel.cs" />
     <Compile Include="Code\Controller.cs" />
-    <Compile Include="Code\FormatStringIndex.cs" />
     <Compile Include="Code\MessageForm.cs">
       <SubType>Form</SubType>
     </Compile>

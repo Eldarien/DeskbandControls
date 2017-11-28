@@ -5,8 +5,7 @@ namespace deskband_actions
 	void hide();
 	void send_track_length(double length);
 	void send_track_time(double time);
-	void send_track_text(int index, pfc::string8 text);
-	void send_file_path(int index, pfc::string8 path);
+	void send_track_text(GUID id, pfc::string8 text);
 	void set_playlist_format(char* fmt, t_size len);
 	void handle_playlist_change(t_size p_playlist);
 	void send_pause_state(bool state);
