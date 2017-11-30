@@ -457,14 +457,14 @@ namespace dcmFoobar2000.Code
             {
                 var index = i;
                 _actions.FormatString(_cfg.Texts[i].GetFormatFromPausedState(_paused),
-                    s => { if (_labels.TryGetElementAt(index, out dcLabel lbl)) lbl.Text = s; });
+                    s => { if (_labels.TryGetElementAt(index, out var lbl)) lbl.Text = s; });
             }
 
             for (int i = 0; i < _tooltipLabels.Count; i++)
             {
                 var index = i;
                 _actions.FormatString(_cfg.Tooltip.Texts[i].GetFormatFromPausedState(_paused),
-                    s => { if (_tooltipLabels.TryGetElementAt(index, out dcLabel lbl)) lbl.Text = s; });
+                    s => { if (_tooltipLabels.TryGetElementAt(index, out var lbl)) lbl.Text = s; });
             }
         }
 
