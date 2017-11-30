@@ -67,8 +67,10 @@ namespace Deskband
             _config.ConfigurationFileChanged += OnConfigurationFileChanged;
             _band.TaskbarResized += (s, e) => ApplyConfiguration();
             _band.DPIChanged += (s, e) => ApplyConfiguration();
-            _band.MouseDoubleClick += (s, e) => HandleDoubleClick(e.Location);
-            _floatingForm.MouseDoubleClick += (s, e) => HandleDoubleClick(e.Location);
+            _band.MouseDoubleClick += (s, e) => HandleDoubleClick(e.Button, e.Location);
+            _band.MouseClick += (s, e) => HandleClick(e.Button, e.Location);
+            _floatingForm.MouseDoubleClick += (s, e) => HandleDoubleClick(e.Button, e.Location);
+            _floatingForm.MouseClick += (s, e) => HandleClick(e.Button, e.Location);
             _floatingForm.Move += (s, e) => _tooltipProvider.HandleMove(_floatingForm.Bounds);
 
             // Console
@@ -205,10 +207,14 @@ namespace Deskband
                 return _modules.FirstOrDefault(m => m.Id == moduleId.Value);
         }
 
-        private void HandleDoubleClick(Point location)
+        private void HandleDoubleClick(MouseButtons button, Point location)
         {
-            var module = GetModuleAtPoint(location);
-            module?.DoubleClick();
+            GetModuleAtPoint(location)?.MouseDoubleClick(button);
+        }
+
+        private void HandleClick(MouseButtons button, Point location)
+        {
+            GetModuleAtPoint(location)?.MouseClick(button);
         }
 
         private void HandleMouseWheel(WinApiTypes.HookMouseStruct hms)

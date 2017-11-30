@@ -8,6 +8,7 @@ using System.Text;
 using System.Drawing;
 using dcmFoobar2000.Configuration;
 using Deskband.Core.Configuration;
+using System.Windows.Forms;
 
 namespace dcmFoobar2000
 {
@@ -50,9 +51,22 @@ namespace dcmFoobar2000
             _controller.ApplyConfiguration();
         }
 
-        public void DoubleClick()
+        public void MouseDoubleClick(MouseButtons button)
         {
-            _controller.DoubleClick();
+            if (button == MouseButtons.Left)
+            {
+                _controller.MouseDoubleClick();
+            }
+        }
+
+        public void MouseClick(MouseButtons button)
+        {
+            if (button == MouseButtons.Middle)
+                _controller.MouseMiddleClick();
+            else if (button == MouseButtons.XButton1)
+                _controller.MouseXButton1Click();
+            else if (button == MouseButtons.XButton2)
+                _controller.MouseXButton2Click();
         }
 
         public void MouseWheel(int delta)

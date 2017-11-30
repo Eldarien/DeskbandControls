@@ -690,9 +690,27 @@ namespace dcmFoobar2000.Code
             });
         }
 
-        public void DoubleClick()
+        public void MouseDoubleClick()
         {
             _actions.ActivateFoobar(_cfg.PathToFoobar2000);
+        }
+
+        public void MouseMiddleClick()
+        {
+            _actions.PlayPause();
+            _lastActiveWindowActivator.Activate();
+        }
+
+        public void MouseXButton1Click()
+        {
+            _actions.Next();
+            _lastActiveWindowActivator.Activate();
+        }
+
+        public void MouseXButton2Click()
+        {
+            _actions.Prev();
+            _lastActiveWindowActivator.Activate();
         }
 
         private bool _tooltipShowed = false;
