@@ -1,7 +1,6 @@
 ﻿using Deskband.Configuration;
 using Deskband.Console;
 using Deskband.Core.Interfaces;
-using Deskband.Extensions;
 using Deskband.Integration;
 using Deskband.UI;
 using Ninject;

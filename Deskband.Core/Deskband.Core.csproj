@@ -94,6 +94,11 @@
     </Compile>
     <Compile Include="EventArguments\ValueEventArgs.cs" />
     <Compile Include="Configuration\ConfigurationObjectBase.cs" />
+    <Compile Include="Extensions\EnumExtensions.cs" />
+    <Compile Include="Extensions\IEnumerableOfTypeExtensions.cs" />
+    <Compile Include="Extensions\IntExtensions.cs" />
+    <Compile Include="Extensions\ListOfTypeExtensions.cs" />
+    <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Interfaces\IConfigurationProvider.cs" />
     <Compile Include="Interfaces\IConsole.cs" />
     <Compile Include="Interfaces\ILastActiveWindowActivator.cs" />

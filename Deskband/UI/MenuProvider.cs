@@ -1,12 +1,10 @@
 ﻿using Deskband.Console;
+using Deskband.Core.Extensions;
 using Deskband.Core.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Windows.Forms;
-using System.Drawing;
-using Deskband.Extensions;
 
 namespace Deskband.UI
 {
@@ -37,7 +35,7 @@ namespace Deskband.UI
             _contextMenu.Collapse += _contextMenu_Collapse;
         }
 
-        
+
 
         public void Dispose()
         {

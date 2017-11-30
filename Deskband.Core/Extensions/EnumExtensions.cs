@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 using System.Reflection;
-using System.Web;
 
-namespace Deskband.Extensions
+namespace Deskband.Core.Extensions
 {
     public static class ExtensionMethods
     {

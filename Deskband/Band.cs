@@ -5,7 +5,7 @@ using Deskband.Core.Common;
 using Deskband.Core.EventArguments;
 using Deskband.Core.Interfaces;
 using Deskband.Core.WinApi;
-using Deskband.Extensions;
+using Deskband.Core.Extensions;
 using Deskband.UI;
 using Ninject;
 using System;

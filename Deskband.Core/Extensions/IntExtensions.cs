@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace Deskband.Extensions
+﻿namespace Deskband.Core.Extensions
 {
     public static class IntExtensions
     {

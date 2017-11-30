@@ -2,6 +2,7 @@
 using dcmFoobar2000.Properties;
 using Deskband.Core.Common;
 using Deskband.Core.Controls;
+using Deskband.Core.Extensions;
 using Deskband.Core.Interfaces;
 using Deskband.Core.WinApi;
 using DeskbandBridge;
@@ -454,14 +455,16 @@ namespace dcmFoobar2000.Code
         {
             for (int i = 0; i < _labels.Count; i++)
             {
-                var lbl = _labels[i];
-                _actions.FormatString(_cfg.Texts[i].GetFormatFromPausedState(_paused), s => lbl.Text = s);
+                var index = i;
+                _actions.FormatString(_cfg.Texts[i].GetFormatFromPausedState(_paused),
+                    s => { if (_labels.TryGetElementAt(index, out dcLabel lbl)) lbl.Text = s; });
             }
 
             for (int i = 0; i < _tooltipLabels.Count; i++)
             {
-                var lbl = _tooltipLabels[i];
-                _actions.FormatString(_cfg.Tooltip.Texts[i].GetFormatFromPausedState(_paused), s => lbl.Text = s);
+                var index = i;
+                _actions.FormatString(_cfg.Tooltip.Texts[i].GetFormatFromPausedState(_paused),
+                    s => { if (_tooltipLabels.TryGetElementAt(index, out dcLabel lbl)) lbl.Text = s; });
             }
         }
 

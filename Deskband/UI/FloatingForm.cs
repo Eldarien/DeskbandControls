@@ -7,7 +7,6 @@ using Deskband.Configuration;
 using Deskband.Core.Common;
 using Deskband.Core.Interfaces;
 using Deskband.Core.WinApi;
-using Deskband.Extensions;
 
 namespace Deskband.UI
 {

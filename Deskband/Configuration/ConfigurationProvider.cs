@@ -8,7 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using Deskband.Core.Configuration;
-using Deskband.Extensions;
+using Deskband.Core.Extensions;
 using Deskband.Console;
 using Deskband.Common;
 

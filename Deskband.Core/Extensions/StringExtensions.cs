@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 
-namespace Deskband.Extensions
+namespace Deskband.Core.Extensions
 {
     public static class StringExtensions
     {

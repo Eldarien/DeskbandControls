@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Reflection;
 
-namespace Deskband.Extensions
+namespace Deskband.Core.Extensions
 {
     public static class IEnumerableOfTypeExtensions
     {
