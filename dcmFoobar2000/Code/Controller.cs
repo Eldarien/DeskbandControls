@@ -190,12 +190,12 @@ namespace dcmFoobar2000.Code
 
             if (m.Enabled)
             {
-                _miStop = m.Stop ? _menu.AddItem(_id, null, "Stop", _actions.Stop) : Guid.Empty;
-                _miPlayPause = m.PlayPause ? _menu.AddItem(_id, null, "Play / Pause", _actions.PlayPause) : Guid.Empty;
-                _miPrev = m.Previous ? _menu.AddItem(_id, null, "Previous", _actions.Prev) : Guid.Empty;
-                _miNext = m.Next ? _menu.AddItem(_id, null, "Next", _actions.Next) : Guid.Empty;
-                _miRandom = m.Random ? _menu.AddItem(_id, null, "Random", _actions.Random) : Guid.Empty;
-                _miToggleStopAC = m.StopAfterCurrent ? _menu.AddItem(_id, null, "Stop After Current", _actions.ToggleStopAfterCurrent) : Guid.Empty;
+                _miStop = m.Stop ? _menu.AddItem(_id, null, "Stop", () => { _actions.Stop(); _lastActiveWindowActivator.Activate(); }) : Guid.Empty;
+                _miPlayPause = m.PlayPause ? _menu.AddItem(_id, null, "Play / Pause", () => { _actions.PlayPause(); _lastActiveWindowActivator.Activate(); }) : Guid.Empty;
+                _miPrev = m.Previous ? _menu.AddItem(_id, null, "Previous", () => { _actions.Prev(); _lastActiveWindowActivator.Activate(); }) : Guid.Empty;
+                _miNext = m.Next ? _menu.AddItem(_id, null, "Next", () => { _actions.Next(); _lastActiveWindowActivator.Activate(); }) : Guid.Empty;
+                _miRandom = m.Random ? _menu.AddItem(_id, null, "Random", () => { _actions.Random(); _lastActiveWindowActivator.Activate(); }) : Guid.Empty;
+                _miToggleStopAC = m.StopAfterCurrent ? _menu.AddItem(_id, null, "Stop After Current", () => { _actions.ToggleStopAfterCurrent(); _lastActiveWindowActivator.Activate(); }) : Guid.Empty;
 
                 if (m.Stop || m.PlayPause || m.Previous || m.Next || m.Random || m.StopAfterCurrent)
                 {
@@ -818,7 +818,7 @@ namespace dcmFoobar2000.Code
                 for (int i = 0; i < _playlist.Count; i++)
                 {
                     int idx = i + playlistStartIndex;
-                    var pi = _menu.AddItem(_id, null, _playlist[i], () => _actions.StartPlaylistIndex(idx));
+                    var pi = _menu.AddItem(_id, null, _playlist[i], () => { _actions.StartPlaylistIndex(idx); _lastActiveWindowActivator.Activate(); });
 
                     _playlistMenuItems.Add(pi);
                     if (i == currentIndex)
