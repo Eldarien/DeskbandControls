@@ -577,7 +577,15 @@ namespace dcmFoobar2000.Code
 
         public void MouseWheel(int delta)
         {
-            _actions.Volume(LimitVolume(_volume + (delta / 120) * _volume_step));
+            if (_cfg.MouseWheelMode == MouseWheelMode.Volume)
+            {
+                _actions.Volume(LimitVolume(_volume + (delta / 120) * _volume_step));
+            }
+            else
+            {
+                var p = Math.Min(Math.Max(_trbPosition.Position + (delta / 120), 0), _trbPosition.Range);
+                _actions.Seek(p);
+            }
         }
 
         private void HandleStopAfterCurrent(bool state)

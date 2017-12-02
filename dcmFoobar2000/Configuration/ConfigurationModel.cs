@@ -99,6 +99,9 @@ namespace dcmFoobar2000.Configuration
             Format = "%artist% - %title%"
         };
 
+        [Category("Mouse"), DisplayName("Mouse Wheel Mode"), TypeConverter(typeof(EnumDescriptionConverter<MouseWheelMode>))]
+        public MouseWheelMode MouseWheelMode { get; set; } = MouseWheelMode.Volume;
+
         public static object AddText(ConfigurationModel model)
         {
             return SettingsObject.AddCollectionItemCommandHelper(model.Texts, "Text", name => new TextSettings { Name = name, Format = "%title%" });
