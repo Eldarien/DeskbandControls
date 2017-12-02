@@ -5,7 +5,7 @@ using System.Reflection;
 
 namespace Deskband.Core.Extensions
 {
-    public static class ExtensionMethods
+    public static class EnumExtensions
     {
         /// <summary>
         /// Returns description of enum item marked with "Description" attribute
@@ -30,6 +30,11 @@ namespace Deskband.Core.Extensions
         public static List<KeyValuePair<Enum, String>> EnumToList(this Enum en)
         {
             Type enumType = en.GetType();
+            return EnumToList(enumType);
+        }
+
+        public static List<KeyValuePair<Enum, String>> EnumToList(Type enumType)
+        {
             Array enumValArray = Enum.GetValues(enumType);
             var enumValList = new List<KeyValuePair<Enum, String>>(enumValArray.Length);
             foreach (int val in enumValArray)

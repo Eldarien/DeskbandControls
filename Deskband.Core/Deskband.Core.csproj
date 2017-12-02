@@ -67,6 +67,7 @@
     <Compile Include="Common\PathHelpers.cs" />
     <Compile Include="Configuration\ColorHexConverter.cs" />
     <Compile Include="Configuration\EditableObjectConverter.cs" />
+    <Compile Include="Configuration\EnumDescriptionConverter.cs" />
     <Compile Include="Configuration\ExpandableCollectionConverter.cs" />
     <Compile Include="Configuration\ExpandableCollectionPropertyDescriptor.cs" />
     <Compile Include="Configuration\FontNameStringConverter.cs" />

@@ -5,7 +5,7 @@ namespace Deskband.Configuration
 {
     public class GeneralSettings
     {
-        [DisplayName("Deskband Mode")]
+        [DisplayName("Deskband Mode"), TypeConverter(typeof(EnumDescriptionConverter<DisplayMode>))]
         public DisplayMode DisplayMode { get; set; }
 
         [DisplayName("Draw Borders"), TypeConverter(typeof(YesNoBooleanConverter))]
@@ -16,6 +16,5 @@ namespace Deskband.Configuration
             {
                 DisplayMode = DisplayMode.Deskband
             };
-        
     }
 }

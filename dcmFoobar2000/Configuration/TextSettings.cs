@@ -78,7 +78,7 @@ namespace dcmFoobar2000.Configuration
         [Category("Text"), DisplayName("Horizontal Align")]
         public HorizontalAlign HorizontalAlign { get; set; }
 
-        [Category("Text"), DisplayName("Detect HTTP Links")]
+        [Category("Text"), DisplayName("Detect HTTP Links"), TypeConverter(typeof(YesNoBooleanConverter))]
         public bool DetectHttpLinks { get; set; }
 
         [Category("Scroll"), DisplayName("Enable Scroll"), TypeConverter(typeof(YesNoBooleanConverter))]
