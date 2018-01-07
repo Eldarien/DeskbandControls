@@ -11,7 +11,7 @@ Important notes:
 !- For those wondering what the hell it is - looks like unfinished people band...
 
 How to install:
-  - Install Microsoft .NET Framework 4: https://www.microsoft.com/en-us/download/details.aspx?id=17718
+  - Install Microsoft .NET Framework 4.7.1: https://www.microsoft.com/en-us/download/details.aspx?id=56116
     If you are using Windows 7 with Windows Updates turned on you may already have it.
     Windows 8/8.1/10 should have it installed by default.
   - Double click on foo_deskband_controls.fb2k-component, foobar2000 will lauch and ask if you want to install. Click 'Yes'.
@@ -32,6 +32,15 @@ Eldarien (eldarien@live.com)
 
 --
 ** Changelog:
+
+January 6 2017
+  * Version 3.6.0
+  + Added ability to scroll position with mouse wheel
+  + Additional mouse buttons control when hovering over deskband - middle button for play/pause, x1 button for next song, x2 for previous
+  - Context menu playback commands as well as playlist are no longer taking away focus from what it was on before
+  - Projects upgraded to VS2017 toolset and .NET framework 4.7.1 + some DPI handling improvements
+  - DPI change on the fly support for Win10 1709 (but not for settings form)
+  - Fixed crush in tooltip when its album art is disabled
 
 October 19 2017
   * Version 3.5.0
