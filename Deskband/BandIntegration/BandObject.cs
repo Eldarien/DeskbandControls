@@ -117,6 +117,8 @@ namespace Deskband.BandIntegration
 
         // IDeskBand
 
+        public bool FloatingMode { get; set; }
+
         public virtual void GetBandInfo(UInt32 dwBandID, UInt32 dwViewMode, ref ComTypes.DESKBANDINFO dbi)
         {
             this.BandId = dwBandID;
@@ -151,7 +153,12 @@ namespace Deskband.BandIntegration
             }
             if ((dbi.dwMask & (uint)ComTypes.DBIM.MODEFLAGS) > 0)
             {
-                dbi.dwModeFlags = (ComTypes.DBIM)(ComTypes.DBIMF.NORMAL | ComTypes.DBIMF.FIXED | ComTypes.DBIMF.NOGRIPPER | ComTypes.DBIMF.NOMARGINS);
+                var flags = ComTypes.DBIMF.NORMAL;
+                if (!FloatingMode)
+                {
+                    flags |= ComTypes.DBIMF.FIXED | ComTypes.DBIMF.NOGRIPPER | ComTypes.DBIMF.NOMARGINS;
+                }
+                dbi.dwModeFlags = (ComTypes.DBIM)flags;
             }
             if ((dbi.dwMask & (uint)ComTypes.DBIM.BKCOLOR) > 0)
             {

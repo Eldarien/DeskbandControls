@@ -114,7 +114,7 @@ namespace Deskband.UI
                     _form.Left = position.X - _form.Width / 2;
                     int maxLeft = screen.Bounds.Width - _form.Width;
                     if (_form.Left > maxLeft) _form.Left = maxLeft;
-                   
+
                     _form.Top = taskbarInfo.Rect.Top <= 0
                         ? taskbarInfo.Rect.Height
                         : screen.Bounds.Height - taskbarInfo.Rect.Height - _form.Height;
@@ -136,11 +136,12 @@ namespace Deskband.UI
                 _form.Left = taskbarInfo.Rect.Left <= 0
                     ? taskbarInfo.Rect.Width
                     : screen.Bounds.Width - taskbarInfo.Rect.Width - _form.Width;
-                
+
 
                 _form.Top = position.Y - _form.Height / 2;
                 int maxTop = screen.Bounds.Height - _form.Height;
                 if (_form.Top > maxTop) _form.Top = maxTop;
+                if (_form.Top < 0) _form.Top = 0;
             }
         }
 

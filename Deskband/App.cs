@@ -121,7 +121,7 @@ namespace Deskband
             {
                 _band.MinSize = new Size(BandMinWidth, 0);
             }
-
+            _band.FloatingMode = cfg.GeneralSettings.DeskbandMode == DeskbandMode.Floating;
             _band.ExecBandInfoChangedCommand();
             _floatingForm.Size = _moduleContainer.Size;
 
