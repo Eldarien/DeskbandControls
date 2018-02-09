@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Deskband.Core.Configuration;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
 
 namespace dcmFoobar2000.Configuration
 {
@@ -15,5 +12,8 @@ namespace dcmFoobar2000.Configuration
         public int NumberOfItemsAfterCurrent { get; set; }
 
         public string Format { get; set; }
+
+        [DisplayName("Cascaded Menu"), TypeConverter(typeof(YesNoBooleanConverter))]
+        public bool CascadedMenu { get; set; }
     }
 }

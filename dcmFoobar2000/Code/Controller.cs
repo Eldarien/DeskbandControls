@@ -818,6 +818,7 @@ namespace dcmFoobar2000.Code
 
         private List<string> _playlist;
         private List<Guid> _playlistMenuItems = new List<Guid>();
+        private Guid? _playlistGroup;
 
         private void HandlePlaylist(int currentIndex, List<string> playlist)
         {
@@ -826,6 +827,12 @@ namespace dcmFoobar2000.Code
                 _menu.RemoveItem(pi);
             }
             _playlistMenuItems.Clear();
+
+            if (_playlistGroup != null)
+            {
+                _menu.RemoveItem(_playlistGroup.Value);
+                _playlistGroup = null;
+            }
 
             if (_playlist != null)
             {
@@ -841,10 +848,15 @@ namespace dcmFoobar2000.Code
 
             if (_cfg.Menu.Playlist)
             {
+                if (_cfg.Playlist.CascadedMenu)
+                {
+                    _playlistGroup = _menu.AddItem(_id, null, "Playlist", null);
+                }
+
                 for (int i = 0; i < _playlist.Count; i++)
                 {
                     int idx = i + playlistStartIndex;
-                    var pi = _menu.AddItem(_id, null, _playlist[i], () => { _actions.StartPlaylistIndex(idx); _lastActiveWindowActivator.Activate(); });
+                    var pi = _menu.AddItem(_id, _playlistGroup, _playlist[i], () => { _actions.StartPlaylistIndex(idx); _lastActiveWindowActivator.Activate(); });
 
                     _playlistMenuItems.Add(pi);
                     if (i == currentIndex)
