@@ -73,7 +73,6 @@
     <Compile Include="Common\AssemblyResolver.cs" />
     <Compile Include="Configuration\ConfigurationModel.cs" />
     <Compile Include="Configuration\ConfigurationOptions.cs" />
-    <Compile Include="Configuration\DeskbandMode.cs" />
     <Compile Include="Configuration\DisplayMode.cs" />
     <Compile Include="Configuration\FloatingWindowSettings.cs" />
     <Compile Include="Configuration\GeneralSettings.cs" />

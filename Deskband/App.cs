@@ -112,7 +112,7 @@ namespace Deskband
             _console.AddDebugLine(String.Format("Module container resized: {0}x{1}", _moduleContainer.Size.Width, _moduleContainer.Size.Height));
 
             var cfg = _config.GetConfiguration(Guid.Empty, ConfigurationModel.Default);
-            if (cfg.GeneralSettings.DisplayMode == DisplayMode.Deskband)
+            if (cfg.GeneralSettings.IsDeskband)
             {
                 var tsi = _band.GetTaskbarSizeInfo();
                 _band.MinSize = new Size(tsi.Mode == LayoutMode.Horizontal ? _moduleContainer.Size.Width : _moduleContainer.Size.Height, 0);
@@ -121,7 +121,7 @@ namespace Deskband
             {
                 _band.MinSize = new Size(BandMinWidth, 0);
             }
-            _band.FloatingMode = cfg.GeneralSettings.DeskbandMode == DeskbandMode.Floating;
+            _band.FloatingMode = cfg.GeneralSettings.DisplayMode == DisplayMode.FloatingDeskband;
             _band.ExecBandInfoChangedCommand();
             _floatingForm.Size = _moduleContainer.Size;
 
@@ -139,7 +139,7 @@ namespace Deskband
             _band.Controls.Clear();
             _floatingForm.Controls.Clear();
 
-            if (cfg.GeneralSettings.DisplayMode == DisplayMode.Deskband)
+            if (cfg.GeneralSettings.IsDeskband)
             {
                 _floatingForm.Visible = false;
                 _band.Controls.Add(_moduleContainer.AsControl());
@@ -163,8 +163,8 @@ namespace Deskband
                     m.Configuration.StretchBackgroundImage
                  ));
 
-            _moduleContainer.MinWidth = cfg.GeneralSettings.DisplayMode == DisplayMode.Deskband ? BandMinWidth : 0;
-            var layoutMode = cfg.GeneralSettings.DisplayMode == DisplayMode.Deskband ? _band.GetTaskbarSizeInfo().Mode : cfg.FloatingWindowSettings.Mode;
+            _moduleContainer.MinWidth = cfg.GeneralSettings.IsDeskband ? BandMinWidth : 0;
+            var layoutMode = cfg.GeneralSettings.IsDeskband ? _band.GetTaskbarSizeInfo().Mode : cfg.FloatingWindowSettings.Mode;
             _moduleContainer.UpdateModules(modulesSizeInfo, cfg.GeneralSettings.DrawBorders, layoutMode);
 
             foreach (var m in _modules)
@@ -233,7 +233,7 @@ namespace Deskband
             if (!_moduleContainer.Created) return;
 
             var cfg = _config.GetConfiguration(Guid.Empty, ConfigurationModel.Default);
-            if (cfg.GeneralSettings.DisplayMode == DisplayMode.Deskband)
+            if (cfg.GeneralSettings.IsDeskband)
             {
                 var taskbarInfo = _band.GetTaskbarSizeInfo();
                 if (!taskbarInfo.Rect.ToRectangle().Contains(globalPoint)) return; // do not react if point is outside of taskbar

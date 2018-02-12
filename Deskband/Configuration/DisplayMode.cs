@@ -8,7 +8,11 @@ namespace Deskband.Configuration
 {
     public enum DisplayMode
     {
+        [Description("Docked Deskband")]
         Deskband,
+
+        [Description("Floating Deskband")]
+        FloatingDeskband,
 
         [Description("Floating Window")]
         FloatingWindow

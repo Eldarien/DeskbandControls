@@ -103,12 +103,12 @@ namespace Deskband.UI
             var position = new Point(rc.Left + rc.Width / 2, rc.Top + rc.Height / 2);
             var screen = Screen.FromControl(_form);
             var taskbarInfo = _band.GetTaskbarSizeInfo();
-            var layoutMode = cfg.GeneralSettings.DisplayMode == DisplayMode.Deskband ? taskbarInfo.Mode : cfg.FloatingWindowSettings.Mode;
+            var layoutMode = cfg.GeneralSettings.IsDeskband ? taskbarInfo.Mode : cfg.FloatingWindowSettings.Mode;
             if (layoutMode == LayoutMode.Horizontal || cfg.GeneralSettings.DisplayMode == DisplayMode.FloatingWindow)
             {
                 // Horizontal deskband || floating window
 
-                if (cfg.GeneralSettings.DisplayMode == DisplayMode.Deskband)
+                if (cfg.GeneralSettings.IsDeskband)
                 {
                     // horizontal center is module center
                     _form.Left = position.X - _form.Width / 2;
