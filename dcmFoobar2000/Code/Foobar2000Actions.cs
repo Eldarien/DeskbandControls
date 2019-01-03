@@ -203,6 +203,9 @@ namespace dcmFoobar2000.Code
             SendCommand(FB2KCommands.StartPlaylistIndex, data);
         }
 
-
+        public void RequestVisualizationData()
+        {
+            SendCommand(FB2KCommands.RequestVisualizationData);
+        }
     }
 }

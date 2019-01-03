@@ -41,6 +41,8 @@ namespace dcmFoobar2000.Code
         private Timer _aaStubTimer;
         private const int _aaStubTimerInterval = 1500;
 
+        private Timer _visualizationTimer;
+
         private bool _eventsInitialized;
 
         private bool _stopped = true;
@@ -98,6 +100,11 @@ namespace dcmFoobar2000.Code
             _aaStubTimer = _disposable.Add(new Timer());
             _aaStubTimer.Interval = _aaStubTimerInterval;
             _aaStubTimer.Tick += (s, e) => HandleAlbumArtStubTick();
+
+            _visualizationTimer = _disposable.Add(new Timer());
+            _visualizationTimer.Interval = 100;
+            _visualizationTimer.Tick += (s, e) => HandleVisualizationTimerTick();
+            _visualizationTimer.Enabled = true;
         }
 
         public void ApplyConfiguration()
@@ -868,6 +875,14 @@ namespace dcmFoobar2000.Code
                 {
                     _playlistMenuItems.Add(_menu.AddItem(_id, null, "-", null));
                 }
+            }
+        }
+
+        private void HandleVisualizationTimerTick()
+        {
+            if (!_stopped)
+            {
+                _actions.RequestVisualizationData();
             }
         }
     }

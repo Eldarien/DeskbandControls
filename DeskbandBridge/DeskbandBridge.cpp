@@ -35,6 +35,7 @@ namespace DeskbandBridge {
 		literal int GetVersion = FOOBAR_PLUGIN_CMD_GetVersion;
 		literal int SetPlaylistFormat = FOOBAR_PLUGIN_CMD_SetPlaylistFormat;
 		literal int StartPlaylistIndex = FOOBAR_PLUGIN_CMD_StartPlaylistIndex;
+		literal int RequestVisualizationData = FOOBAR_PLUGIN_CMD_RequestVisualizationData;
 	};
 
 	public ref class DeskbandCommands {
@@ -51,5 +52,6 @@ namespace DeskbandBridge {
 		literal int AlbumArt = DESKBAND_CMD_AlbumArt;
 		literal int Version = DESKBAND_CMD_Version;
 		literal int Playlist = DESKBAND_CMD_Playlist;
+		literal int VisualizationData = DESKBAND_CMD_VisualizationData;
 	};
 }

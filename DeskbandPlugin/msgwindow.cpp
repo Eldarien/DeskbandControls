@@ -7,11 +7,15 @@ namespace msgwindow
 	static HWND hwnd;
 	static wchar_t class_name[] = TEXT(FOOBAR_PLUGIN_MSGWINDOW_CLASS);
 	static wchar_t window_title[] = TEXT(FOOBAR_PLUGIN_MSGWINDOW_TITLE);
+	static service_ptr_t<visualisation_stream_v3> vis_stream;
 
 	LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 	void create()
 	{
+		static_api_ptr_t<visualisation_manager> vis_mgr;
+		vis_mgr->create_stream(vis_stream, visualisation_manager::KStreamFlagNewFFT);
+
 		HMODULE hInst = GetModuleHandle(NULL);
 
 		WNDCLASSW wc = { 0 };
@@ -137,6 +141,24 @@ namespace msgwindow
 				//control->start();
 				pm->activeplaylist_execute_default_action(index);
 
+			}
+			break;
+			case FOOBAR_PLUGIN_CMD_RequestVisualizationData:
+			{
+				double time;
+				if (vis_stream->get_absolute_time(time))
+				{
+					audio_chunk_impl chunk;
+					vis_stream->get_chunk_absolute(chunk, time, 100 * 0.001); // 100ms
+
+					t_uint32 channel_count = chunk.get_channel_count();
+					t_uint32 sample_count_total = chunk.get_sample_count();
+					const audio_sample *samples = chunk.get_data();
+
+					//console::formatter() << "Vis. data requested:  channels: " << channel_count << ", samples:" << sample_count_total;
+
+					//TODO: send samples to deskband
+				}
 			}
 			break;
 			}

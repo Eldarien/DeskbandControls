@@ -31,6 +31,7 @@
 #define FOOBAR_PLUGIN_CMD_GetVersion 105
 #define FOOBAR_PLUGIN_CMD_SetPlaylistFormat 106
 #define FOOBAR_PLUGIN_CMD_StartPlaylistIndex 107
+#define FOOBAR_PLUGIN_CMD_RequestVisualizationData 108
 
 #define DESKBAND_CMD_Show 1
 #define DESKBAND_CMD_Hide 2
@@ -44,4 +45,4 @@
 #define DESKBAND_CMD_AlbumArt 17
 #define DESKBAND_CMD_Version 19
 #define DESKBAND_CMD_Playlist 20
-
+#define DESKBAND_CMD_VisualizationData 21
