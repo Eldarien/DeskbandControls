@@ -880,10 +880,10 @@ namespace dcmFoobar2000.Code
 
         private void HandleVisualizationTimerTick()
         {
-            if (!_stopped)
-            {
-                _actions.RequestVisualizationData();
-            }
+            //if (!_stopped)
+            //{
+            //    _actions.RequestVisualizationData();
+            //}
         }
     }
 }
