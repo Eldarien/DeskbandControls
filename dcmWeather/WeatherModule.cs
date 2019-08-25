@@ -7,6 +7,7 @@ using System.Text;
 using System.Drawing;
 using dcmWeather.Configuration;
 using Deskband.Core.Configuration;
+using System.Windows.Forms;
 
 namespace dcmWeather
 {
@@ -45,9 +46,14 @@ namespace dcmWeather
         {
         }
 
-        public void DoubleClick()
+        public void MouseDoubleClick(MouseButtons button)
         {
             _console.AddLine("Weather plugin was double-clicked!");
+        }
+
+        public void MouseClick(MouseButtons button)
+        {
+            _console.AddLine("Weather plugin was single-clicked!");
         }
 
         public void MouseWheel(int delta)
