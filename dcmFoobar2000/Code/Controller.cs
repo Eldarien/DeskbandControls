@@ -67,6 +67,8 @@ namespace dcmFoobar2000.Code
 
         private List<dcLabel> _labels = new List<dcLabel>();
 
+        private DisposableContainer _controls;
+
         public Controller(
             ISizeProvider sp,
             IConsole console,
@@ -105,6 +107,8 @@ namespace dcmFoobar2000.Code
             _visualizationTimer.Interval = 100;
             _visualizationTimer.Tick += (s, e) => HandleVisualizationTimerTick();
             _visualizationTimer.Enabled = true;
+
+            _controls = new DisposableContainer();
         }
 
         public void ApplyConfiguration()
@@ -136,38 +140,24 @@ namespace dcmFoobar2000.Code
             _config.UpdateConfiguration(_cfg);
 
             _messageForm.Lock();
-            DestroyControls();
+            _controls.Dispose();
             _disposable.Dispose();
-        }
 
-        private List<IDisposable> _controls = new List<IDisposable>();
-
-        private void DestroyControls()
-        {
-            _controls.Reverse();
-            foreach (var x in _controls)
-            {
-                x.Dispose();
-            }
-            _controls.Clear();
         }
 
         private T CreateControl<T>() where T : Control, new()
         {
-            var control = new T();
-            return AddControl(control);
+            return AddControl(new T());
         }
 
         private T AddControl<T>(T control) where T : Control
         {
-            _controls.Add(control);
-            return control;
+            return _controls.Add(control);
         }
 
         private void RemoveAndDestroyControl<T>(T control) where T : Control
         {
-            _controls.Remove(control);
-            control.Dispose();
+            _controls.DisposeRemoveItem(control);
         }
 
         private void AddControlToModuleContainer(Control control)
@@ -225,7 +215,7 @@ namespace dcmFoobar2000.Code
         private void RegisterControls()
         {
             _mcontainer.ClearControls(Foobar2000Module.ModuleId);
-            DestroyControls();
+            _controls.DisposeRemoveItems();
 
             _picAlbumArt = CreateAlbumArt(_cfg.AlbumArt);
             AddControlToModuleContainer(_picAlbumArt);
