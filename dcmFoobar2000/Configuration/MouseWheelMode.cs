@@ -2,6 +2,6 @@
 {
     public enum MouseWheelMode
     {
-        Volume, Position
+        None, Volume, Position
     }
 }
