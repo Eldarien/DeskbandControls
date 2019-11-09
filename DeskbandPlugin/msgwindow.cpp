@@ -75,11 +75,32 @@ namespace msgwindow
 
 				service_ptr_t<titleformat_object> format;
 				static_api_ptr_t<titleformat_compiler>()->compile(format, fmt8);
-				pfc::string8 value;
-				control->playback_format_title(NULL, value, format, NULL, control->display_level_all);
+				pfc::string8 text;
+
+				if (control->is_playing() || control->is_paused())
+				{
+					control->playback_format_title(NULL, text, format, NULL, control->display_level_all);
+				}
+				else
+				{
+					static_api_ptr_t<playlist_manager> pm;
+					t_size active_playlist = pm->get_active_playlist();
+					if (active_playlist != pfc_infinite)
+					{
+						bit_array_true t;
+						metadb_handle_list meta_list;
+						pm->playlist_get_items(active_playlist, meta_list, t);
+						if (meta_list.get_count() != 0)
+						{
+							auto item = meta_list.get_item(deskband_actions::get_last_playlist_current_index());
+							item->format_title(NULL, text, format, NULL);
+						}
+					}
+				}
+
 				format.release();
 
-				deskband_actions::send_track_text(id, value);
+				deskband_actions::send_track_text(id, text);
 			}
 			break;
 			/*case FOOBAR_PLUGIN_CMD_FilePath:

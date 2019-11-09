@@ -72,7 +72,7 @@ namespace dcmFoobar2000.Configuration
         [Category("Text"), DisplayName("Paused Format")]
         public string PausedFormat { get; set; } = "";
 
-        [Category("Text"), DisplayName("Stopped Text")]
+        [Category("Text"), DisplayName("Stopped Format")]
         public string StoppedText { get; set; } = "";
 
         [Category("Text"), DisplayName("Horizontal Align")]

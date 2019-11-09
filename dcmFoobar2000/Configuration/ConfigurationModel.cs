@@ -120,7 +120,7 @@ namespace dcmFoobar2000.Configuration
                 cfg.Texts.Add(new TextSettings
                 {
                     X = 92, Y = 2, Width = 158, Height = 16, Name = "Default Text",
-                    StoppedText = "**Stopped**", Format = "%artist% - %title% '('%playback_time%')')"
+                    StoppedText = "**Stopped** %artist% - %title%", Format = "%artist% - %title% '('%playback_time%')')"
                 });
 
                 cfg.Tooltip.Texts.Add(new TooltipTextSettings

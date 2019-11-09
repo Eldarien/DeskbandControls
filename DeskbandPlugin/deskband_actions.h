@@ -8,6 +8,7 @@ namespace deskband_actions
 	void send_track_text(GUID id, pfc::string8 text);
 	void set_playlist_format(char* fmt, t_size len);
 	void handle_playlist_change(t_size p_playlist);
+	t_size get_last_playlist_current_index();
 	void send_pause_state(bool state);
 	void send_stop();
 	void send_track_volume(float volume, float step);

@@ -125,14 +125,12 @@ namespace dcmFoobar2000.Code
                 _eventsInitialized = true;
             }
 
+            _actions.Init(_stopped, _cfg);
+
             if (_stopped)
             {
-                UpdateAlbumArt();
-                ClearTexts();
-                HandlePlaybackState(false);
+                HandleStop();
             }
-
-            _actions.Init(_stopped, _cfg);
         }
 
         public void Dispose()
@@ -221,7 +219,7 @@ namespace dcmFoobar2000.Code
             AddControlToModuleContainer(_picAlbumArt);
 
             _btnStop = CreateButton(_cfg.Buttons.BtnStop, Resources.Icon_Stop, null,
-                () => { _actions.Stop(); _lastActiveWindowActivator.Activate(); });
+                () => { if (_stopped) HandleStop(); else _actions.Stop(); _lastActiveWindowActivator.Activate(); });
             AddControlToModuleContainer(_btnStop);
 
             _btnPlayPause = CreateButton(_cfg.Buttons.BtnPlayPause, Resources.Icon_Play, Resources.Icon_Pause,
@@ -465,9 +463,12 @@ namespace dcmFoobar2000.Code
             }
         }
 
-        private void ClearTexts()
+        private void UpdateStoppedTexts()
         {
-            _cfg.Texts.Zip(_labels, (settings, lbl) => new { settings, lbl }).ToList().ForEach(x => { x.lbl.Text = x.settings.StoppedText; });
+            _cfg.Texts.Zip(_labels, (settings, lbl) => new { settings, lbl }).ToList().ForEach(x =>
+            {
+                _actions.FormatString(x.settings.StoppedText, s => x.lbl.Text = s);
+            });
         }
 
         private void ResetTextsScrollPosition()
@@ -546,7 +547,7 @@ namespace dcmFoobar2000.Code
 
             UpdateButtonIcons();
             UpdatePosition(0);
-            ClearTexts();
+            UpdateStoppedTexts();
             HandlePlaybackState(false);
         }
 

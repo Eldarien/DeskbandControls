@@ -14,6 +14,7 @@ namespace deskband_actions
 	//static pfc::string_list_impl* last_playlist = NULL;
 	//static size_t last_playlist_current_index = 0;
 	static pfc::string8* playlist_format = NULL;
+	static t_size last_playlist_current_index = 0;
 
 	void send_command(int cmd, PVOID data, size_t size)
 	{
@@ -106,20 +107,7 @@ namespace deskband_actions
 		metadb_handle_ptr current_item;
 		control->get_now_playing(current_item);
 		t_size current_index = current_item != 0 ? meta_list.find_item(current_item) : 0;
-
-	/*	deskband_actions::send_playlist(formatted_list, current_index);
-	}
-
-	void send_playlist(pfc::string_list_impl list, size_t current_index)
-	{
-		if (last_playlist != NULL)
-		{
-			delete last_playlist;
-			last_playlist = NULL;
-		}
-
-		last_playlist = new pfc::string_list_impl(list);
-		last_playlist_current_index = current_index;*/
+		last_playlist_current_index = current_index;
 
 		t_size count = formatted_list.get_count();
 		t_size total_len = 0;
@@ -154,6 +142,11 @@ namespace deskband_actions
 		send_command(DESKBAND_CMD_Playlist, data, size);
 
 		free(data);
+	}
+
+	t_size get_last_playlist_current_index()
+	{
+		return last_playlist_current_index;
 	}
 
 	void send_pause_state(bool state)
