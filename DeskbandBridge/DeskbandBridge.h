@@ -6,7 +6,9 @@
 
 #define DESKBAND_CONTROLS_VERSION "3.6.1" // Always use 3 numbers version (e.g. xx.y.z)
 #define DESKBAND_CONTROLS_TITLE "Deskband Controls"
-#define DESKBAND_CONTROLS_ABOUT_TEXT "(c) Eldarien (eldarien@live.com)\nhttps://hydrogenaud.io/index.php/topic,78234.0.html"
+#define DESKBAND_CONTROLS_ABOUT_TEXT "(c) Eldarien (eldarien@live.com)\n" \
+									 "https://hydrogenaud.io/index.php/topic,78234.0.html\n" \
+									 "Build date and time: " __DATE__ " " __TIME__
 
 #define FOOBAR_PLUGIN_MSGWINDOW_CLASS "FoobarDeskbandControlsWndClass"
 #define FOOBAR_PLUGIN_MSGWINDOW_TITLE "FooDeskbandMsgWindow"

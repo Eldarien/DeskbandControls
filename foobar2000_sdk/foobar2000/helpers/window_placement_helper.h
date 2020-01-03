@@ -1,12 +1,11 @@
-#ifdef _WIN32
+#pragma once
 
-#ifndef _WINDOW_PLACEMENT_HELPER_H_
-#define _WINDOW_PLACEMENT_HELPER_H_
+#ifdef FOOBAR2000_DESKTOP_WINDOWS
 
 class cfg_window_placement : public cfg_var
 {
 public:
-	bool on_window_creation(HWND window);//returns true if window position has been changed, false if not
+	bool on_window_creation(HWND window, bool allowHidden = false);//returns true if window position has been changed, false if not
 	void on_window_creation_silent(HWND window);
 	void on_window_destruction(HWND window);
 	bool read_from_window(HWND window);
@@ -32,7 +31,4 @@ private:
 	t_uint32 m_width,m_height;
 };
 
-
-#endif //_WINDOW_PLACEMENT_HELPER_H_
-
-#endif // _WIN32
+#endif // FOOBAR2000_DESKTOP_WINDOWS

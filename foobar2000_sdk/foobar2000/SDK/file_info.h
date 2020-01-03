@@ -7,24 +7,25 @@ struct replaygain_info
 	enum {text_buffer_size = 16 };
 	typedef char t_text_buffer[text_buffer_size];
 
-	enum { peak_invalid = -1, gain_invalid = -1000 };
+	static const float peak_invalid, gain_invalid;
 
 	static bool g_format_gain(float p_value,char p_buffer[text_buffer_size]);
 	static bool g_format_peak(float p_value,char p_buffer[text_buffer_size]);
+	static bool g_format_peak_db(float p_value, char p_buffer[text_buffer_size]);
 
 	inline bool format_album_gain(char p_buffer[text_buffer_size]) const {return g_format_gain(m_album_gain,p_buffer);}
 	inline bool format_track_gain(char p_buffer[text_buffer_size]) const {return g_format_gain(m_track_gain,p_buffer);}
 	inline bool format_album_peak(char p_buffer[text_buffer_size]) const {return g_format_peak(m_album_peak,p_buffer);}
 	inline bool format_track_peak(char p_buffer[text_buffer_size]) const {return g_format_peak(m_track_peak,p_buffer);}
 
-	void set_album_gain_text(const char * p_text,t_size p_text_len = pfc_infinite);
-	void set_track_gain_text(const char * p_text,t_size p_text_len = pfc_infinite);
-	void set_album_peak_text(const char * p_text,t_size p_text_len = pfc_infinite);
-	void set_track_peak_text(const char * p_text,t_size p_text_len = pfc_infinite);
+	void set_album_gain_text(const char * p_text,t_size p_text_len = SIZE_MAX);
+	void set_track_gain_text(const char * p_text,t_size p_text_len = SIZE_MAX);
+	void set_album_peak_text(const char * p_text,t_size p_text_len = SIZE_MAX);
+	void set_track_peak_text(const char * p_text,t_size p_text_len = SIZE_MAX);
 
-	static bool g_is_meta_replaygain(const char * p_name,t_size p_name_len = pfc_infinite);
+	static bool g_is_meta_replaygain(const char * p_name,t_size p_name_len = SIZE_MAX);
 	bool set_from_meta_ex(const char * p_name,t_size p_name_len,const char * p_value,t_size p_value_len);
-	inline bool set_from_meta(const char * p_name,const char * p_value) {return set_from_meta_ex(p_name,pfc_infinite,p_value,pfc_infinite);}
+	inline bool set_from_meta(const char * p_name,const char * p_value) {return set_from_meta_ex(p_name,SIZE_MAX,p_value,SIZE_MAX);}
 
 	inline bool is_album_gain_present() const {return m_album_gain != gain_invalid;}
 	inline bool is_track_gain_present() const {return m_track_gain != gain_invalid;}
@@ -36,10 +37,13 @@ struct replaygain_info
 	inline void remove_album_peak() {m_album_peak = peak_invalid;}
 	inline void remove_track_peak() {m_track_peak = peak_invalid;}
 
+	float anyGain(bool bPreferAlbum = false) const;
+
 	t_size	get_value_count();
 
 	static replaygain_info g_merge(replaygain_info r1,replaygain_info r2);
 
+	static bool g_equalLoose( const replaygain_info & item1, const replaygain_info & item2);
 	static bool g_equal(const replaygain_info & item1,const replaygain_info & item2);
 
 	void reset();
@@ -50,6 +54,7 @@ public:
 	format_rg_gain(float val) {replaygain_info::g_format_gain(val, m_buffer);}
 
 	operator const char * () const {return m_buffer;}
+	const char * c_str() const { return m_buffer; }
 private:
 	replaygain_info::t_text_buffer m_buffer;
 };
@@ -59,6 +64,7 @@ public:
 	format_rg_peak(float val) {replaygain_info::g_format_peak(val, m_buffer);}
 
 	operator const char * () const {return m_buffer;}
+	const char * c_str() const { return m_buffer; }
 private:
 	replaygain_info::t_text_buffer m_buffer;
 };
@@ -209,6 +215,7 @@ public:
 	uint32_t info_get_wfx_chanMask() const;
 
 	bool is_encoding_lossy() const;
+	bool is_encoding_overkill() const;
 
 
 	void info_calculate_bitrate(t_filesize p_filesize,double p_length);

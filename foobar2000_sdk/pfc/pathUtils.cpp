@@ -148,35 +148,115 @@ string getIllegalNameChars(bool allowWC) {
 
 #ifdef _WINDOWS
 static bool isIllegalTrailingChar(char c) {
-	return c == ' ' || c == '.';
+	switch (c) {
+	case ' ':
+	case '.':
+	case '?':
+		return true;
+	default:
+		return false;
+	}
 }
-#endif
+static const char * const specialIllegalNames[] = {
+	"con", "aux", "lst", "prn", "nul", "eof", "inp", "out"
+};
 
-string validateFileName(string name, bool allowWC) {
-	for(t_size walk = 0; name[walk];) {
-		if (name[walk] == '?') {
-			t_size end = walk;
-			do { ++end; } while(name[end] == '?');
-			name = name.subString(0, walk) + name.subString(end);
-		} else {
-			++walk;
+enum { maxPathComponent = 255 };
+static size_t safeTruncat( const char * str, size_t maxLen ) {
+	size_t i = 0;
+	size_t ret = 0;
+	for( ; i < maxLen; ++ i ) {
+		auto d = pfc::utf8_char_len( str + ret );
+		if ( d == 0 ) break;
+		ret += d;
+	}
+	return ret;
+}
+
+static size_t utf8_length( const char * str ) {
+	size_t ret = 0;
+	for (; ++ret;) {
+		size_t d = pfc::utf8_char_len( str );
+		if ( d == 0 ) break;
+		str += d;
+	}
+	return ret;
+}
+static string truncatePathComponent( string name, bool preserveExt ) {
+	
+	if (name.length() <= maxPathComponent) return name;
+	if (preserveExt) {
+		auto dot = name.lastIndexOf('.');
+		if (dot != pfc_infinite) {
+			const auto ext = name.subString(dot);
+			const auto extLen = utf8_length( ext.c_str() );
+			if (extLen < maxPathComponent) {
+				auto lim = maxPathComponent - extLen;
+				lim = safeTruncat( name.c_str(), lim );
+				if (lim < dot) {
+					return name.subString(0, lim) + ext;
+				}
+			}
+		}
+	}
+
+	size_t truncat = safeTruncat( name.c_str(), maxPathComponent );
+	return name.subString(0, truncat);
+}
+
+#endif
+static string trailingSanity(string name, bool preserveExt) {
+	t_size end = name.length();
+	if (preserveExt) {
+		size_t offset = pfc::string_find_last(name.c_str(), '.');
+		if (offset < end) end = offset;
+	}
+	const size_t endEx = end;
+	while (end > 0) {
+		if (!isIllegalTrailingChar(name[end - 1])) break;
+		--end;
+	}
+	t_size begin = 0;
+	while (begin < end) {
+		if (!isIllegalTrailingChar(name[begin])) break;
+		++begin;
+	}
+	if (end < endEx || begin > 0) {
+		name = name.subString(begin, end - begin) + name.subString(endEx);
+	}
+	return name;
+}
+string validateFileName(string name, bool allowWC, bool preserveExt) {
+	if (!allowWC) { // special fix for filenames that consist only of question marks
+		size_t end = name.length();
+		if (preserveExt) {
+			size_t offset = pfc::string_find_last(name.c_str(), '.');
+			if (offset < end) end = offset;
+		}
+		bool unnamed = true;
+		for (size_t walk = 0; walk < end; ++walk) {
+			if (name[walk] != '?') unnamed = false;
+		}
+		if (unnamed) {
+			name = string("[unnamed]") + name.subString(end);
 		}
 	}
 #ifdef _WINDOWS
-	name = replaceIllegalNameChars(name, allowWC);
-	if (name.length() > 0) {
-		t_size end = name.length();
-		while(end > 0) {
-			if (!isIllegalTrailingChar(name[end-1])) break;
-			--end;
-		}
-		t_size begin = 0;
-		while(begin < end) {
-			if (!isIllegalTrailingChar(name[begin])) break;
-			++begin;
-		}
-		if (end < name.length() || begin > 0) name = name.subString(begin,end - begin);
+	if (name.length() > 0 && !allowWC) {
+		name = trailingSanity(name, preserveExt);
 	}
+
+	name = replaceIllegalNameChars(name, allowWC);
+
+	name = truncatePathComponent(name, preserveExt);
+	
+	for( unsigned w = 0; w < _countof(specialIllegalNames); ++w ) {
+		if (pfc::stringEqualsI_ascii( name.c_str(), specialIllegalNames[w] ) ) {
+			name += "-";
+			break;
+		}
+	}
+
 	if (name.isEmpty()) name = "_";
 	return name;
 #else

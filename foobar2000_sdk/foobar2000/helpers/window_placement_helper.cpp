@@ -1,6 +1,8 @@
 #include "stdafx.h"
 
-#ifdef _WIN32
+#ifdef FOOBAR2000_DESKTOP_WINDOWS
+
+#include "window_placement_helper.h"
 
 static bool g_is_enabled()
 {
@@ -51,6 +53,8 @@ bool cfg_window_placement::read_from_window(HWND window)
 			/*if (wp.showCmd == SW_SHOWNORMAL) {
 				GetWindowRect(window, &wp.rcNormalPosition);
 			}*/
+
+			if ( !IsWindowVisible( window ) ) wp.showCmd = SW_HIDE;
 		}
 		/*else
 		{
@@ -65,7 +69,7 @@ void cfg_window_placement::on_window_creation_silent(HWND window) {
 	PFC_ASSERT(!m_windows.have_item(window));
 	m_windows.add_item(window);
 }
-bool cfg_window_placement::on_window_creation(HWND window)
+bool cfg_window_placement::on_window_creation(HWND window, bool allowHidden)
 {
 	bool ret = false;
 	PFC_ASSERT(!m_windows.have_item(window));
@@ -75,9 +79,20 @@ bool cfg_window_placement::on_window_creation(HWND window)
 	{
 		if (m_data.length==sizeof(m_data) && test_rect(&m_data.rcNormalPosition))
 		{
-			if (SetWindowPlacement(window,&m_data))
-			{
-				ret = true;
+			if ( allowHidden || m_data.showCmd != SW_HIDE ) {
+				if ( m_data.showCmd == SW_HIDE && (m_data.flags & WPF_RESTORETOMAXIMIZED) ) {
+					// Special case of hidden-from-maximized
+					auto fix = m_data;
+					fix.showCmd = SW_SHOWMINIMIZED;
+					if (SetWindowPlacement(window,&fix)) {
+						ShowWindow(window, SW_HIDE);
+						ret = true;
+					}
+				} else {
+					if (SetWindowPlacement(window,&m_data)) {
+						ret = true;
+					}
+				}
 			}
 		}
 	}
@@ -213,4 +228,4 @@ void cfg_window_size::set_data_raw(stream_reader * p_stream,t_size p_sizehint,ab
 
 	m_width = width; m_height = height;
 }
-#endif // _WIN32
+#endif // FOOBAR2000_DESKTOP_WINDOWS

@@ -17,8 +17,6 @@
 #endif
 
 
-#define PFC_DLL_EXPORT
-
 #ifdef _WINDOWS
 
 #ifndef STRICT
@@ -29,6 +27,8 @@
 #define _NO_SYS_GUID_OPERATOR_EQ_	//fix retarded warning with operator== on GUID returning int
 #endif
 
+// WinSock2.h *before* Windows.h or else VS2017 15.3 breaks
+#include <WinSock2.h>
 #include <windows.h>
 
 #if !defined(PFC_WINDOWS_STORE_APP) && !defined(PFC_WINDOWS_DESKTOP_APP)
@@ -173,6 +173,7 @@ namespace pfc {
 #include "ptr_list.h"
 #include "string_base.h"
 #include "string_list.h"
+#include "lockless.h"
 #include "ref_counter.h"
 #include "iterators.h"
 #include "avltree.h"
@@ -180,7 +181,7 @@ namespace pfc {
 #include "bit_array_impl_part2.h"
 #include "timers.h"
 #include "guid.h"
-#include "byte_order_helper.h"
+#include "byte_order.h"
 #include "other.h"
 #include "chain_list_v2.h"
 #include "rcptr.h"
@@ -216,5 +217,9 @@ namespace pfc {
 #include "filehandle.h"
 
 #define PFC_INCLUDED 1
+
+#ifndef PFC_SET_THREAD_DESCRIPTION
+#define PFC_SET_THREAD_DESCRIPTION(X)
+#endif
 
 #endif //___PFC_H___
