@@ -17,4 +17,7 @@ namespace deskband_actions
 	void resend_last_state();
 	void resend_last_nontrack_state();
 	void send_version();
+
+	void initialize_vis_stream();
+	void send_visualization_data();
 };

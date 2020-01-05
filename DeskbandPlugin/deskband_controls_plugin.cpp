@@ -10,6 +10,8 @@ namespace deskband_controls_plugin
 	class initquit_handler : public initquit {
 		virtual void on_init()
 		{
+			deskband_actions::initialize_vis_stream();
+
 			msgwindow::create();
 
 			if (!setup_helper::is_deskband_installed()) {

@@ -28,6 +28,7 @@ namespace dcmFoobar2000.Code
         public event EventHandler<ValueEventArgs<Tuple<byte[], bool>>> OnAlbumArt;
         public event EventHandler<ValueEventArgs<string>> OnVersion;
         public event EventHandler<PlaylistEventArgs> OnPlaylist;
+        public event EventHandler<VisualizationDataEventArgs> OnVisualizationData;
 
         public MessageForm()
         {
@@ -171,6 +172,17 @@ namespace dcmFoobar2000.Code
                                         list.Add(Encoding.UTF8.GetString(bytes));
                                     }
                                     FireEvent(OnPlaylist, new PlaylistEventArgs(currentIndex, list));
+                                }
+                                break;
+
+                            case DeskbandCommands.VisualizationData:
+                                {
+                                    IntPtr p = csd.lpData;
+                                    int channelCount = (int)(uint)Marshal.PtrToStructure(p, typeof(uint)); p += sizeof(uint);
+                                    int sampleCount = (int)(uint)Marshal.PtrToStructure(p, typeof(uint)); p += sizeof(uint);
+                                    float[] samples = new float[sampleCount];
+                                    Marshal.Copy(p, samples, 0, sampleCount);
+                                    FireEvent(OnVisualizationData, new VisualizationDataEventArgs(channelCount, samples));
                                 }
                                 break;
                         }

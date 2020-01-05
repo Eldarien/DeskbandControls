@@ -64,6 +64,7 @@ namespace dcmFoobar2000.Code
 
         private dcTrackbar _trbPosition;
         private dcTrackbar _trbVolume;
+        private dcTrackbar _trbVis;
 
         private List<dcLabel> _labels = new List<dcLabel>();
 
@@ -104,7 +105,7 @@ namespace dcmFoobar2000.Code
             _aaStubTimer.Tick += (s, e) => HandleAlbumArtStubTick();
 
             _visualizationTimer = _disposable.Add(new Timer());
-            _visualizationTimer.Interval = 100;
+            _visualizationTimer.Interval = 12;
             _visualizationTimer.Tick += (s, e) => HandleVisualizationTimerTick();
             _visualizationTimer.Enabled = true;
 
@@ -249,6 +250,10 @@ namespace dcmFoobar2000.Code
             _trbVolume = CreateTrackbar(_cfg.VolumeBar, false,
                 p => SetVolume(p), () => _lastActiveWindowActivator.Activate());
             AddControlToModuleContainer(_trbVolume);
+
+            _trbVis = CreateTrackbar(new TrackbarSettings { X = 0, Y = 29, Heigth = 6, Width = 200, Visible = true, Color = Color.White }, false,
+                p => { }, () => { });
+            AddControlToModuleContainer(_trbVis);
 
             _labels.Clear();
             foreach (var text in _cfg.Texts)
@@ -490,6 +495,7 @@ namespace dcmFoobar2000.Code
             _messageForm.OnAlbumArt += (s, e) => HandleAlbumArt(e.Value.Item1, e.Value.Item2);
             _messageForm.OnVersion += (s, e) => HandleVersion(e.Value);
             _messageForm.OnPlaylist += (s, e) => HandlePlaylist(e.CurrentIndex, e.Playlist);
+            _messageForm.OnVisualizationData += (s, e) => HandleVisualizationData(e.ChannelCount, e.Samples);
         }
 
         private void ShowOrHide(bool state)
@@ -876,10 +882,45 @@ namespace dcmFoobar2000.Code
 
         private void HandleVisualizationTimerTick()
         {
-            //if (!_stopped)
-            //{
-            //    _actions.RequestVisualizationData();
-            //}
+            if (!_stopped)
+            {
+                _actions.RequestVisualizationData();
+            }
+        }
+
+        private float _lastPeakL;
+        private float _lastPeakR;
+        private void HandleVisualizationData(int channelCount, float[] samples)
+        {
+            if (channelCount == 0)
+                return;
+
+            int nsamples = samples.Length / channelCount;
+
+            float[] data = new float[Math.Max(2, channelCount)];
+
+            for (int channel = 0; channel < channelCount; channel++)
+            {
+                data[channel] = 0;
+                for (int s = 0; s < nsamples; s++)
+                {
+                    float amplitude = samples[s + channel * nsamples];
+                    if (amplitude > data[channel])
+                        data[channel] = amplitude;
+                }
+            }
+
+            if (channelCount == 1)
+            {
+                data[1] = data[0];
+            }
+
+            float fadeSpeed = 0.05f;
+
+            _lastPeakL = data[0] < _lastPeakL - fadeSpeed ? _lastPeakL - fadeSpeed : data[0];
+            _lastPeakR = data[1] < _lastPeakR - fadeSpeed ? _lastPeakR - fadeSpeed : data[1];
+
+            _trbVis.Position =  (int)(Math.Log10(_lastPeakR * 100) * 50);
         }
     }
 }
