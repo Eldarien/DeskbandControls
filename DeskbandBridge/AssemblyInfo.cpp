@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "DeskbandBridge.h"
 
 using namespace System;
 using namespace System::Reflection;
@@ -16,7 +17,7 @@ using namespace System::Security::Permissions;
 [assembly:AssemblyConfigurationAttribute("")];
 [assembly:AssemblyCompanyAttribute("")];
 [assembly:AssemblyProductAttribute("DeskbandBridge")];
-[assembly:AssemblyCopyrightAttribute("Copyright (c) Eldarien 2013")];
+[assembly:AssemblyCopyrightAttribute(DESKBAND_CONTROLS_ASSEMBLY_COPYRIGHT)];
 [assembly:AssemblyTrademarkAttribute("")];
 [assembly:AssemblyCultureAttribute("")];
 

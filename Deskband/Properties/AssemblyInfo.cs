@@ -11,7 +11,7 @@ using DeskbandBridge;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct(FB2KConstants.DeskbandControlsTitle)]
-[assembly: AssemblyCopyright("Copyright © Eldarien 2017")]
+[assembly: AssemblyCopyright(FB2KConstants.DeskbandControlsAssemblyCopyright)]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

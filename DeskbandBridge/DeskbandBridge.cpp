@@ -6,6 +6,9 @@ using namespace System;
 namespace DeskbandBridge {
 	public ref class FB2KConstants {
 	public:
+		literal const String^ DeskbandControlsAssemblyCopyright = DESKBAND_CONTROLS_ASSEMBLY_COPYRIGHT;
+		literal const String^ DeskbandControlsAboutText = DESKBAND_CONTROLS_ABOUT_TEXT;
+
 		literal const String ^ DeskbandControlsVersion = DESKBAND_CONTROLS_VERSION;
 		literal const String ^ DeskbandControlsTitle = DESKBAND_CONTROLS_TITLE;
 

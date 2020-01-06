@@ -4,6 +4,7 @@
 //	const int MAGIC_NUMBER = 42;
 //}
 
+#define DESKBAND_CONTROLS_ASSEMBLY_COPYRIGHT "Copyright (c) Eldarien (" __DATE__ ")"
 #define DESKBAND_CONTROLS_VERSION "3.6.1" // Always use 3 numbers version (e.g. xx.y.z)
 #define DESKBAND_CONTROLS_TITLE "Deskband Controls"
 #define DESKBAND_CONTROLS_ABOUT_TEXT "(c) Eldarien (eldarien@live.com)\n" \

@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using DeskbandBridge;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -10,7 +11,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("dcmWeather")]
-[assembly: AssemblyCopyright("Copyright ©  2016")]
+[assembly: AssemblyCopyright(FB2KConstants.DeskbandControlsAssemblyCopyright)]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

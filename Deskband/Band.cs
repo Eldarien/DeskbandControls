@@ -54,6 +54,7 @@ namespace Deskband
                 _console = _kernel.Get<ConsoleHandler>();
 
                 _console.AddLine($"{DeskbandBridge.FB2KConstants.DeskbandControlsTitle} {DeskbandBridge.FB2KConstants.DeskbandControlsVersion}");
+                _console.AddLine(DeskbandBridge.FB2KConstants.DeskbandControlsAboutText.Replace("\n", "\r\n"));
                 _console.AddLine($"OS version: {Environment.OSVersion.Version}");
 
                 var installationDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
