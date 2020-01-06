@@ -101,15 +101,16 @@ namespace Deskband.Core.WinApi
             dib.bmiHeader.biCompression = BI_RGB;
         }
 
-        public static void FixAlphaChannel(IntPtr alphadc, IntPtr alphabitmap, uint lines, ref COLORREF[] pixels, ref BITMAPINFO dib, COLORREF colorToFix)
+        public static void FixAlphaChannel(IntPtr alphadc, IntPtr alphabitmap, uint lines, ref COLORREF[] pixels, ref BITMAPINFO dib, COLORREF[] colorsToFix)
         {
-            
-            var rgbColorToFix = (colorToFix.ColorDWORD & 0x000000FF) << 16 | (colorToFix.ColorDWORD & 0x0000FF00) | (colorToFix.ColorDWORD & 0x00FF0000) >> 16;
+            var rgbColorsToFix = colorsToFix
+                .Select(x => (x.ColorDWORD & 0x000000FF) << 16 | (x.ColorDWORD & 0x0000FF00) | (x.ColorDWORD & 0x00FF0000) >> 16)
+                .ToArray();
 
             Gdi32.GetDIBits(alphadc, alphabitmap, 0, lines, pixels, ref dib, 0);
             for (int i = 0; i < pixels.Length; i++)
             {
-                if (pixels[i].ColorDWORD == rgbColorToFix)
+                if (rgbColorsToFix.Contains(pixels[i].ColorDWORD))
                     pixels[i].ColorDWORD |= 0xFF000000;
             }
             Gdi32.SetDIBits(alphadc, alphabitmap, 0, lines, pixels, ref dib, 0);

@@ -87,6 +87,9 @@
     <Compile Include="Controls\dcLabel.cs">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Include="Controls\dcLevelbar.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="Controls\dcPicture.cs">
       <SubType>Component</SubType>
     </Compile>

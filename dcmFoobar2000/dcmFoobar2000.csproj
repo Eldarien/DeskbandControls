@@ -64,6 +64,7 @@
     <Compile Include="Code\PlaylistEventArgs.cs" />
     <Compile Include="Code\VisualizationDataEventArgs.cs" />
     <Compile Include="Configuration\ButtonSettingsContainer.cs" />
+    <Compile Include="Configuration\LevelbarSettings.cs" />
     <Compile Include="Configuration\MenuSettings.cs" />
     <Compile Include="Configuration\MouseWheelMode.cs" />
     <Compile Include="Configuration\PlaylistSettings.cs" />

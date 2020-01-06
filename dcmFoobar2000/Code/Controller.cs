@@ -64,7 +64,9 @@ namespace dcmFoobar2000.Code
 
         private dcTrackbar _trbPosition;
         private dcTrackbar _trbVolume;
-        private dcTrackbar _trbVis;
+
+        private dcLevelbar _levelRight;
+        private dcLevelbar _levelLeft;
 
         private List<dcLabel> _labels = new List<dcLabel>();
 
@@ -251,9 +253,11 @@ namespace dcmFoobar2000.Code
                 p => SetVolume(p), () => _lastActiveWindowActivator.Activate());
             AddControlToModuleContainer(_trbVolume);
 
-            _trbVis = CreateTrackbar(new TrackbarSettings { X = 0, Y = 29, Heigth = 6, Width = 200, Visible = true, Color = Color.White }, false,
-                p => { }, () => { });
-            AddControlToModuleContainer(_trbVis);
+            _levelLeft = CreateLevelbar(_cfg.PeakMeter, true);
+            AddControlToModuleContainer(_levelLeft);
+
+            _levelRight = CreateLevelbar(_cfg.PeakMeter, false);
+            AddControlToModuleContainer(_levelRight);
 
             _labels.Clear();
             foreach (var text in _cfg.Texts)
@@ -376,6 +380,30 @@ namespace dcmFoobar2000.Code
                 lbl.Click += Lbl_Click;
             }
             return lbl;
+        }
+
+        private dcLevelbar CreateLevelbar(LevelbarSettings settings, bool leftChannel)
+        {
+            var lvb = CreateControl<dcLevelbar>();
+            lvb.Visible = settings.Visible;
+            lvb.Location = leftChannel
+                ? _sp.MakePoint(settings.LeftChannelX, settings.LeftChannelY)
+                : _sp.MakePoint(settings.RightChannelX, settings.RightChannelY);
+            lvb.Size = _sp.MakeSize(settings.Width, settings.Heigth);
+            lvb.PrimarySegmentColor = settings.PrimarySegmentColor;
+            lvb.SecondarySegmentColor = settings.SecondarySegmentColor;
+            lvb.BackgroundColor = settings.BackgroundColor;
+            lvb.InactiveSegmentColor = settings.InactiveSegmentColor;
+            lvb.SegmentsCount = settings.SegmentsCount;
+            lvb.TransitionPoint = settings.TransitionPoint;
+            lvb.StripedSegments = settings.StripedSegments;
+            lvb.SegmentSpaceRatio = settings.SegmentSpaceRatio;
+            lvb.Range = 100;
+            lvb.Position = 0;
+            lvb.PaddingTop = settings.PaddingTop;
+            lvb.PaddingBottom = settings.PaddingBottom;
+
+            return lvb;
         }
 
         private void Lbl_Click(object sender, EventArgs e)
@@ -882,14 +910,21 @@ namespace dcmFoobar2000.Code
 
         private void HandleVisualizationTimerTick()
         {
+            if (!_cfg.PeakMeter.Visible)
+                return;
+
             if (!_stopped)
             {
                 _actions.RequestVisualizationData();
             }
+            else
+            {
+                HandleVisualizationData(1, new float[] { 0f });
+            }
         }
 
-        private float _lastPeakL;
-        private float _lastPeakR;
+        private int _lastPeakL;
+        private int _lastPeakR;
         private void HandleVisualizationData(int channelCount, float[] samples)
         {
             if (channelCount == 0)
@@ -915,12 +950,16 @@ namespace dcmFoobar2000.Code
                 data[1] = data[0];
             }
 
-            float fadeSpeed = 0.05f;
+            int fadeSpeed = _cfg.PeakMeter.FadeSpeed;
 
-            _lastPeakL = data[0] < _lastPeakL - fadeSpeed ? _lastPeakL - fadeSpeed : data[0];
-            _lastPeakR = data[1] < _lastPeakR - fadeSpeed ? _lastPeakR - fadeSpeed : data[1];
+            int leftPeak = (int)(Math.Log10(data[0] * 100) * 50);
+            int rightPeak = (int)(Math.Log10(data[1] * 100) * 50);
 
-            _trbVis.Position =  (int)(Math.Log10(_lastPeakR * 100) * 50);
+            _lastPeakL = leftPeak < _lastPeakL - fadeSpeed ? _lastPeakL - fadeSpeed : leftPeak;
+            _lastPeakR = rightPeak < _lastPeakR - fadeSpeed ? _lastPeakR - fadeSpeed : rightPeak;
+
+            _levelLeft.Position = _lastPeakL;
+            _levelRight.Position = _lastPeakR;
         }
     }
 }

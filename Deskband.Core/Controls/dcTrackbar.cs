@@ -85,7 +85,7 @@ namespace Deskband.Core.Controls
             {
                 var backgroundColor = new COLORREF(BackgroundColor);
                 Internal_PaintBackground(alphadc, rc, backgroundColor);
-                Gdi32.FixAlphaChannel(alphadc, alphabitmap, (uint)Height, ref pixels, ref dib, backgroundColor);
+                Gdi32.FixAlphaChannel(alphadc, alphabitmap, (uint)Height, ref pixels, ref dib, new[] { backgroundColor });
                 Gdi32.DoAlphaBlendToMemdc(memdc, ref rc, alphadc, BackgroundColor.A);
 
                 // clear alphadc
@@ -93,7 +93,7 @@ namespace Deskband.Core.Controls
             }
 
             Internal_PaintContent(alphadc, rc, color);
-            Gdi32.FixAlphaChannel(alphadc, alphabitmap, (uint)Height, ref pixels, ref dib, color);
+            Gdi32.FixAlphaChannel(alphadc, alphabitmap, (uint)Height, ref pixels, ref dib, new[] { color });
             Gdi32.DoAlphaBlendToMemdc(memdc, ref rc, alphadc, ForeColor.A);
 
             Gdi32.BitBlt(hdc, rc.Left, rc.Top, rc.Width, rc.Height, memdc, 0, 0, SRCCOPY);

@@ -130,7 +130,8 @@ namespace Deskband.Core.Controls
 
         public override void Refresh()
         {
-            User32.InvalidateRect(Handle, IntPtr.Zero, false);
+            if (!IsDisposed)
+                User32.InvalidateRect(Handle, IntPtr.Zero, false);
         }
 
         protected override void Dispose(bool disposing)
@@ -294,7 +295,7 @@ namespace Deskband.Core.Controls
                 Gdi32.Rectangle(bdc, 0, 0, rc.Width, rc.Height);
 
                 var pixels = new COLORREF[Width * Height];
-                Gdi32.FixAlphaChannel(bdc, bitmap, (uint)rc.Height, ref pixels, ref dib, color);
+                Gdi32.FixAlphaChannel(bdc, bitmap, (uint)rc.Height, ref pixels, ref dib, new[] { color });
                 Gdi32.DoAlphaBlendToMemdc(dc, ref rc, bdc, BackgroundColor.A);
 
                 Gdi32.DeleteObject(pen);

@@ -15,8 +15,8 @@ namespace dcmFoobar2000.Configuration
         public ConfigurationModel()
         {
             ModuleId = Foobar2000Module.ModuleId;
-            Width = 260;
-            Height = 30;
+            Width = 510;
+            Height = 40;
         }
 
         public override string ToString()
@@ -98,6 +98,27 @@ namespace dcmFoobar2000.Configuration
             NumberOfItemsAfterCurrent = 5,
             Format = "%artist% - %title%"
         };
+
+        [Browsable(false), SettingsNode("Peak Meter")]
+        public LevelbarSettings PeakMeter { get; set; } = new LevelbarSettings
+        {
+            LeftChannelX = 260,
+            LeftChannelY = 5,
+            RightChannelX = 260,
+            RightChannelY = 20,
+
+            Heigth = 8,
+            Width = 250,
+
+            SegmentsCount = 15,
+            StripedSegments = true,
+            SegmentSpaceRatio = 77,
+            FadeSpeed = 3,
+            Visible = true
+        };
+
+
+
 
         [Category("Mouse"), DisplayName("Mouse Wheel Mode"), TypeConverter(typeof(EnumDescriptionConverter<MouseWheelMode>))]
         public MouseWheelMode MouseWheelMode { get; set; } = MouseWheelMode.Volume;
