@@ -7,7 +7,7 @@
 #define DESKBAND_CONTROLS_ASSEMBLY_COPYRIGHT "Copyright (c) Eldarien (" __DATE__ ")"
 #define DESKBAND_CONTROLS_VERSION "3.6.1" // Always use 3 numbers version (e.g. xx.y.z)
 #define DESKBAND_CONTROLS_TITLE "Deskband Controls"
-#define DESKBAND_CONTROLS_ABOUT_TEXT "(c) Eldarien (eldarien@live.com)\n" \
+#define DESKBAND_CONTROLS_ABOUT_TEXT "(c) Eldarien\n" \
 									 "https://hydrogenaud.io/index.php/topic,78234.0.html\n" \
 									 "Build date and time: " __DATE__ " " __TIME__
 

@@ -37,7 +37,7 @@ namespace Deskband.Configuration
             new FloatingWindowSettings
             {
                 Opacity = 1.0,
-                Color = Color.CornflowerBlue
+                Color = Color.FromArgb(0xFF, 0x20, 0x37, 0x3F)
             };
     }
 }

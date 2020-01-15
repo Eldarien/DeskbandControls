@@ -245,7 +245,6 @@ namespace deskband_actions
 
 	void initialize_vis_stream()
 	{
-		//static_api_ptr_t<visualisation_manager> vis_mgr;
 		visualisation_manager::get()->create_stream(vis_stream, visualisation_manager::KStreamFlagNewFFT);
 	}
 
@@ -256,27 +255,14 @@ namespace deskband_actions
 		{
 			audio_chunk_impl chunk;
 
-			// read samples before and after the current track time
 			double length = (double)12 * 1e-3;
-			//if (time >= length)
-			//{
-				//time -= length / 2;
-				//length *= 2;
-			//}
 			vis_stream->get_chunk_absolute(chunk, time, length);
-
-
-			//vis_stream->get_chunk_absolute(chunk, time, 100 * 0.001); // 100ms
 
 			t_uint32 channel_count = chunk.get_channel_count();
 			t_uint32 sample_count = chunk.get_sample_count();
 			const audio_sample* samples = chunk.get_data();
 
-			//console::formatter() << "Vis. data requested:  channels: " << channel_count << ", samples:" << sample_count_total;
-
-			//TODO: send samples to deskband
-
-			// size =channel_count + sample_count + samples
+			// size = channel_count + sample_count + samples
 			size_t size = sizeof(t_uint32) + sizeof(t_uint32) + sizeof(audio_sample) * sample_count;
 			char* data = (char*)malloc(size);
 			memcpy(data, &channel_count, sizeof(t_uint32));

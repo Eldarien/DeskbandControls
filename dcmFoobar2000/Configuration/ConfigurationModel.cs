@@ -114,7 +114,12 @@ namespace dcmFoobar2000.Configuration
             StripedSegments = true,
             SegmentSpaceRatio = 77,
             FadeSpeed = 3,
-            Visible = true
+            TransitionPoint = 75,
+            Visible = true,
+
+            InactiveSegmentColor = Color.FromArgb(0xFF, 0x2F, 0x4F, 0x4F),
+            PrimarySegmentColor = Color.FromArgb(0xFF, 0x00, 0xBF, 0xFF),
+            SecondarySegmentColor = Color.FromArgb(0xFF, 0xFA, 0x80, 0x72)
         };
 
 

@@ -4,7 +4,7 @@
 HydrogenAudio forum topic: https://hydrogenaud.io/index.php/topic,78234.0.html
 
 How to install:
-  - Install Microsoft .NET Framework 4.7.1: https://www.microsoft.com/en-us/download/details.aspx?id=56116
+  - Install Microsoft .NET Framework 4.8: https://go.microsoft.com/fwlink/?linkid=2088631
     If you are using Windows 7 with Windows Updates turned on you may already have it.
     Windows 8/8.1/10 should have it installed by default.
   - Double click on foo_deskband_controls.fb2k-component, foobar2000 will lauch and ask if you want to install. Click 'Yes'.
@@ -26,6 +26,16 @@ Eldarien (eldarien@live.com)
 --
 ** Changelog:
 
+January 9 2020
+  * Version 3.7.0
+  + Added peakmeter.
+  - "Deskband Mode" options now merged into one named "Display Mode".
+  - Added mouse wheel "None" mode.
+  - Possible crash fix when changing DPI and recreating controls.
+  - Added formatting support to Stopped Text.
+  - Updated foobar2000 SDK to the latest version.
+  - Updated all projects to .NET Framework 4.8 and VS2019.
+
 February 9 2018
   * Version 3.6.1
   + Added playlist cascaded menu.
@@ -38,7 +48,7 @@ January 6 2017
   - Context menu playback commands as well as playlist are no longer taking away focus from what it was on before.
   - Projects upgraded to VS2017 toolset and .NET framework 4.7.1 + some DPI handling improvements.
   - DPI change on the fly support for Win10 1709 (but not for settings form).
-  - Fixed crush in tooltip when its album art is disabled.
+  - Fixed crash in tooltip when its album art is disabled.
 
 October 19 2017
   * Version 3.5.0
@@ -61,7 +71,7 @@ September 19 2017
   * Version 3.4.0
   - Fixed display of '&' symbol in playlist.
   - Fixed admin rights detection in install scripts when Server service is disabled.
-  - Fixed crush when album art size is set to 0.
+  - Fixed crash when album art size is set to 0.
   - Changed volume control handling to better match with foobar2000 volume control behaviour.
   - Fixed memory leak in album art handler.
 
@@ -87,7 +97,7 @@ March 26 2017
   * Version 3.2.0
   + Added tooltip delay option.
   + Added keep tooltip open on hover option.
-  - Fixed tooltip crush when background color contains alpha channel.
+  - Fixed tooltip crash when background color contains alpha channel.
   - Fixed issue with trackbar background color transparency.
   - Fixed issue where trackbar position could get less than 0.
 
@@ -96,7 +106,7 @@ March 21 2017
   + New installer/uninstaller system. Installer is integrated into foobar2000 plugin.
   + Deskband Controls is now distributed from official plugins repository.
   + Context menu settings - ability to select context menu items that shold be visible.
-  - Fixed issues with tooltip window positioning and tooltip crush on Win10.
+  - Fixed issues with tooltip window positioning and tooltip crash on Win10.
 
 February 22 2017
   * Version 3.0.0
@@ -120,12 +130,12 @@ October 8 2014
 
 October 2 2014
   * Version 1.1.1
-  - Fix crush for some album art data
+  - Fix crash for some album art data
 
 April 10 2014
   * Version 1.1
   - Default button colorization color set to transparent (a bug when at first start buttons were black)
-  - Fix a crush when using alpha channel in floating window background color. Use Opacity setting instead.
+  - Fix a crash when using alpha channel in floating window background color. Use Opacity setting instead.
   - Fix text not drawing in WindowsXP
   + Album Art Preserve aspect ratio option
   + Added link to hydrogenaudio forum topic in foobar plugin about window
