@@ -115,7 +115,7 @@ namespace dcmFoobar2000.Configuration
             SegmentSpaceRatio = 77,
             FadeSpeed = 3,
             TransitionPoint = 75,
-            Visible = true,
+            Visible = false,
 
             InactiveSegmentColor = Color.FromArgb(0xFF, 0x2F, 0x4F, 0x4F),
             PrimarySegmentColor = Color.FromArgb(0xFF, 0x00, 0xBF, 0xFF),
