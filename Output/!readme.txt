@@ -21,12 +21,12 @@ How to uninstall:
 
 --
 Greetings from Ukraine!
-Eldarien (eldarien@live.com)
+(c) Eldarien
 
 --
 ** Changelog:
 
-January 9 2020
+January 15 2020
   * Version 3.7.0
   + Added peakmeter.
   - "Deskband Mode" options now merged into one named "Display Mode".
