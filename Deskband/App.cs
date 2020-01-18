@@ -105,6 +105,11 @@ namespace Deskband
 
             _config.DisableWatcher();
             _config.Save();
+
+            if (_settingsForm != null && _settingsForm.Visible)
+            {
+                _settingsForm.Close();
+            }
         }
 
         private void OnResize(object sender, EventArgs e)
