@@ -26,6 +26,12 @@ Greetings from Ukraine!
 --
 ** Changelog:
 
+January 18 2020
+  * Version 3.7.1
+  - fixed crash when stopping playback while in different playlist.
+  - fixed crash when settings form is opened and and deskband is removed from taskbar.
+  - fix for album art dissapearing after apply settings clicked when default art stub is shown.
+
 January 15 2020
   * Version 3.7.0
   + Added peakmeter.

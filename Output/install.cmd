@@ -32,7 +32,7 @@ if defined ProgramFiles(x86) (
   %SystemRoot%\Microsoft.NET\Framework\v4.0.30319\regasm.exe /nologo /unregister "%fn%"
 )
 if ERRORLEVEL 1 (
-  echo Unable to unregister deskband DLL. Please make sure that .NET framework 4 is installed.
+  echo Unable to unregister deskband DLL. Please make sure that .NET framework 4.8 is installed.
   goto EXIT
 )
 %SystemRoot%\System32\taskkill.exe /F /IM explorer.exe >nul
@@ -57,7 +57,7 @@ if defined ProgramFiles(x86) (
    %SystemRoot%\Microsoft.NET\Framework\v4.0.30319\regasm.exe /nologo /codebase "%dc%\Deskband.dll"
 )
 if ERRORLEVEL 1 (
-  echo Unable to register deskband DLL. Please make sure that .NET framework 4 is installed.
+  echo Unable to register deskband DLL. Please make sure that .NET framework 4.8 is installed.
   goto EXIT
 )
 

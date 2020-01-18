@@ -7,6 +7,12 @@ echo    DESKBAND CONTROLS
 echo =======================
 echo[
 echo Welcome to the Deskband Controls uninstaller.
+echo[
+echo (!) During this uninstall "explorer.exe" process that is responsible for your taskbar and desktop will be terminated.
+echo (!) Press Ctrl+Shift+ESC to launch task manager and run explorer.exe from "File - New Task (Run)..." menu.
+echo[
+pause
+echo[
 echo Administrative permissions required. Detecting permissions...
 
 rem Check permissions
@@ -33,7 +39,7 @@ if defined ProgramFiles(x86) (
   %SystemRoot%\Microsoft.NET\Framework\v4.0.30319\regasm.exe /nologo /unregister "%fn%"
 )
 if ERRORLEVEL 1 (
-  echo Unable to unregister deskband DLL. Please make sure that .NET framework 4 is installed.
+  echo Unable to unregister deskband DLL. Please make sure that .NET framework 4.8 is installed.
   goto EXIT
 )
 %SystemRoot%\System32\taskkill.exe /F /IM explorer.exe >nul
@@ -45,8 +51,6 @@ if exist "%dc%" (
   rd /S /Q "%dc%"
 )
 echo Uninstall completed.
-echo Explorer.exe process was terminated.
-echo Press Ctrl+Shift+ESC to launch task manager and run explorer.exe from "File - New Task (Run)..." menu.
 
 :EXIT
 echo[
