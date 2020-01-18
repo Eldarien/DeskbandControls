@@ -128,6 +128,8 @@ namespace dcmFoobar2000.Code
                 _eventsInitialized = true;
             }
 
+            UpdateAlbumArt();
+
             _actions.Init(_stopped, _cfg);
 
             if (_stopped)
