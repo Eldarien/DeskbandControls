@@ -80,15 +80,17 @@ namespace msgwindow
 				else
 				{
 					static_api_ptr_t<playlist_manager> pm;
-					t_size active_playlist = pm->get_active_playlist();
-					if (active_playlist != pfc_infinite)
+					t_size playlist = pm->get_playing_playlist();
+					if (playlist != pfc_infinite)
 					{
 						bit_array_true t;
 						metadb_handle_list meta_list;
-						pm->playlist_get_items(active_playlist, meta_list, t);
-						if (meta_list.get_count() != 0)
+						pm->playlist_get_items(playlist, meta_list, t);
+						t_size count = meta_list.get_count();
+						t_size lastIndex = deskband_actions::get_last_playlist_current_index();
+						if (count > 0 && lastIndex < count)
 						{
-							auto item = meta_list.get_item(deskband_actions::get_last_playlist_current_index());
+							auto item = meta_list.get_item(lastIndex);
 							item->format_title(NULL, text, format, NULL);
 						}
 					}
@@ -137,27 +139,20 @@ namespace msgwindow
 			{
 				char *fmt = (char *)(cds.lpData);
 				deskband_actions::set_playlist_format(fmt, cds.cbData);
-				deskband_actions::handle_playlist_change(0);
+				deskband_actions::handle_playlist_change();
 			}
 			break;
 			case FOOBAR_PLUGIN_CMD_StartPlaylistIndex:
 			{
 				int index = *(int*)cds.lpData;
-				//TODO: figure this out
 
 				static_api_ptr_t<playlist_manager> pm;
-				//t_size active_playlist = pm->get_active_playlist();
-				//bit_array_true t;
-				//metadb_handle_list meta_list;
-				//pm->playlist_get_items(active_playlist, meta_list, t);
-				//auto meta_item = meta_list.get_item(index);
-				//auto meta_handle = meta_item.get_ptr();
-				//pm->queue_add_item(meta_item);
-				//pm->activeplaylist_set_selection_single(index, true);
-				//control->stop();
-				//control->start();
-				pm->activeplaylist_execute_default_action(index);
-
+				t_size playlist = deskband_actions::get_last_playlist();
+				if (playlist != pfc_infinite)
+				{
+					pm->set_active_playlist(playlist);
+					pm->playlist_execute_default_action(playlist, index);
+				}
 			}
 			break;
 			case FOOBAR_PLUGIN_CMD_RequestVisualizationData:

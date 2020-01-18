@@ -15,6 +15,7 @@ namespace deskband_actions
 	//static size_t last_playlist_current_index = 0;
 	static pfc::string8* playlist_format = NULL;
 	static t_size last_playlist_current_index = 0;
+	static t_size last_playlist = 0;
 
 	void send_command(int cmd, PVOID data, size_t size)
 	{
@@ -76,22 +77,24 @@ namespace deskband_actions
 		playlist_format = new pfc::string8(fmt, len);
 	}
 
-	void handle_playlist_change(t_size p_playlist)
+	void handle_playlist_change()
 	{
 		static_api_ptr_t<playlist_manager> pm;
-		t_size active_playlist = pm->get_active_playlist();
-		if (p_playlist != 0 && p_playlist != active_playlist)
+		t_size playlist = pm->get_playing_playlist();
+		if (playlist == pfc_infinite)
 			return;
 
 		if (playlist_format == NULL)
 			return;
+
+		last_playlist = playlist;
 
 		service_ptr_t<titleformat_object> format;
 		static_api_ptr_t<titleformat_compiler>()->compile(format, *playlist_format);
 
 		bit_array_true t;
 		metadb_handle_list meta_list;
-		pm->playlist_get_items(active_playlist, meta_list, t);
+		pm->playlist_get_items(playlist, meta_list, t);
 
 		pfc::string_list_impl formatted_list;
 		t_size meta_count = meta_list.get_count();
@@ -144,9 +147,40 @@ namespace deskband_actions
 		free(data);
 	}
 
+	void handle_playlist_reorder(const t_size* p_order, t_size p_count)
+	{
+		for (int i = 0; i < p_count; i++)
+		{
+			if (i == last_playlist)
+			{
+				last_playlist = p_order[i];
+				break;
+			}
+		}
+	}
+
+	void handle_playlist_removed(t_size p_old_count, t_size p_new_count)
+	{
+		if (p_new_count == 0)
+		{
+			last_playlist = pfc_infinite;
+			return;
+		}
+
+		if (p_new_count < p_old_count && last_playlist >= p_new_count)
+		{
+			last_playlist -= p_old_count - p_new_count;
+		}
+	}
+
 	t_size get_last_playlist_current_index()
 	{
 		return last_playlist_current_index;
+	}
+
+	t_size get_last_playlist()
+	{
+		return last_playlist;
 	}
 
 	void send_pause_state(bool state)
@@ -213,8 +247,7 @@ namespace deskband_actions
 		send_stop_after_current(last_stop_after_current_state);
 		send_album_art(last_album_art_buffer, last_album_art_buffer_size, last_album_art_stub);
 
-		//if (last_playlist != NULL) send_playlist(*last_playlist, last_playlist_current_index);
-		handle_playlist_change(0);
+		handle_playlist_change();
 	}
 
 	void resend_last_nontrack_state()
@@ -223,7 +256,7 @@ namespace deskband_actions
 		send_stop_after_current(last_stop_after_current_state);
 		send_album_art(last_album_art_buffer, last_album_art_buffer_size, last_album_art_stub);
 
-		handle_playlist_change(0);
+		handle_playlist_change();
 	}
 
 	void send_version()

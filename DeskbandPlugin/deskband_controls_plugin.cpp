@@ -39,28 +39,30 @@ namespace deskband_controls_plugin
 			return flag_on_items_added
 				| flag_on_items_reordered
 				| flag_on_items_removed
-				| flag_on_items_modified;
+				| flag_on_items_modified
+				| flag_on_playlists_reorder
+				| flag_on_playlists_removed;
 		}
 
 		virtual void on_items_added(t_size p_playlist, t_size p_start, const pfc::list_base_const_t<metadb_handle_ptr> & p_data, const bit_array & p_selection)
 		{
-			deskband_actions::handle_playlist_change(p_playlist);
+			deskband_actions::handle_playlist_change();
 		}
 		virtual void on_items_reordered(t_size p_playlist, const t_size * p_order, t_size p_count)
 		{
-			deskband_actions::handle_playlist_change(p_playlist);
+			deskband_actions::handle_playlist_change();
 		}
 		virtual void on_items_removing(t_size p_playlist, const bit_array & p_mask, t_size p_old_count, t_size p_new_count) {}
 		virtual void on_items_removed(t_size p_playlist, const bit_array & p_mask, t_size p_old_count, t_size p_new_count)
 		{
-			deskband_actions::handle_playlist_change(p_playlist);
+			deskband_actions::handle_playlist_change();
 		}
 		virtual void on_items_selection_change(t_size p_playlist, const bit_array & p_affected, const bit_array & p_state) {}
 		virtual void on_item_focus_change(t_size p_playlist, t_size p_from, t_size p_to) {}
 
 		virtual void on_items_modified(t_size p_playlist, const bit_array & p_mask)
 		{
-			deskband_actions::handle_playlist_change(p_playlist);
+			deskband_actions::handle_playlist_change();
 		}
 
 		virtual void on_items_modified_fromplayback(t_size p_playlist, const bit_array & p_mask, play_control::t_display_level p_level) {}
@@ -68,9 +70,15 @@ namespace deskband_controls_plugin
 		virtual void on_item_ensure_visible(t_size p_playlist, t_size p_idx) {}
 		virtual void on_playlist_activate(t_size p_old, t_size p_new) {}
 		virtual void on_playlist_created(t_size p_index, const char * p_name, t_size p_name_len) {}
-		virtual void on_playlists_reorder(const t_size * p_order, t_size p_count) {}
+		virtual void on_playlists_reorder(const t_size * p_order, t_size p_count)
+		{
+			deskband_actions::handle_playlist_reorder(p_order, p_count);
+		}
 		virtual void on_playlists_removing(const bit_array & p_mask, t_size p_old_count, t_size p_new_count) {}
-		virtual void on_playlists_removed(const bit_array & p_mask, t_size p_old_count, t_size p_new_count) {}
+		virtual void on_playlists_removed(const bit_array & p_mask, t_size p_old_count, t_size p_new_count)
+		{
+			deskband_actions::handle_playlist_removed(p_old_count, p_new_count);
+		}
 		virtual void on_playlist_renamed(t_size p_index, const char * p_new_name, t_size p_new_name_len) {}
 		virtual void on_default_format_changed() {}
 		virtual void on_playback_order_changed(t_size p_new_index) {}
@@ -164,8 +172,7 @@ namespace deskband_controls_plugin
 				deskband_actions::send_album_art(NULL, 0, stub);
 			}
 
-			//foo_playlist_handler.get_static_instance().handle_playlist_change(0);
-			deskband_actions::handle_playlist_change(0);
+			deskband_actions::handle_playlist_change();
 		}
 	};
 	static play_callback_static_factory_t<playback_handler> foo_playback;
